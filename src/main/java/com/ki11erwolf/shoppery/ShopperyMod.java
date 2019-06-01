@@ -1,8 +1,6 @@
 package com.ki11erwolf.shoppery;
 
-import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -18,7 +16,7 @@ import org.apache.logging.log4j.util.StackLocatorUtil;
 /**
  * The Shoppery "Main" mod class.
  */
-@Mod("shoppery")
+@Mod(ShopperyMod.MODID)
 @SuppressWarnings("unused")//Methods/Objects found by reflection
 public class ShopperyMod {
 
@@ -26,6 +24,18 @@ public class ShopperyMod {
      * Logging Object
      */
     private static final Logger LOGGER = getNewLogger();
+
+    /**
+     * The forge modid for shopperycraft.
+     */
+    public static final String MODID = "shoppery";
+
+    /**
+     * The version number for this release of
+     * shopperycraft.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static final String VERSION = "1.0.0";
 
     /**
      * Default Constructor.
@@ -37,7 +47,6 @@ public class ShopperyMod {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -47,7 +56,7 @@ public class ShopperyMod {
      * @param event forge provided event.
      */
     private void setup(final FMLCommonSetupEvent event){
-
+        LOGGER.info(String.format("Starting ShopperyCraft %s setup...", VERSION));
     }
 
     /**
@@ -94,22 +103,5 @@ public class ShopperyMod {
     @SuppressWarnings("WeakerAccess")
     public static Logger getNewLogger(){
         return LogManager.getLogger(StackLocatorUtil.getCallerClass(2));
-    }
-
-    /**
-     * Mod object & content registration events.
-     */
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-
-        /**
-         * Mod block registration event.
-         *
-         * @param blockRegistryEvent forge provided event.
-         */
-        @SubscribeEvent
-        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
-
-        }
     }
 }

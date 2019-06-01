@@ -13,7 +13,7 @@ public final class ShopperyItemGroup extends ItemGroup {
     /**
      * Shoppery Item Group singleton instance.
      */
-    public static final ShopperyItemGroup SHOPPERY_ITEM_GROUP
+    public static final ShopperyItemGroup INSTANCE
             = new ShopperyItemGroup(ShopperyMod.MODID);
 
     /**

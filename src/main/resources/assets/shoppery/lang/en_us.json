@@ -1,3 +1,10 @@
 {
-  "itemGroup.shoppery": "ShopperyCraft"
+  "itemGroup.shoppery": "ShopperyCraft",
+
+  "item.shoppery.coin_one": "One Cent Coin",
+  "item.shoppery.coin_five": "Five Cent Coin",
+  "item.shoppery.coin_ten": "Ten Cent Coin",
+  "item.shoppery.coin_twenty": "Twenty Cent Coin",
+  "item.shoppery.coin_fifty": "Fifty Cent Coin",
+  "item.shoppery.coin_eighty": "Eighty Cent Coin"
 }

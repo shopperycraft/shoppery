@@ -1,13 +1,16 @@
 package com.ki11erwolf.shoppery.item;
 
+import com.ki11erwolf.shoppery.ShopperyItemGroup;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import net.minecraft.item.Item;
 
 /**
  * Base class for all shoppery items.
+ *
+ * @generic T the class inheriting from this class.
  */
 @SuppressWarnings("WeakerAccess")
-public class ShopperyItem extends Item {
+public class ShopperyItem<T extends ShopperyItem> extends Item {
 
     /**
      * Flag to prevent queuing an item
@@ -26,7 +29,7 @@ public class ShopperyItem extends Item {
      *                     this item under.
      */
     ShopperyItem(Properties properties, String registryName) {
-        super(properties);
+        super(setItemGroup(properties));
         this.setRegistryName(ShopperyMod.MODID, registryName);
     }
 
@@ -38,7 +41,7 @@ public class ShopperyItem extends Item {
      *
      * @return {@code this}.
      */
-    ShopperyItem queueRegistration(){
+    T queueRegistration(){
         if(isQueued)
             throw new IllegalStateException(
                     String.format("Item: %s already queued for registration.", this.getClass().getCanonicalName())
@@ -47,6 +50,19 @@ public class ShopperyItem extends Item {
         Items.queueItem(this);
         isQueued = true;
 
-        return this;
+        //noinspection unchecked //Should NOT be possible.
+        return (T)this;
+    }
+
+    /**
+     * Util method to set the item group of the given
+     * properties object before passing it to the
+     * super class constructor.
+     *
+     * @param properties given properties object.
+     * @return updated properties object.
+     */
+    private static Properties setItemGroup(Properties properties){
+        return properties.group(ShopperyItemGroup.INSTANCE);
     }
 }

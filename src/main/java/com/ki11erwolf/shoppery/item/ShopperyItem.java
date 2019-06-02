@@ -47,7 +47,7 @@ public class ShopperyItem<T extends ShopperyItem> extends Item {
                     String.format("Item: %s already queued for registration.", this.getClass().getCanonicalName())
             );
 
-        Items.queueItem(this);
+        ShopperyItems.queueItem(this);
         isQueued = true;
 
         //noinspection unchecked //Should NOT be possible.

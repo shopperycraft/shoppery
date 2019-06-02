@@ -1,6 +1,6 @@
 package com.ki11erwolf.shoppery;
 
-import net.minecraft.init.Items;
+import com.ki11erwolf.shoppery.item.ShopperyItems;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 
@@ -30,6 +30,6 @@ public final class ShopperyItemGroup extends ItemGroup {
      */
     @Override
     public ItemStack createIcon() {
-        return new ItemStack(Items.DIAMOND);
+        return new ItemStack(ShopperyItems.NOTE_ONE_HUNDRED_K);
     }
 }

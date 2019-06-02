@@ -1,10 +1,23 @@
 {
-  "itemGroup.shoppery": "ShopperyCraft",
+  "itemGroup.shoppery":                                   "ShopperyCraft",
 
-  "item.shoppery.coin_one": "One Cent Coin",
-  "item.shoppery.coin_five": "Five Cent Coin",
-  "item.shoppery.coin_ten": "Ten Cent Coin",
-  "item.shoppery.coin_twenty": "Twenty Cent Coin",
-  "item.shoppery.coin_fifty": "Fifty Cent Coin",
-  "item.shoppery.coin_eighty": "Eighty Cent Coin"
+  "item.shoppery.coin_one":                               "ℳ1¢ Coin",
+  "item.shoppery.coin_five":                              "ℳ5¢ Coin",
+  "item.shoppery.coin_ten":                               "ℳ10¢ Coin",
+  "item.shoppery.coin_twenty":                            "ℳ20¢ Coin",
+  "item.shoppery.coin_fifty":                             "ℳ50¢ Coin",
+  "item.shoppery.coin_eighty":                            "ℳ80¢ Coin",
+
+  "item.shoppery.note_one":                               "ℳ1 Note",
+  "item.shoppery.note_five":                              "ℳ5 Note",
+  "item.shoppery.note_ten":                               "ℳ10 Note",
+  "item.shoppery.note_twenty":                            "ℳ20 Note",
+  "item.shoppery.note_fifty":                             "ℳ50 Note",
+  "item.shoppery.note_one_hundred":                       "ℳ100 Note",
+  "item.shoppery.note_five_hundred":                      "ℳ500 Note",
+  "item.shoppery.note_one_k":                             "ℳ1,000 Note",
+  "item.shoppery.note_five_k":                            "ℳ5,000 Note",
+  "item.shoppery.note_ten_k":                             "ℳ10,000 Note",
+  "item.shoppery.note_fifty_k":                           "ℳ50,000 Note",
+  "item.shoppery.note_one_hundred_k":                     "ℳ100,000 Note"
 }

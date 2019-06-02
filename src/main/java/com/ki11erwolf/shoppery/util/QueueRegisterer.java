@@ -17,9 +17,9 @@ public class QueueRegisterer<T> {
      * iteratively registered to the game.
      *
      * This queue is used to programmatically
-     * register items to the game, after which
+     * register objects to the game, after which
      * it is nullified (made {@code null}) as
-     * it has no further purpose to store item
+     * it has no further purpose to store object
      * references.
      */
     private Queue<T> objects = new ArrayDeque<>();

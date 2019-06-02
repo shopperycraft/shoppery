@@ -11,30 +11,31 @@ public class Coin extends ShopperyItem<Coin> {
     private static final String ITEM_NAME_PREFIX = "coin_";
 
     /**
-     * The value/worth (in cents) of this coin (0 < value <= 100).
+     * The worth/worth (in cents) of this coin (0 < worth <= 100).
      */
-    private byte value;
+    private byte worth;
 
     /**
      * {@inheritDoc}
      *
      * @param coinName the name of the coin
      *                 type.
-     * @param value the worth (in cents) of this coin (0 < value <= 100).
+     * @param worth the worth (in cents) of this coin (0 < worth <= 100).
      */
-    Coin(String coinName, byte value) {
+    Coin(String coinName, byte worth) {
         super(new Properties(), ITEM_NAME_PREFIX + coinName);
 
-        if(value < 0 || value > 100)
-            throw new IllegalArgumentException("Value out of range (0 < value <= 100): " + value);
+        if(worth < 0 || worth > 100)
+            throw new IllegalArgumentException("Value out of range (0 < worth <= 100): " + worth);
 
-        this.value = value;
+        this.worth = worth;
     }
 
     /**
-     * @return The value/worth (in cents) of this coin (0 < value <= 100).
+     * @return The worth/worth (in cents) of this coin (0 < worth <= 100).
      */
-    public byte getValue(){
-        return this.value;
+    public byte getWorth(){
+        return this.worth;
     }
+
 }

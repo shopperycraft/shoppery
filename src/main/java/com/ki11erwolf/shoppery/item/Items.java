@@ -1,13 +1,11 @@
 package com.ki11erwolf.shoppery.item;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.util.QueueRegisterer;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 /**
  * Shoppery items registry, container &
@@ -15,19 +13,13 @@ import java.util.Queue;
  */
 @SuppressWarnings("unused")//References found by reflection.
 @Mod.EventBusSubscriber(modid = ShopperyMod.MODID, bus=Mod.EventBusSubscriber.Bus.MOD)
-public class Items {
+public final class Items extends QueueRegisterer<Item> {
 
     /**
-     * Queue holding every shoppery item
-     * that needs to be registered to the game.
-     *
-     * This queue is used to programmatically
-     * register items to the game, after which
-     * it is nullified (made {@code null}) as
-     * it has no further purpose to store item
-     * references.
+     * Private instance of this class.
      */
-    private static Queue<ShopperyItem> items = new ArrayDeque<>();
+    private static final Items INSTANCE = new Items();
+    private Items(){}
 
     //############################
     //   Public Item Instances
@@ -77,12 +69,7 @@ public class Items {
      */
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        if(items == null)
-            return;
-
-        items.iterator().forEachRemaining(item -> event.getRegistry().register(item));
-        items.clear();
-        items = null;
+        INSTANCE.iterateQueue(item -> event.getRegistry().register(item));
     }
 
     /**
@@ -92,6 +79,6 @@ public class Items {
      * @param item the item to queue.
      */
     static void queueItem(ShopperyItem item){
-        items.add(item);
+        INSTANCE.queueForRegistration(item);
     }
 }

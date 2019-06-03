@@ -2,6 +2,10 @@ package com.ki11erwolf.shoppery.item;
 
 /**
  * Item class for any type of coin.
+ *
+ * Shoppery notes & coins are usually referred to
+ * as Dollars to give simple, well known name
+ * to the currency.
  */
 public class Coin extends ShopperyItem<Coin> {
 

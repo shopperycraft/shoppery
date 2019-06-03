@@ -2,6 +2,10 @@ package com.ki11erwolf.shoppery.item;
 
 /**
  * Item class for every type of note.
+ *
+ * Shoppery notes & coins are usually referred to
+ * as Dollars to a give simple, well known name
+ * to the currency.
  */
 public class Note extends ShopperyItem<Note> {
 

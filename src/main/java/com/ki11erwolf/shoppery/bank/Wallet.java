@@ -1,8 +1,14 @@
 package com.ki11erwolf.shoppery.bank;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.util.PlayerUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Player Wallet.
@@ -19,6 +25,11 @@ import java.util.Objects;
  * Bank class.
  */
 public class Wallet {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = ShopperyMod.getNewLogger();
 
     /**
      * The symbol to represent the currency.
@@ -63,7 +74,12 @@ public class Wallet {
 
         this.balance = balance;
         this.cents = cents;
+        balance();
     }
+
+    //************
+    // PUBLIC API
+    //************
 
     /**
      * Sets the balance for this wallet. This
@@ -277,5 +293,124 @@ public class Wallet {
             balance += cents / 100;
             cents = (byte) (cents % 100);
         }
+    }
+
+    //****************
+    // INTERNAL LOGIC
+    //****************
+
+    /*
+        Json structure used to store
+        and retrieve wallet data:
+        {"PlayerName": "<player name>, "Balance": "<balance>, "Cents": "<cents>"}.
+        We write the player name to identify different wallets when editing
+        the file manually.
+     */
+
+    /**
+     * An enum set of keys used when
+     * writing the wallet to json.
+     */
+    enum WalletObjectKeys {
+
+        /**
+         * Key-value pair that stores
+         * the players name.
+         */
+        PLAYER_NAME("PlayerName"),
+
+        /**
+         * Key-value pair that stores
+         * the players balance.
+         */
+        BALANCE("Balance"),
+
+        /**
+         * Key-value pair that stores
+         * the players balance cents.
+         */
+        CENTS("Cents");
+
+        /**
+         * Value used in json.
+         */
+        public final String value;
+
+        /**
+         * @param value Value used in json.
+         */
+        WalletObjectKeys(String value){
+            this.value = value;
+        }
+    }
+
+    /**
+     * Creates a JsonObject that holds
+     * all the data in this wallet
+     * object which can be used to store
+     * this wallet object on file.
+     *
+     * @return a JsonObject that can
+     * be used to store this wallet on file.
+     */
+    JsonObject getWalletAsJsonObject(){
+        balance();
+        JsonObject walletObject = new JsonObject();
+
+        walletObject.add(
+                WalletObjectKeys.PLAYER_NAME.value,
+                new JsonPrimitive(player.getGameProfile().getName())
+        );
+
+        walletObject.add(
+                WalletObjectKeys.BALANCE.value,
+                new JsonPrimitive(balance)
+        );
+
+        walletObject.add(
+                WalletObjectKeys.CENTS.value,
+                new JsonPrimitive(cents)
+        );
+
+        return walletObject;
+    }
+
+    /**
+     * Takes a JsonWalletObject (containing
+     * wallet data in the correct format)
+     * and constructs a new Wallet from it.
+     *
+     * @param jWallet the JsonObject containing wallet
+     *                data
+     * @param player the player entity.
+     * @return the newly created wallet object or {@code null}
+     * if the json wallet object couldn't be parsed.
+     */
+    static Wallet createWalletFromJsonObject(JsonObject jWallet, EntityPlayer player){
+        if(jWallet.get(WalletObjectKeys.BALANCE.value) == null
+                || jWallet.get(WalletObjectKeys.CENTS.value) == null){
+            LOGGER.warn("Invalid json wallet object found: " + jWallet.toString());
+            return null;
+        }
+
+        long balance = jWallet.get(WalletObjectKeys.BALANCE.value).getAsLong();
+        byte cents = jWallet.get(WalletObjectKeys.CENTS.value).getAsByte();
+
+        return new Wallet(player, balance, cents);
+    }
+
+    /**
+     * Takes a JsonWalletObject (containing
+     * wallet data in the correct format)
+     * and constructs a new Wallet from it.
+     *
+     * @param jWallet the JsonObject containing wallet
+     *                data
+     * @param playerUUID the player entity's unique ID.
+     * @return the newly created wallet object or {@code null}
+     * if the json wallet object couldn't be parsed.
+     */
+    static Wallet createWalletFromJsonObject(JsonObject jWallet, UUID playerUUID){
+        return createWalletFromJsonObject(jWallet, PlayerUtil.getPlayerFromUUID(playerUUID));
     }
 }

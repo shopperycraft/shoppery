@@ -245,7 +245,6 @@ public class Wallet {
      */
     public String getTextualBalance(){
         String display = balance + "." + cents;
-
         //TODO: Create proper styling for textual balance.
         return CURRENCY_SYMBOL + display;
     }

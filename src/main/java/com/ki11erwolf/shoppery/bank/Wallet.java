@@ -1,5 +1,6 @@
 package com.ki11erwolf.shoppery.bank;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.ki11erwolf.shoppery.ShopperyMod;
@@ -23,7 +24,10 @@ import java.util.UUID;
  * created from this class, rather, a
  * wallet must be obtained from the
  * Bank class.
+ *
+ * @see BankManager for obtaining Bank & Wallet objects.
  */
+//TODO: Add logging for transactions.
 public class Wallet {
 
     /**
@@ -66,8 +70,8 @@ public class Wallet {
     Wallet(EntityPlayer player, long balance, byte cents){
         this.player = Objects.requireNonNull(player, "Wallet player cannot be null.");
 
-        if(cents > 100 || cents <= 0)
-            throw new IllegalArgumentException("cents > 100 || cents <= 0");
+        if(cents > 100 || cents < 0)
+            throw new IllegalArgumentException("cents > 100 || cents < 0");
 
         if(balance < 0)
             throw new IllegalArgumentException("balance < 0");
@@ -124,6 +128,7 @@ public class Wallet {
      *
      * @param balance the amount to add.
      */
+    @SuppressWarnings("WeakerAccess")
     public void add(long balance){
         if(balance < 1)
             throw new IllegalArgumentException("balance < 1");
@@ -209,6 +214,7 @@ public class Wallet {
         double bal;
         double sub;
 
+        //Does the subtraction with doubles and rounds them off
         if(this.cents < 10)
             bal = Math.round(Double.parseDouble(this.balance + ".0" + this.cents) * 100.0) / 100.0;
         else
@@ -386,15 +392,19 @@ public class Wallet {
      * @return the newly created wallet object or {@code null}
      * if the json wallet object couldn't be parsed.
      */
+    @SuppressWarnings("WeakerAccess")
     static Wallet createWalletFromJsonObject(JsonObject jWallet, EntityPlayer player){
-        if(jWallet.get(WalletObjectKeys.BALANCE.value) == null
-                || jWallet.get(WalletObjectKeys.CENTS.value) == null){
+        JsonElement jBalance = jWallet.get(WalletObjectKeys.BALANCE.value);
+        JsonElement jCents = jWallet.get(WalletObjectKeys.CENTS.value);
+
+        if(jBalance == null
+                || jCents == null){
             LOGGER.warn("Invalid json wallet object found: " + jWallet.toString());
             return null;
         }
 
-        long balance = jWallet.get(WalletObjectKeys.BALANCE.value).getAsLong();
-        byte cents = jWallet.get(WalletObjectKeys.CENTS.value).getAsByte();
+        long balance = jBalance.getAsLong();
+        byte cents = jCents.getAsByte();
 
         return new Wallet(player, balance, cents);
     }

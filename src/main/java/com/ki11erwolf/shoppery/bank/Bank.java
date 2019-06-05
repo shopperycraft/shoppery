@@ -25,7 +25,10 @@ import java.util.UUID;
  * with multiple worlds, and as such, a bank needs to
  * be obtained from the {@link BankManager} using a
  * {@link net.minecraft.world.World}.
+ *
+ * @see BankManager for obtaining Bank & Wallet objects.
  */
+@SuppressWarnings("WeakerAccess")
 public class Bank {
 
     /**
@@ -122,10 +125,21 @@ public class Bank {
      */
     public World getWorld(){return world;}
 
+    /**
+     * @return the name (given at world creation)
+     * of the world this bank links to.
+     */
+    public String getWorldName(){
+        return world.getWorldInfo().getWorldName();
+    }
+
     //****************
     // INTERNAL LOGIC
     //****************
 
+    /**
+     * The key used to store the world name.
+     */
     private static final String WORLD_NAME_KEY = "WorldName";
 
     /*
@@ -149,10 +163,7 @@ public class Bank {
         JsonObject jBank = new JsonObject();
 
         jBank.add(WORLD_NAME_KEY, new JsonPrimitive(world.getWorldInfo().getWorldName()));
-
-        walletMap.forEach((uuid, wallet) -> {
-            jBank.add(uuid.toString(), wallet.getWalletAsJsonObject());
-        });
+        walletMap.forEach((uuid, wallet) -> jBank.add(uuid.toString(), wallet.getWalletAsJsonObject()));
 
         return jBank;
     }
@@ -160,7 +171,7 @@ public class Bank {
     /**
      * Creates a new bank instances containing
      * all its wallets from a JsonObject containing
-     * bank object data and wallets.
+     * bank object data (wallets).
      *
      * @param jBank the JsonObject holding bank data
      *              and wallets.
@@ -179,7 +190,7 @@ public class Bank {
 
             Wallet wallet = Wallet.createWalletFromJsonObject(walletObject, uuid);
 
-            if(wallet != null)//Ignore invalid wallets.
+            if(wallet != null)//Ignore invalid wallets. Already logged.
                 bank.walletMap.put(uuid, Wallet.createWalletFromJsonObject(walletObject, uuid));
         }
 

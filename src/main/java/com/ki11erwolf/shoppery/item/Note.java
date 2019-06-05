@@ -1,5 +1,11 @@
 package com.ki11erwolf.shoppery.item;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
+
 /**
  * Item class for every type of note.
  *
@@ -43,5 +49,18 @@ public class Note extends ShopperyItem<Note> {
      */
     public int getWorth() {
         return worth;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Adds the amount of money this note is worth
+     * to the players {@link com.ki11erwolf.shoppery.bank.Wallet}.
+     */
+    @Override
+    @SuppressWarnings("NullableProblems")
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+        //TODO: Implement adding to wallet with right-click.
+        return super.onItemRightClick(world, player, hand);
     }
 }

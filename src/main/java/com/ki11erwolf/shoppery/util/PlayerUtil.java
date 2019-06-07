@@ -1,7 +1,8 @@
 package com.ki11erwolf.shoppery.util;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.UUID;
 
@@ -21,7 +22,8 @@ public final class PlayerUtil {
     }
 
     /**
-     * Gets a specific player given their UUID.
+     * Gets a specific player given their UUID from the
+     * integrated server.
      *
      * @param playerUUID unique player ID.
      * @return the player. Returns null if
@@ -31,9 +33,8 @@ public final class PlayerUtil {
         if(playerUUID == null)
             return null;
 
-        if(Minecraft.getInstance().getIntegratedServer() == null)
-            return null;
-
-        return Minecraft.getInstance().getIntegratedServer().getPlayerList().getPlayerByUUID(playerUUID);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        return server.getPlayerList().getPlayerByUUID(playerUUID);
     }
+
 }

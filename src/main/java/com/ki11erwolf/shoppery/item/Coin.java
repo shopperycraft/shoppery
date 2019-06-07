@@ -58,6 +58,9 @@ public class Coin extends ShopperyItem<Coin> {
     @Override
     @SuppressWarnings("NullableProblems")
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+        if(world.isRemote)
+            return super.onItemRightClick(world, player, hand);
+
         BankManager._getBank(world).getWallet(player).add(0, this.worth);
         //Always decrease stack size to indicate success.
         player.getHeldItem(hand).shrink(1);

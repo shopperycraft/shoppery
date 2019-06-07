@@ -27,7 +27,6 @@ import java.util.UUID;
  *
  * @see BankManager for obtaining Bank & Wallet objects.
  */
-//TODO: Add logging for transactions.
 public class Wallet {
 
     /**
@@ -117,6 +116,7 @@ public class Wallet {
         if(cents < 0)
             throw new IllegalArgumentException("cents < 0");
 
+        LOGGER.debug("Setting player: " + player.getGameProfile().getName() + " balance: " + balance + "-" + cents);
         this.cents = cents;
         this.balance = balance;
         balance();
@@ -132,6 +132,7 @@ public class Wallet {
         if(balance < 0)
             throw new IllegalArgumentException("balance < 0");
 
+        LOGGER.debug("Adding to player: " + player.getGameProfile().getName() + " balance: " + balance);
         this.balance += balance;
         balance();
     }
@@ -155,6 +156,8 @@ public class Wallet {
 
         short sum = (short)(this.cents + cents);
 
+        LOGGER.debug("Adding to player: " + player.getGameProfile().getName() + " balance: " + balance + "-" + cents);
+
         if(sum > 99){
             this.balance += sum / 100;
             this.cents = (byte) (sum % 100);
@@ -162,7 +165,8 @@ public class Wallet {
             this.cents = (byte)sum;
         }
 
-        add(balance);
+        this.balance += balance;
+        balance();
     }
 
     /**
@@ -183,6 +187,7 @@ public class Wallet {
         if(this.balance < balance)
             return false;
 
+        LOGGER.debug("Taking from player: " + player.getGameProfile().getName() + " balance: " + balance);
         this.balance -= balance;
         balance();
         return true;
@@ -229,6 +234,7 @@ public class Wallet {
 
         String sum = String.valueOf((double)Math.round((bal - sub) * 100.0) / 100.0);
 
+        LOGGER.debug("Taking from player: " + player.getGameProfile().getName() + " balance: " + balance + "-" + cents);
         if(sum.contains(".")){
             String[] sumA = sum.split("\\.");
             this.balance = Long.valueOf(sumA[0]);

@@ -128,10 +128,9 @@ public class Wallet {
      *
      * @param balance the amount to add.
      */
-    @SuppressWarnings("WeakerAccess")
     public void add(long balance){
-        if(balance < 1)
-            throw new IllegalArgumentException("balance < 1");
+        if(balance < 0)
+            throw new IllegalArgumentException("balance < 0");
 
         this.balance += balance;
         balance();
@@ -148,11 +147,11 @@ public class Wallet {
         if(cents > 99)
             throw new IllegalArgumentException("cents > 99");
 
-        if(cents < 1)
-            throw new IllegalArgumentException("cents < 1");
+        if(cents < 0)
+            throw new IllegalArgumentException("cents < 0");
 
-        if(balance < 1)
-            throw new IllegalArgumentException("balance < 1");
+        if(balance < 0)
+            throw new IllegalArgumentException("balance < 0");
 
         short sum = (short)(this.cents + cents);
 

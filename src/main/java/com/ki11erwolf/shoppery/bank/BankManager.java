@@ -119,6 +119,33 @@ public enum BankManager {
         return givenBank;
     }
 
+
+    /**
+     * Static shortcut for {@link #getBank(World)}
+     *
+     * Gets the bank linked to the given
+     * world object.
+     *
+     * This method will either return the
+     * cached bank object if it's been
+     * read from file or created already by calling
+     * this method, or, it will
+     * try read the bank from file and load
+     * it. If no cached version can be found and
+     * no bank can be found on file, a
+     * new empty bank will be created, cached
+     * and returned.
+     *
+     * @param world the world object.
+     * @return the bank object linked
+     * to the given world.
+     */
+    //Underscore used to differentiate
+    //between static & member method.
+    public static Bank _getBank(World world){
+        return INSTANCE.getBank(world);
+    }
+
     /**
      * Saves the given bank to file. If the
      * given bank is {@code null}, this method

@@ -1,5 +1,6 @@
 package com.ki11erwolf.shoppery.item;
 
+import com.ki11erwolf.shoppery.bank.BankManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -60,7 +61,10 @@ public class Note extends ShopperyItem<Note> {
     @Override
     @SuppressWarnings("NullableProblems")
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        //TODO: Implement adding to wallet with right-click.
+        BankManager._getBank(world).getWallet(player).add(this.worth);
+        //Always decrease stack size to indicate success.
+        player.getHeldItem(hand).shrink(1);
         return super.onItemRightClick(world, player, hand);
     }
+
 }

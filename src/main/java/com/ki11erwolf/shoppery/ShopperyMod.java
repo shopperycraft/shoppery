@@ -1,6 +1,7 @@
 package com.ki11erwolf.shoppery;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
+import com.ki11erwolf.shoppery.command.Command;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -73,6 +74,7 @@ public class ShopperyMod {
      */
     private void setup(final FMLCommonSetupEvent event){
         LOGGER.info(String.format("Starting ShopperyCraft %s setup...", VERSION));
+        Command.init();
     }
 
     /**

@@ -27,12 +27,21 @@ import java.util.UUID;
  *
  * @see BankManager for obtaining Bank & Wallet objects.
  */
+@SuppressWarnings("WeakerAccess")
 public class Wallet {
 
     /**
      * Logger for this class.
      */
     private static final Logger LOGGER = ShopperyMod.getNewLogger();
+
+    /**
+     * Regex Expression to match currency in String form (e.g. 99.99, 100, ect).
+     *
+     * Copied from: https://stackoverflow.com/questions/354044/what-is-the-best-u-s-currency-regex/354216#354216
+     * Original Library/Origin: Regex Buddy (https://www.regexbuddy.com/)
+     */
+    private static final String BALANCE_REGEX = "^[+-]?[0-9]{1,3}(?:,?[0-9]{3})*(?:\\.[0-9]{2})?$";
 
     /**
      * The symbol to represent the currency.
@@ -170,6 +179,72 @@ public class Wallet {
     }
 
     /**
+     * Adds the specified amount to the wallet balance.
+     *
+     * Given balance must in one of the following formats:
+     *   1
+     *   100
+     *   1,000
+     *   100.00
+     *   100.99
+     * Only one decimal place is allowed.
+     * Decimal place must have two digits.
+     * Invalid formats:
+     * -1
+     * 100.000
+     * 100.1
+     *
+     * @param balance the amount to add to the wallet balance.
+     * @throws NumberFormatException if the given balance
+     * is not in the correct format.
+     */
+    public void add(float balance){
+        add(String.valueOf(balance));
+    }
+
+    /**
+     * Adds the specified amount to the wallet balance.
+     *
+     * Given balance must in one of the following formats:
+     *   1
+     *   100
+     *   1,000
+     *   100.00
+     *   100.99
+     * Only one decimal place is allowed.
+     * Decimal place must have two digits.
+     * Invalid formats:
+     * -1
+     * 100.000
+     * 100.1
+     *
+     * @param balance the amount to add to the wallet balance.
+     * @throws NumberFormatException if the given balance
+     * is not in the correct format.
+     */
+    public void add(String balance){
+        //Don't allow commas & currency symbol.
+        balance = Objects.requireNonNull(balance.replace(",", "").replace("$", ""));
+
+        if(!balance.matches(BALANCE_REGEX))
+            throw new NumberFormatException("Balance not in correct format: " + balance);
+
+        if(balance.contains("-"))
+            throw new NumberFormatException("Negative balance: " + balance);
+
+        if(balance.contains(".")){//Has cents(decimal)
+            String[] values = balance.split("\\.");
+
+            if(values.length != 2 || values[1].length() != 2)
+                throw new NumberFormatException("Balance not in correct format (decimals): " + balance);
+
+            add(Long.valueOf(values[0]), Byte.valueOf(values[1]));
+        } else {//Has no cents(decimal)
+            add(Long.valueOf(balance));
+        }
+    }
+
+    /**
      * Subtracts the given amount from
      * this wallet IF the remaining
      * amount/balance is above 0.
@@ -209,43 +284,108 @@ public class Wallet {
         if(cents > 99)
             throw new IllegalArgumentException("cents > 99");
 
-        if(cents < 1)
-            throw new IllegalArgumentException("cents < 1");
+        if(cents < 0)
+            throw new IllegalArgumentException("cents < 0");
 
         if(balance < 0)
             throw new IllegalArgumentException("balance < 0");
 
-        double bal;
-        double sub;
 
-        //Does the subtraction with doubles and rounds them off
-        if(this.cents < 10)
-            bal = Math.round(Double.parseDouble(this.balance + ".0" + this.cents) * 100.0) / 100.0;
-        else
-            bal = Math.round(Double.parseDouble(this.balance + "." + this.cents) * 100.0) / 100.0;
+        int newCents = this.cents - cents;
+        long newBalance = this.balance;
 
-        if(cents < 10)
-            sub = Math.round(Double.parseDouble(balance + ".0" + cents) * 100.0) / 100.0;
-        else
-            sub = Math.round(Double.parseDouble(balance + "." + cents) * 100.0) / 100.0;
+        if(newCents < 0){
+            newBalance--;
+            newCents += 100;
+        }
 
-        if(bal - sub < 0)
+        newBalance -= balance;
+
+        if(newBalance == 0){
+            if (newCents == 0)
+                return false;
+        }
+
+        if(newBalance < 0)
             return false;
 
-        String sum = String.valueOf((double)Math.round((bal - sub) * 100.0) / 100.0);
+        LOGGER.debug("Taking from player: " + player.getGameProfile().getName() + " balance: " + balance + "." + cents);
 
-        LOGGER.debug("Taking from player: " + player.getGameProfile().getName() + " balance: " + balance + "-" + cents);
-        if(sum.contains(".")){
-            String[] sumA = sum.split("\\.");
-            this.balance = Long.valueOf(sumA[0]);
-            this.cents = Byte.valueOf(sumA[1]);
-        } else {
-            this.balance = Long.valueOf(sum);
-            this.cents = 0;
-        }
+        this.balance = newBalance;
+        this.cents = (byte)newCents;
 
         balance();
         return true;
+    }
+
+    /**
+     * Subtracts the specified amount from the wallet balance.
+     *
+     * Given balance must in one of the following formats:
+     *   1
+     *   100
+     *   1,000
+     *   100.00
+     *   100.99
+     * Only one decimal place is allowed.
+     * Decimal place must have two digits.
+     * Invalid formats:
+     * -1
+     * 100.000
+     * 100.1
+     *
+     * @param balance the amount to subtract from the wallet balance.
+     * @throws NumberFormatException if the given balance
+     * is not in the correct format.
+     * @return {@code true} if the wallet has a sufficient balance
+     * and the amount was taken off, {@code false} otherwise.
+     */
+    public boolean subtract(String balance){
+        //Don't allow commas & currency symbol.
+        balance = Objects.requireNonNull(balance.replace(",", "").replace("$", ""));
+
+        if(!balance.matches(BALANCE_REGEX))
+            throw new NumberFormatException("Balance not in correct format: " + balance);
+
+        if(balance.contains("-"))
+            throw new NumberFormatException("Negative balance: " + balance);
+
+        if(balance.contains(".")){//Has cents(decimal)
+            String[] values = balance.split("\\.");
+
+            if(values.length != 2 || values[1].length() != 2)
+                throw new NumberFormatException("Balance not in correct format (decimals): " + balance);
+
+            return subtract(Long.valueOf(values[0]), Byte.valueOf(values[1]));
+        } else {//Has no cents(decimal)
+            return subtract(Long.valueOf(balance));
+        }
+    }
+
+    /**
+     * Subtracts the specified amount from the wallet balance.
+     *
+     * Given balance must in one of the following formats:
+     *   1
+     *   100
+     *   1,000
+     *   100.00
+     *   100.99
+     * Only one decimal place is allowed.
+     * Decimal place must have two digits.
+     * Invalid formats:
+     * -1
+     * 100.000
+     * 100.1
+     *
+     * @param balance the amount to subtract from the wallet balance.
+     * @throws NumberFormatException if the given balance
+     * is not in the correct format.
+     * @return {@code true} if the wallet has a sufficient balance
+     * and the amount was taken off, {@code false} otherwise.
+     */
+    public boolean subtract(float balance){
+        return subtract(String.valueOf(balance));
     }
 
     /**

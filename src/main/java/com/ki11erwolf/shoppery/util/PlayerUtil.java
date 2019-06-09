@@ -23,7 +23,7 @@ public final class PlayerUtil {
 
     /**
      * Gets a specific player given their UUID from the
-     * integrated server.
+     * current Minecraft server.
      *
      * @param playerUUID unique player ID.
      * @return the player. Returns null if

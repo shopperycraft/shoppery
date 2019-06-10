@@ -36,6 +36,16 @@ public abstract class Command {
      */
     public static final CmdShoppery SHOPPERY_COMMAND;
 
+    /**
+     * Instance of the money command.
+     */
+    public static final CmdMoney MONEY_COMMAND;
+
+    /**
+     * Instance of the balance command.
+     */
+    public static final CmdBalance BALANCE_COMMAND;
+
     //*******
     // Logic
     //*******
@@ -223,5 +233,7 @@ public abstract class Command {
         //Instance initialization.
         PAY_COMMAND = new CmdPay();
         SHOPPERY_COMMAND = new CmdShoppery();
+        MONEY_COMMAND = new CmdMoney();
+        BALANCE_COMMAND = new CmdBalance();
     }
 }

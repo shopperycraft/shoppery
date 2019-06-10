@@ -44,6 +44,11 @@ class CmdPay extends Command{
                 = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(arguments[0]);
         String amount = arguments[1];
 
+        if(player.isCreative()){
+            message(player, TextFormatting.RED + "Cannot use /pay in creative mode.");
+            return;
+        }
+
         if(toPlayer != null){
             if(!player.getEntityWorld().getWorldInfo().getWorldName()
                     .equals(toPlayer.getEntityWorld().getWorld().getWorldInfo().getWorldName())){

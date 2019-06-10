@@ -4,6 +4,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+/**
+ * Used to list commands and get information on
+ * specific commands.
+ */
 class CmdShoppery extends Command {
 
     /**
@@ -80,7 +84,7 @@ class CmdShoppery extends Command {
      */
     @Override
     String getUsage() {
-        return "/shoppery [<command>]";
+        return "/shoppery [<Command>]";
     }
 
     /**

@@ -2,19 +2,18 @@ package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The button displayed in the players
@@ -34,9 +33,37 @@ public class ShopperyButton extends GuiButtonImage {
             = new ResourceLocation(ShopperyMod.MODID, "textures/gui/shoppery_button.png");
 
     /**
+     * Latest instance of the shoppery button to be
+     * created. Used to "destroy" duplicate instances.
+     */
+    private static ShopperyButton CURRENT_BUTTON = null;
+
+    /**
      * The gui this button is attached to.
      */
     private final GuiContainer parent;
+
+    /**
+     * Check if the mouse is hovering over the button
+     * AND if it is pressable.
+     */
+    private boolean isHovering;
+
+    /**
+     * Flag used to check if this
+     * button is still in use. Only
+     * one ShopperyButton may be in use
+     * for a player.
+     */
+    private boolean isDestroyed = false;
+
+    /**
+     * Number of times the left click
+     * mouse button has been pressed
+     * over the button. Used to filter
+     * out double-presses.
+     */
+    private int presses = 0;
 
     /*
      * Registers this class to the forge event bus.
@@ -67,6 +94,7 @@ public class ShopperyButton extends GuiButtonImage {
                            int x, int y, int width, int height, int offset) {
         super(buttonId, x, y, width, height, 0, 0, offset, texture);
         this.parent = parent;
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     /**
@@ -77,8 +105,9 @@ public class ShopperyButton extends GuiButtonImage {
      */
     @Override
     public void onClick(double mouseX, double mouseY) {
-        ShopperyMod.getNewLogger().info("Button Clicked!");
         super.onClick(mouseX, mouseY);
+        ShopperyMod.getNewLogger().info("Button Clicked!");
+        this.playPressSound(Minecraft.getInstance().getSoundHandler());
     }
 
     /**
@@ -98,13 +127,52 @@ public class ShopperyButton extends GuiButtonImage {
 
         super.render(mouseX, mouseY, partialTicks);
 
-        this.drawCenteredString(
-            Minecraft.getInstance().fontRenderer, getBalance(),
-                x + 22, y + (this.height / 3) - 1, 0xffffff
-        );
+        if(this.visible){
+            this.drawCenteredString(
+                    Minecraft.getInstance().fontRenderer, getBalance(),
+                    x + 22, y + (this.height / 3) - 1, 0xffffff
+            );
+
+            this.hovered = mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height;
+            int k = this.getHoverState(this.hovered);
+            isHovering = hovered;
+        } else {
+            isHovering = false;
+        }
 
         this.x = oldX;
         this.y = oldY;
+    }
+
+    /**
+     * Forge hook to subscribe to mouse events.
+     *
+     * Used to call this buttons {@link #onClick(double, double)}
+     * method when the mouse is hovering over it
+     * as it isn't called by default
+     *
+     * @param event forge mouse event.
+     */
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
+    public void onEvent(InputEvent.MouseInputEvent event) {
+        if(presses == 0 || presses == 2){
+            if(event.getButton() == 0 && isHovering && visible && !isDestroyed)
+                this.onClick(0, 0);
+            presses = 0;
+        }
+
+        presses++;
+    }
+
+    /**
+     * Call to tell this button
+     * to it's no longer needed
+     * and must stop working.
+     */
+    private void destroy(){
+        this.visible = false;
+        this.isDestroyed = true;
     }
 
     /**
@@ -139,41 +207,22 @@ public class ShopperyButton extends GuiButtonImage {
         @SubscribeEvent
         public void guiPostInit(GuiScreenEvent.InitGuiEvent.Post event) {
             if (event.getGui() instanceof GuiInventory) {
-
                 GuiContainer gui = (GuiContainer) event.getGui();
-                List<GuiButton> list = getBackingList(event.getButtonList());
 
-                if(list == null)
-                    throw new IllegalStateException("Cannot add shoppery button. List is null");
-
-                list.add(
-                    new ShopperyButton(
-                            BANK_BUTTON_TEXTURE, gui, 82, 125, 22, 46, 18, 19
-                    )
+                ShopperyButton button = new ShopperyButton(
+                        BANK_BUTTON_TEXTURE, gui, 82, 125, 22, 46, 18, 19
                 );
+
+                if(CURRENT_BUTTON != null)
+                    CURRENT_BUTTON.destroy();
+
+                event.addButton(
+                   button
+                );
+                event.removeButton(CURRENT_BUTTON);
+                CURRENT_BUTTON = button;
             }
         }
 
-        /**
-         * Allows getting the backing (editable) list of an
-         * {@link Collections.UnmodifiableRandomAccessList} through reflection.
-         *
-         * @param list the given {@link Collections.UnmodifiableRandomAccessList}.
-         * @return the backing editable {@link List}.
-         */
-        @SuppressWarnings("JavadocReference")
-        private static <T> List<T> getBackingList(List<T> list){
-            try {
-                Field f = list.getClass().getSuperclass().getDeclaredField("list");
-                f.setAccessible(true);
-                //Should always return the same object.
-                //noinspection unchecked
-                return (List<T>)f.get(list);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                ShopperyMod.getNewLogger().error("Failed to get button list", e);
-            }
-
-            return null;
-        }
     }
 }

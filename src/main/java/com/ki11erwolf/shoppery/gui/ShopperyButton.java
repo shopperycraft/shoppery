@@ -135,7 +135,10 @@ public class ShopperyButton extends GuiButtonImage {
 
             this.hovered = mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height;
             int k = this.getHoverState(this.hovered);
-            isHovering = hovered;
+            if(k != 1)
+                isHovering = hovered;
+            else
+                isHovering = false;
         } else {
             isHovering = false;
         }
@@ -157,7 +160,8 @@ public class ShopperyButton extends GuiButtonImage {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     public void onEvent(InputEvent.MouseInputEvent event) {
         if(presses == 0 || presses == 2){
-            if(event.getButton() == 0 && isHovering && visible && !isDestroyed)
+            if(event.getButton() == 0 && isHovering && visible && !isDestroyed &&
+                    Minecraft.getInstance().currentScreen instanceof GuiInventory)
                 this.onClick(0, 0);
             presses = 0;
         }
@@ -171,6 +175,7 @@ public class ShopperyButton extends GuiButtonImage {
      * and must stop working.
      */
     private void destroy(){
+        MinecraftForge.EVENT_BUS.unregister(CURRENT_BUTTON);
         this.visible = false;
         this.isDestroyed = true;
     }

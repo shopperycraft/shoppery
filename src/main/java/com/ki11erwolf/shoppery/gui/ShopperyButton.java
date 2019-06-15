@@ -1,11 +1,15 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.network.packets.PReceivePlayerBalance;
+import com.ki11erwolf.shoppery.network.packets.PRequestPlayerBalance;
+import com.ki11erwolf.shoppery.network.packets.Packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -14,6 +18,8 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 /**
  * The button displayed in the players
@@ -31,6 +37,13 @@ public class ShopperyButton extends GuiButtonImage {
      */
     private static final ResourceLocation BANK_BUTTON_TEXTURE
             = new ResourceLocation(ShopperyMod.MODID, "textures/gui/shoppery_button.png");
+
+    /**
+     * The time when the last balance request
+     * packet was sent. Used to prevent
+     * sending packets in quick succession.
+     */
+    private static long lastPktSendTime = -1;
 
     /**
      * Latest instance of the shoppery button to be
@@ -79,6 +92,7 @@ public class ShopperyButton extends GuiButtonImage {
      */
     //Dummy method that allows us to statically
     //load the class.
+    @OnlyIn(Dist.CLIENT)
     public static void init(){}
 
     /**
@@ -182,11 +196,21 @@ public class ShopperyButton extends GuiButtonImage {
 
     /**
      * @return the textual formatted balance of the
-     * player viewing the button.
+     * player viewing the button. Also handles requesting
+     * the balance from the server.
      */
     private static String getBalance(){
         EntityPlayer player = Minecraft.getInstance().player;
-        return "$10.00";
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        //Timer to prevent spamming the server every gui redraw.
+        if(System.currentTimeMillis() > lastPktSendTime + 1000 /*Time between*/ || lastPktSendTime == -1){
+            Packet.send(PacketDistributor.SERVER.noArg(), new PRequestPlayerBalance(player.getUniqueID().toString()));
+            lastPktSendTime = System.currentTimeMillis();
+        }
+
+        return PReceivePlayerBalance.getLastKnownBalance() == null ?
+                "<ERROR>" : PReceivePlayerBalance.getLastKnownBalance();
     }
 
     /**

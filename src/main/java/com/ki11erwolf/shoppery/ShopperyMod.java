@@ -1,10 +1,9 @@
 package com.ki11erwolf.shoppery;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
-import com.ki11erwolf.shoppery.command.Command;
-import com.ki11erwolf.shoppery.gui.ShopperyButton;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -56,6 +55,11 @@ public class ShopperyMod {
             = new File(System.getProperty("user.dir") + "/shoppery/banks/");
 
     /**
+     * The proxy class (server or client) for this instance.
+     */
+    private static Proxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+
+    /**
      * Default Constructor.
      *
      * Sets up mod event listeners & callbacks.
@@ -69,14 +73,14 @@ public class ShopperyMod {
     }
 
     /**
-     * First mod registration event.
+     * First mod registration event. Called to
+     * initialize and register the shoppery mod.
      *
      * @param event forge provided event.
      */
     private void setup(final FMLCommonSetupEvent event){
         LOGGER.info(String.format("Starting ShopperyCraft %s setup...", VERSION));
-        Command.init();
-        ShopperyButton.init();
+        proxy.setup(event);
     }
 
     /**
@@ -85,7 +89,8 @@ public class ShopperyMod {
      * @param event forge provided event.
      */
     private void doClientStuff(final FMLClientSetupEvent event) {
-
+        if(proxy instanceof ClientProxy)
+            proxy.doClientStuff(event);
     }
 
     /**
@@ -94,7 +99,8 @@ public class ShopperyMod {
      * @param event forge provided event.
      */
     private void enqueueIMC(final InterModEnqueueEvent event){
-
+        if(!(proxy instanceof ClientProxy))
+            proxy.enqueueIMC(event);
     }
 
     /**
@@ -103,7 +109,8 @@ public class ShopperyMod {
      * @param event forge provided event.
      */
     private void processIMC(final InterModProcessEvent event){
-
+        if(!(proxy instanceof ClientProxy))
+            proxy.processIMC(event);
     }
 
     /**
@@ -113,7 +120,8 @@ public class ShopperyMod {
      */
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
-
+        if(!(proxy instanceof ClientProxy))
+            proxy.onServerStarting(event);
     }
 
     /**
@@ -123,7 +131,8 @@ public class ShopperyMod {
      */
     @SubscribeEvent
     public void onServerStopped(FMLServerStoppedEvent event){
-
+        if(!(proxy instanceof ClientProxy))
+            proxy.onServerStopped(event);
     }
 
     /**

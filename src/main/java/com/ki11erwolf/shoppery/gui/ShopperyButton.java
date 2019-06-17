@@ -30,6 +30,7 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
  * Button Class:
  * https://github.com/Azanor/Baubles/blob/master/src/main/java/baubles/client/gui/GuiBaublesButton.java
  */
+@OnlyIn(Dist.CLIENT)
 public class ShopperyButton extends GuiButtonImage {
 
     /**
@@ -122,6 +123,16 @@ public class ShopperyButton extends GuiButtonImage {
         super.onClick(mouseX, mouseY);
         ShopperyMod.getNewLogger().info("Button Clicked!");
         this.playPressSound(Minecraft.getInstance().getSoundHandler());
+
+        if(parent instanceof MoneyGui){
+            parent.close();
+            this.destroy();
+            Minecraft.getInstance().displayGuiScreen(new GuiInventory(Minecraft.getInstance().player));
+        } else {
+            parent.close();
+            this.destroy();
+            Minecraft.getInstance().displayGuiScreen(new MoneyGui(Minecraft.getInstance().player));
+        }
     }
 
     /**

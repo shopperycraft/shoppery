@@ -64,14 +64,14 @@ public class Note extends ShopperyItem<Note> {
         if(world.isRemote)
             return super.onItemRightClick(world, player, hand);
 
-        if(player.isSneaking() && BankManager._getBank(world).getWallet(player).subtract(this.worth)){
+        if(player.isSneaking() && BankManager._getWallet(world, player).subtract(this.worth)){
             //Always increase stack size to indicate success.
             if(player.getHeldItem(hand).getCount() >= 64)
                 player.addItemStackToInventory(new ItemStack(player.getHeldItem(hand).getItem(), 1));
             else
                 player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() + 1);
         } else {
-            BankManager._getBank(world).getWallet(player).add(this.worth);
+            BankManager._getWallet(world, player).add(this.worth);
             //Always decrease stack size to indicate success.
             player.getHeldItem(hand).shrink(1);
         }

@@ -77,7 +77,7 @@ public class PRequestPlayerBalance extends Packet<PRequestPlayerBalance> {
                     return;
                 }
 
-                Wallet senderWallet = BankManager._getBank(player.getEntityWorld()).getWallet(player);
+                Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
                 send(
                         PacketDistributor.PLAYER.with(() -> ctx.get().getSender()),
                         new PReceivePlayerBalance(senderWallet.getFormattedBalance())

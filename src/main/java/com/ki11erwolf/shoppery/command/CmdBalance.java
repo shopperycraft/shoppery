@@ -41,7 +41,7 @@ class CmdBalance extends Command{
             return;
         }
 
-        Wallet wallet = BankManager._getBank(world).getWallet(player);
+        Wallet wallet = BankManager._getWallet(world, player);
         message(player, "Balance: "
                 + TextFormatting.GREEN + wallet.getFullBalance() + " (" + wallet.getFormattedBalance() + ")");
     }

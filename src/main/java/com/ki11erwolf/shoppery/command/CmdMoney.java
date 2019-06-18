@@ -39,7 +39,7 @@ class CmdMoney extends Command {
      */
     @Override
     void onCommandCalled(String[] arguments, EntityPlayer player, World world) {
-        Wallet playerWallet = BankManager._getBank(world).getWallet(player);
+        Wallet playerWallet = BankManager._getWallet(world, player);
 
         switch (arguments[0].toLowerCase()){
             case "1":

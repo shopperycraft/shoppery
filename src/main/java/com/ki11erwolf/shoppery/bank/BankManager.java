@@ -5,6 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.util.PlayerUtil;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
@@ -15,6 +18,7 @@ import org.apache.logging.log4j.util.StackLocatorUtil;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Used to retrieve {@link Bank} & {@link Wallet}
@@ -146,7 +150,86 @@ public enum BankManager {
         return INSTANCE.getBank(world);
     }
 
-    //TODO: Add a few more shortcut methods.
+    /**
+     * Shortcut method to retrieve the given players
+     * wallet from the given world. Equivalent to:
+     * {@code _getBank(bank).getWallet(player);}.
+     *
+     * @param world the players wallet in the given world.
+     * @param playerUUID the UUID of the player who's wallet
+     *                   we're retrieving.
+     * @return the players wallet for the given world.
+     */
+    public static Wallet _getWallet(World world, UUID playerUUID){
+        return _getBank(world).getWallet(playerUUID);
+    }
+
+    /**
+     * Shortcut method to retrieve the given players
+     * wallet from the given world. Equivalent to:
+     * {@code _getBank(bank).getWallet(player);}.
+     *
+     * @param world the players wallet in the given world.
+     * @param player the player who's wallet we're retrieving.
+     * @return the players wallet for the given world.
+     */
+    public static Wallet _getWallet(World world, EntityPlayer player){
+        return _getBank(world).getWallet(player);
+    }
+
+    /**
+     * Shortcut method to retrieve the given players
+     * wallet from the given world. Equivalent to:
+     * {@code _getBank(bank).getWallet(player);}.
+     *
+     * @param world the players wallet in the given world.
+     * @param playerProfile the GameProfile of the player
+     *                      who's wallet we're retrieving.
+     * @return the players wallet for the given world.
+     */
+    public static Wallet _getWallet(World world, GameProfile playerProfile){
+        return _getBank(world).getWallet(playerProfile);
+    }
+
+    /**
+     * Shortcut method to retrieve the given players
+     * wallet from the world they are currently in.
+     * Equivalent to: {@code _getBank(bank).getWallet(player);}.
+     *
+     * @param playerUUID the UUID of the player
+     *                      who's wallet we're retrieving.
+     * @return the players wallet for the world they are currently in.
+     */
+    public static Wallet _getWallet(UUID playerUUID){
+        EntityPlayer player = PlayerUtil.getPlayerFromUUID(playerUUID);
+        return _getBank(player.getEntityWorld()).getWallet(player);
+    }
+
+    /**
+     * Shortcut method to retrieve the given players
+     * wallet from the world they are currently in.
+     * Equivalent to: {@code _getBank(bank).getWallet(player);}.
+     *
+     * @param player the the player who's wallet we're retrieving.
+     * @return the players wallet for the world they are currently in.
+     */
+    public static Wallet _getWallet(EntityPlayer player){
+        return _getBank(player.getEntityWorld()).getWallet(player);
+    }
+
+    /**
+     * Shortcut method to retrieve the given players
+     * wallet from the world they are currently in.
+     * Equivalent to: {@code _getBank(bank).getWallet(player);}.
+     *
+     * @param playerProfile the GameProfile of the player
+     *                      who's wallet we're retrieving.
+     * @return the players wallet for the world they are currently in.
+     */
+    public static Wallet _getWallet(GameProfile playerProfile){
+        EntityPlayer player = PlayerUtil.getPlayerFromUUID(playerProfile.getId());
+        return _getBank(player.getEntityWorld()).getWallet(player);
+    }
 
     /**
      * Saves the given bank to file. If the

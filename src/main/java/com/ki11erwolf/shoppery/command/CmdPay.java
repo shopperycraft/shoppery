@@ -56,8 +56,8 @@ class CmdPay extends Command{
                 return;
             }
 
-            Wallet toPlayerWallet = BankManager._getBank(world).getWallet(toPlayer);
-            Wallet fromPlayerWallet = BankManager._getBank(world).getWallet(player);
+            Wallet toPlayerWallet = BankManager._getWallet(world, toPlayer);
+            Wallet fromPlayerWallet = BankManager._getWallet(world, player);
 
             if(fromPlayerWallet.subtract(amount)){
                 try{

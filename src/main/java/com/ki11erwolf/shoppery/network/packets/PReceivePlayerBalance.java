@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  *
  * This class saves the last received balance so it can
  * be retrieved easily, however, it is recommended a
- * {@link PReceivePlayerBalance} is sent to keep
+ * {@link PRequestPlayerBalance} is sent to keep
  * the balance in sync before retrieving the balance.
  */
 public class PReceivePlayerBalance extends Packet<PReceivePlayerBalance> {

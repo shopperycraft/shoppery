@@ -183,5 +183,7 @@ public abstract class Packet<S extends Packet<S>> {
     static {
         MANAGER.register(new PRequestPlayerBalance(null));
         MANAGER.register(new PReceivePlayerBalance(null));
+        MANAGER.register(new PRequestFullPlayerBalance(null));
+        MANAGER.register(new PReceiveFullPlayerBalance(null));
     }
 }

@@ -173,6 +173,13 @@ public class ShopperyButton extends GuiButtonImage {
             isHovering = false;
         }
 
+        if(isHovering) {
+            this.drawCenteredString(
+                    Minecraft.getInstance().fontRenderer, MoneyGui.getBalance(),
+                    x + 5, this.y + this.height, 0xffffff
+            );
+        }
+
         this.x = oldX;
         this.y = oldY;
     }
@@ -218,7 +225,7 @@ public class ShopperyButton extends GuiButtonImage {
      * player viewing the button. Also handles requesting
      * the balance from the server.
      */
-    private static String getBalance(){
+    protected static String getBalance(){
         EntityPlayer player = Minecraft.getInstance().player;
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 

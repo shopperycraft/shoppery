@@ -127,11 +127,15 @@ public class ShopperyButton extends GuiButtonImage {
         if(parent instanceof MoneyGui){
             parent.close();
             this.destroy();
-            Minecraft.getInstance().displayGuiScreen(new GuiInventory(Minecraft.getInstance().player));
+
+            GuiInventory guiInventory = new GuiInventory(Minecraft.getInstance().player);
+            Minecraft.getInstance().displayGuiScreen(guiInventory);
         } else {
             parent.close();
             this.destroy();
-            Minecraft.getInstance().displayGuiScreen(new MoneyGui(Minecraft.getInstance().player));
+
+            MoneyGui guiMoney = new MoneyGui(Minecraft.getInstance().player);
+            Minecraft.getInstance().displayGuiScreen(guiMoney);
         }
     }
 
@@ -158,7 +162,8 @@ public class ShopperyButton extends GuiButtonImage {
                     x + 22, y + (this.height / 3) - 1, 0xffffff
             );
 
-            this.hovered = mouseX >= x && mouseY >= this.y && mouseX < x + this.width && mouseY < this.y + this.height;
+            this.hovered = mouseX >= x && mouseY >= this.y && mouseX < x + this.width
+                    && mouseY < this.y + this.height;
             int k = this.getHoverState(this.hovered);
             if(k != 1)
                 isHovering = hovered;
@@ -187,7 +192,10 @@ public class ShopperyButton extends GuiButtonImage {
         if(presses == 0 || presses == 2){
             if(event.getButton() == 0 && isHovering && visible && !isDestroyed &&
                     Minecraft.getInstance().currentScreen instanceof GuiInventory)
-                this.onClick(0, 0);
+                this.onClick(
+                        Minecraft.getInstance().mouseHelper.getMouseX(),
+                        Minecraft.getInstance().mouseHelper.getMouseY()
+                );
             presses = 0;
         }
 

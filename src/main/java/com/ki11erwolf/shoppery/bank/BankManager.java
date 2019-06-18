@@ -146,6 +146,8 @@ public enum BankManager {
         return INSTANCE.getBank(world);
     }
 
+    //TODO: Add a few more shortcut methods.
+
     /**
      * Saves the given bank to file. If the
      * given bank is {@code null}, this method

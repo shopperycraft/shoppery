@@ -2,6 +2,7 @@ package com.ki11erwolf.shoppery;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -99,8 +100,7 @@ public class ShopperyMod {
      * @param event forge provided event.
      */
     private void enqueueIMC(final InterModEnqueueEvent event){
-        if(!(proxy instanceof ClientProxy))
-            proxy.enqueueIMC(event);
+        proxy.enqueueIMC(event);
     }
 
     /**
@@ -109,8 +109,7 @@ public class ShopperyMod {
      * @param event forge provided event.
      */
     private void processIMC(final InterModProcessEvent event){
-        if(!(proxy instanceof ClientProxy))
-            proxy.processIMC(event);
+        proxy.processIMC(event);
     }
 
     /**
@@ -120,8 +119,7 @@ public class ShopperyMod {
      */
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
-        if(!(proxy instanceof ClientProxy))
-            proxy.onServerStarting(event);
+        proxy.onServerStarting(event);
     }
 
     /**
@@ -133,6 +131,16 @@ public class ShopperyMod {
     public void onServerStopped(FMLServerStoppedEvent event){
         if(!(proxy instanceof ClientProxy))
             proxy.onServerStopped(event);
+    }
+
+    /**
+     * Called whenever an entity joins a world.
+     *
+     * @param joinWorldEvent forge event.
+     */
+    @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent joinWorldEvent){
+        proxy.onEntityJoinWorld(joinWorldEvent);
     }
 
     /**

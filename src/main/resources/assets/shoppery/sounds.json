@@ -1,0 +1,7 @@
+{
+  "money": {
+    "category": "block",
+    "subtitle": "shoppery.subtitle.money",
+    "sounds": ["shoppery:money"]
+  }
+}

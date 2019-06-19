@@ -15,28 +15,28 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class PRequestPlayerBalance extends Packet<PRequestPlayerBalance> {
+public class PRequestPlayerCents extends Packet<PRequestPlayerCents> {
 
     private final String playerUUID;
 
-    public PRequestPlayerBalance(String playerUUID){
+    public PRequestPlayerCents(String playerUUID){
         this.playerUUID = playerUUID;
     }
 
     @Override
-    BiConsumer<PRequestPlayerBalance, PacketBuffer> getEncoder() {
+    BiConsumer<PRequestPlayerCents, PacketBuffer> getEncoder() {
         return (packet, buffer) -> {
             writeString(packet.playerUUID, buffer);
         };
     }
 
     @Override
-    Function<PacketBuffer, PRequestPlayerBalance> getDecoder() {
-        return (buffer) -> new PRequestPlayerBalance(readString(buffer));
+    Function<PacketBuffer, PRequestPlayerCents> getDecoder() {
+        return (buffer) -> new PRequestPlayerCents(readString(buffer));
     }
 
     @Override
-    BiConsumer<PRequestPlayerBalance, Supplier<NetworkEvent.Context>> getHandler() {
+    BiConsumer<PRequestPlayerCents, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
             try{
                 EntityPlayer player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
@@ -52,7 +52,7 @@ public class PRequestPlayerBalance extends Packet<PRequestPlayerBalance> {
                 Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
                 send(
                         PacketDistributor.PLAYER.with(() -> ctx.get().getSender()),
-                        new PReceivePlayerBalance(senderWallet.getBalance())
+                        new PReceivePlayerCents(senderWallet.getCents())
                 );
             } catch (Exception e){
                 ShopperyMod.getNewLogger().error("Failed to send back player balance", e);

@@ -1,6 +1,8 @@
 {
   "itemGroup.shoppery":                                   "ShopperyCraft",
 
+  "item.shoppery.deposit":                                "Deposit Money In Inventory.",
+
   "item.shoppery.coin_one":                               "$1¢ (One Cent Coin)",
   "item.shoppery.coin_five":                              "$5¢ (Five Cent Coin)",
   "item.shoppery.coin_ten":                               "$10¢ (Ten Cent Coin)",

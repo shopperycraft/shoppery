@@ -1,16 +1,12 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.network.packets.PReceiveFullPlayerBalance;
-import com.ki11erwolf.shoppery.network.packets.PRequestFullPlayerBalance;
-import com.ki11erwolf.shoppery.network.packets.Packet;
+import com.ki11erwolf.shoppery.network.packets.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
@@ -22,7 +18,6 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
  * GUI (like the recipe book) however it is a separate
  * GUI extending the original inventory GUI.
  */
-@OnlyIn(Dist.CLIENT)
 public class MoneyGui extends GuiInventory {
 
     /**
@@ -50,6 +45,15 @@ public class MoneyGui extends GuiInventory {
      * sending packets in quick succession.
      */
     private static long lastPktSendTime = -1;
+
+    /**
+     * The player this gui instance belongs to.
+     */
+    private final EntityPlayer player;
+
+    private final MoneyGuiSlotHandler slotHandler;
+
+    private boolean last;
 
     /**
      * The x position of the money gui section relative
@@ -80,10 +84,13 @@ public class MoneyGui extends GuiInventory {
     /**
      * Constructs a new money inventory.
      *
-     * @param c the player the gui belongs to.
+     * @param player the player the gui belongs to.
      */
-    MoneyGui(EntityPlayer c){
-        super(c);
+    MoneyGui(EntityPlayer player){
+        super(player);
+
+        this.slotHandler = new MoneyGuiSlotHandler(inventorySlots, player);
+        this.player = player;
     }
 
     /**
@@ -93,6 +100,8 @@ public class MoneyGui extends GuiInventory {
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
     }
+
+    private long lastPktSendTime2 = -1;
 
     /**
      * {@inheritDoc}
@@ -107,7 +116,16 @@ public class MoneyGui extends GuiInventory {
         super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
         this.mc.getTextureManager().bindTexture(MONEY_GUI_TEXTURE);
 
+        if(System.currentTimeMillis() > lastPktSendTime2 + 250 /*Time between*/ || lastPktSendTime2 == -1){
+            last = !last;
+            lastPktSendTime2 = System.currentTimeMillis();
+        }
+
         if(func_194310_f().isVisible()){
+            if(!last){
+                slotHandler.removeSlots();
+            }
+
             this.drawTexturedModalRect(
                     this.guiLeft + 10 - (MONEY_GUI_WIDTH / 2),
                     this.guiTop - MONEY_GUI_HEIGHT - 4,
@@ -115,9 +133,12 @@ public class MoneyGui extends GuiInventory {
                     MONEY_GUI_WIDTH, MONEY_GUI_HEIGHT
             );
 
-            this.moneyGuiX = this.guiLeft + 10 - (MONEY_GUI_WIDTH / 2);
-            this.relMoneyGuiX = 0 - 78 + (this.xSize / 2) - (MONEY_GUI_WIDTH / 2);
+            last = true;
         } else {
+            if(last){
+                slotHandler.removeSlots();
+            }
+
             this.drawTexturedModalRect(
                     this.guiLeft + (this.xSize / 2) - (MONEY_GUI_WIDTH / 2),
                     this.guiTop - MONEY_GUI_HEIGHT - 4,
@@ -125,12 +146,11 @@ public class MoneyGui extends GuiInventory {
                     MONEY_GUI_WIDTH, MONEY_GUI_HEIGHT
             );
 
-            this.moneyGuiX = this.guiLeft + (this.xSize / 2) - (MONEY_GUI_WIDTH / 2);
-            this.relMoneyGuiX = (this.xSize / 2) - (MONEY_GUI_WIDTH / 2);
+            last = false;
         }
 
-        this.moneyGuiY = this.guiTop - MONEY_GUI_HEIGHT - 4;
-        this.relMoneyGuiY = 0 - 4 - MONEY_GUI_HEIGHT;
+        calculatePositions();
+        slotHandler.addSlots(relMoneyGuiX, relMoneyGuiY);
     }
 
     /**
@@ -148,9 +168,22 @@ public class MoneyGui extends GuiInventory {
         );
 
         this.mc.fontRenderer.drawString(getBalance(),
-                this.relMoneyGuiX + 27, this.relMoneyGuiY + 31,
+                this.relMoneyGuiX + 31, this.relMoneyGuiY + 31,
                 4210752
         );
+    }
+
+    private void calculatePositions(){
+        if(func_194310_f().isVisible()){
+            this.moneyGuiX = this.guiLeft + 10 - (MONEY_GUI_WIDTH / 2);
+            this.relMoneyGuiX = 0 - 78 + (this.xSize / 2) - (MONEY_GUI_WIDTH / 2);
+        } else {
+            this.moneyGuiX = this.guiLeft + (this.xSize / 2) - (MONEY_GUI_WIDTH / 2);
+            this.relMoneyGuiX = (this.xSize / 2) - (MONEY_GUI_WIDTH / 2);
+        }
+
+        this.moneyGuiY = this.guiTop - MONEY_GUI_HEIGHT - 4;
+        this.relMoneyGuiY = 0 - 4 - MONEY_GUI_HEIGHT;
     }
 
     /**
@@ -173,5 +206,11 @@ public class MoneyGui extends GuiInventory {
 
         return PReceiveFullPlayerBalance.getLastKnownBalance() == null ?
                 "<ERROR>" : PReceiveFullPlayerBalance.getLastKnownBalance();
+    }
+
+    @Override
+    public void onGuiClosed() {
+        slotHandler.removeSlots();
+        super.onGuiClosed();
     }
 }

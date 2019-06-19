@@ -1,5 +1,6 @@
 package com.ki11erwolf.shoppery;
 
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -54,4 +55,11 @@ public interface Proxy {
      * @param event Forge event.
      */
     default void onServerStopped(FMLServerStoppedEvent event){}
+
+    /**
+     * Called whenever an entity joins a world.
+     *
+     * @param event forge event.
+     */
+    default void onEntityJoinWorld(EntityJoinWorldEvent event){}
 }

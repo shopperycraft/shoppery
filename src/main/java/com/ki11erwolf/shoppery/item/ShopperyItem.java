@@ -34,6 +34,26 @@ public class ShopperyItem<T extends ShopperyItem> extends Item {
     }
 
     /**
+     * Constructor that allows turning off
+     * the setting of the ItemGroup.
+     *
+     * Package private constructor to prevent
+     * item instance creation from outside
+     * packages.
+     *
+     * @param properties properties specific
+     *                   to this item.
+     * @param group {@code false} to turn off setting
+     *                           the ItemGroup
+     * @param registryName the name to register
+     *                     this item under.
+     */
+    ShopperyItem(Properties properties, boolean group, String registryName){
+        super((group) ? setItemGroup(properties) : properties);
+        this.setRegistryName(ShopperyMod.MODID, registryName);
+    }
+
+    /**
      * Adds this item instance to the
      * Shoppery-item-registration-queue
      * where it will be queued for

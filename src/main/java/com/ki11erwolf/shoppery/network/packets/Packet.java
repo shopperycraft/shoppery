@@ -165,6 +165,7 @@ public abstract class Packet<S extends Packet<S>> {
      * @param <M> the packet class type.
      */
     public static <M> void send(PacketDistributor.PacketTarget target, M packet){
+        ShopperyMod.getNewLogger().debug("Sending packet: " + packet.getClass().getName());
         MANAGER.handler.send(target, packet);
     }
 
@@ -181,9 +182,20 @@ public abstract class Packet<S extends Packet<S>> {
         & registration.
      */
     static {
-        MANAGER.register(new PRequestPlayerBalance(null));
-        MANAGER.register(new PReceivePlayerBalance(null));
+        MANAGER.register(new PRequestFormattedPlayerBalance(null));
+        MANAGER.register(new PReceiveFormattedPlayerBalance(null));
+
         MANAGER.register(new PRequestFullPlayerBalance(null));
         MANAGER.register(new PReceiveFullPlayerBalance(null));
+
+        MANAGER.register(new PRequestPlayerBalance(null));
+        MANAGER.register(new PReceivePlayerBalance(0));
+
+        MANAGER.register(new PRequestPlayerCents(null));
+        MANAGER.register(new PReceivePlayerCents((byte)0));
+
+        MANAGER.register(new PRequestInventoryDeposit(null));
+
+        MANAGER.register(new PRequestMoney(null, false, 0));
     }
 }

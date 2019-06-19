@@ -73,7 +73,7 @@ public class PReceiveFullPlayerBalance extends Packet<PReceiveFullPlayerBalance>
 
     /**
      * @return The full balance given from the last
-     * received PReceivePlayerBalance packet.
+     * received PReceiveFormattedPlayerBalance packet.
      * This is specific to clients.
      */
     public static String getLastKnownBalance(){

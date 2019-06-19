@@ -14,7 +14,7 @@ import net.minecraft.world.World;
  * as Dollars to give simple, well known name
  * to the currency.
  */
-public class Coin extends ShopperyItem<Coin> {
+public class CoinItem extends ShopperyItem<CoinItem> {
 
     /**
      * Prefix for all coin item types.
@@ -33,7 +33,7 @@ public class Coin extends ShopperyItem<Coin> {
      *                 type.
      * @param worth the worth (in cents) of this coin (0 < worth <= 100).
      */
-    Coin(String coinName, byte worth) {
+    CoinItem(String coinName, byte worth) {
         super(new Properties(), ITEM_NAME_PREFIX + coinName);
 
         if(worth < 0 || worth > 100)

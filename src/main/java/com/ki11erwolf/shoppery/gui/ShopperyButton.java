@@ -1,8 +1,8 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.network.packets.PReceivePlayerBalance;
-import com.ki11erwolf.shoppery.network.packets.PRequestPlayerBalance;
+import com.ki11erwolf.shoppery.network.packets.PReceiveFormattedPlayerBalance;
+import com.ki11erwolf.shoppery.network.packets.PRequestFormattedPlayerBalance;
 import com.ki11erwolf.shoppery.network.packets.Packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButtonImage;
@@ -121,7 +121,6 @@ public class ShopperyButton extends GuiButtonImage {
     @Override
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
-        ShopperyMod.getNewLogger().info("Button Clicked!");
         this.playPressSound(Minecraft.getInstance().getSoundHandler());
 
         if(parent instanceof MoneyGui){
@@ -231,12 +230,12 @@ public class ShopperyButton extends GuiButtonImage {
 
         //Timer to prevent spamming the server every gui redraw.
         if(System.currentTimeMillis() > lastPktSendTime + 1000 /*Time between*/ || lastPktSendTime == -1){
-            Packet.send(PacketDistributor.SERVER.noArg(), new PRequestPlayerBalance(player.getUniqueID().toString()));
+            Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(player.getUniqueID().toString()));
             lastPktSendTime = System.currentTimeMillis();
         }
 
-        return PReceivePlayerBalance.getLastKnownBalance() == null ?
-                "<ERROR>" : PReceivePlayerBalance.getLastKnownBalance();
+        return PReceiveFormattedPlayerBalance.getLastKnownBalance() == null ?
+                "<ERROR>" : PReceiveFormattedPlayerBalance.getLastKnownBalance();
     }
 
     /**

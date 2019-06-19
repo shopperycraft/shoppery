@@ -29,7 +29,7 @@ class CmdMoney extends Command {
     /**
      * {@inheritDoc}
      *
-     * Gives the player the specified amount as Note item
+     * Gives the player the specified amount as NoteItem item
      * provided they have enough funds.
      *
      * @param arguments the arguments given by the player.
@@ -138,7 +138,7 @@ class CmdMoney extends Command {
      */
     @Override
     String getFunction() {
-        return "Gives the specified amount as a Note provided you have enough funds." +
+        return "Gives the specified amount as a NoteItem provided you have enough funds." +
                 TextFormatting.GOLD + " Values: [1, 5, 10, 20, 50, 100, 500, 1k, 5k, 10k, 50k, 100k]";
     }
 }

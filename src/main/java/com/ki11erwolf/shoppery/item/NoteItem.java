@@ -14,7 +14,7 @@ import net.minecraft.world.World;
  * as Dollars to a give simple, well known name
  * to the currency.
  */
-public class Note extends ShopperyItem<Note> {
+public class NoteItem extends ShopperyItem<NoteItem> {
 
     /**
      * Prefix for the name of every note item.
@@ -36,7 +36,7 @@ public class Note extends ShopperyItem<Note> {
      * @param worth how much money the note
      *              is worth (worth > 0).
      */
-    Note(String noteName, int worth) {
+    NoteItem(String noteName, int worth) {
         super(new Properties(), ITEM_NAME_PREFIX + noteName);
 
         if(worth < 0)

@@ -165,7 +165,8 @@ public abstract class Packet<S extends Packet<S>> {
      * @param <M> the packet class type.
      */
     public static <M> void send(PacketDistributor.PacketTarget target, M packet){
-        ShopperyMod.getNewLogger().debug("Sending packet: " + packet.getClass().getName());
+        //Spams the debug log too much.
+        //ShopperyMod.getNewLogger().debug("Sending packet: " + packet.getClass().getName());
         MANAGER.handler.send(target, packet);
     }
 

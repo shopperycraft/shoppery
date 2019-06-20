@@ -112,6 +112,8 @@ public class ShopperyButton extends GuiButtonImage {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    private static boolean change = false;
+
     /**
      * Called when the user clicks the button.
      *
@@ -121,21 +123,28 @@ public class ShopperyButton extends GuiButtonImage {
     @Override
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
-        this.playPressSound(Minecraft.getInstance().getSoundHandler());
 
         if(parent instanceof MoneyGui){
-            parent.close();
+            if(change){
+                change = false;
+                return;
+            }
+
+            //parent.close();
             this.destroy();
 
             GuiInventory guiInventory = new GuiInventory(Minecraft.getInstance().player);
             Minecraft.getInstance().displayGuiScreen(guiInventory);
         } else {
-            parent.close();
+            //parent.close();
             this.destroy();
 
             MoneyGui guiMoney = new MoneyGui(Minecraft.getInstance().player);
             Minecraft.getInstance().displayGuiScreen(guiMoney);
+            change = true;
         }
+
+        this.playPressSound(Minecraft.getInstance().getSoundHandler());
     }
 
     /**
@@ -229,7 +238,7 @@ public class ShopperyButton extends GuiButtonImage {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
         //Timer to prevent spamming the server every gui redraw.
-        if(System.currentTimeMillis() > lastPktSendTime + 1000 /*Time between*/ || lastPktSendTime == -1){
+        if(System.currentTimeMillis() > lastPktSendTime + 250 /*Time between*/ || lastPktSendTime == -1){
             Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(player.getUniqueID().toString()));
             lastPktSendTime = System.currentTimeMillis();
         }

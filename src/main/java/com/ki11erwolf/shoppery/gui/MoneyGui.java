@@ -1,7 +1,9 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.network.packets.*;
+import com.ki11erwolf.shoppery.network.packets.PReceiveFullPlayerBalance;
+import com.ki11erwolf.shoppery.network.packets.PRequestFullPlayerBalance;
+import com.ki11erwolf.shoppery.network.packets.Packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,20 +42,36 @@ public class MoneyGui extends GuiInventory {
     private static final int MONEY_GUI_WIDTH = 256;
 
     /**
-     * The time when the last balance request
+     * The time when the lastMoneySlotRefreshTime full balance request
      * packet was sent. Used to prevent
      * sending packets in quick succession.
      */
     private static long lastPktSendTime = -1;
 
     /**
+     * The time when the lastMoneySlotRefreshTime integer balance request
+     * packet was sent. Used to prevent
+     * sending packets in quick succession.
+     */
+    private long lastPktSendTime2 = -1;
+
+    /**
      * The player this gui instance belongs to.
      */
     private final EntityPlayer player;
 
+    /**
+     * The handler that puts the money slots
+     * on this inventory.
+     */
     private final MoneyGuiSlotHandler slotHandler;
 
-    private boolean last;
+    /**
+     * The time when the last refresh of the
+     * money slots happened. Used to periodically
+     * refresh/redraw the slots on a time schedule.
+     */
+    private boolean lastMoneySlotRefreshTime;
 
     /**
      * The x position of the money gui section relative
@@ -101,8 +119,6 @@ public class MoneyGui extends GuiInventory {
         super.render(mouseX, mouseY, partialTicks);
     }
 
-    private long lastPktSendTime2 = -1;
-
     /**
      * {@inheritDoc}
      *
@@ -117,12 +133,12 @@ public class MoneyGui extends GuiInventory {
         this.mc.getTextureManager().bindTexture(MONEY_GUI_TEXTURE);
 
         if(System.currentTimeMillis() > lastPktSendTime2 + 250 /*Time between*/ || lastPktSendTime2 == -1){
-            last = !last;
+            lastMoneySlotRefreshTime = !lastMoneySlotRefreshTime;
             lastPktSendTime2 = System.currentTimeMillis();
         }
 
         if(func_194310_f().isVisible()){
-            if(!last){
+            if(!lastMoneySlotRefreshTime){
                 slotHandler.removeSlots();
             }
 
@@ -133,9 +149,9 @@ public class MoneyGui extends GuiInventory {
                     MONEY_GUI_WIDTH, MONEY_GUI_HEIGHT
             );
 
-            last = true;
+            lastMoneySlotRefreshTime = true;
         } else {
-            if(last){
+            if(lastMoneySlotRefreshTime){
                 slotHandler.removeSlots();
             }
 
@@ -146,7 +162,7 @@ public class MoneyGui extends GuiInventory {
                     MONEY_GUI_WIDTH, MONEY_GUI_HEIGHT
             );
 
-            last = false;
+            lastMoneySlotRefreshTime = false;
         }
 
         calculatePositions();
@@ -173,6 +189,10 @@ public class MoneyGui extends GuiInventory {
         );
     }
 
+    /**
+     * Calculates the x/y positions of the
+     * newly added money gui.
+     */
     private void calculatePositions(){
         if(func_194310_f().isVisible()){
             this.moneyGuiX = this.guiLeft + 10 - (MONEY_GUI_WIDTH / 2);
@@ -196,7 +216,7 @@ public class MoneyGui extends GuiInventory {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
         //Timer to prevent spamming the server every gui redraw.
-        if(System.currentTimeMillis() > lastPktSendTime + 500 /*Time between*/ || lastPktSendTime == -1){
+        if(System.currentTimeMillis() > lastPktSendTime + 250 /*Time between*/ || lastPktSendTime == -1){
             Packet.send(
                     PacketDistributor.SERVER.noArg(),
                     new PRequestFullPlayerBalance(player.getUniqueID().toString())
@@ -208,6 +228,11 @@ public class MoneyGui extends GuiInventory {
                 "<ERROR>" : PReceiveFullPlayerBalance.getLastKnownBalance();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Removes the money slots.
+     */
     @Override
     public void onGuiClosed() {
         slotHandler.removeSlots();

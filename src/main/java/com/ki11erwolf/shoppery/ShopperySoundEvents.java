@@ -11,7 +11,7 @@ public final class ShopperySoundEvents {
 
     /**
      * The money sound effect. Used when taking money from the
-     * wallet gui.
+     * wallet/money gui.
      */
     public static final SoundEvent MONEY = new SoundEvent(new ResourceLocation(
             ShopperyMod.MODID, "money"

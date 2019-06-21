@@ -5,21 +5,21 @@ loaderVersion="[25,)" #mandatory (24 is current forge version)
 
 
 # A URL to refer people to when problems occur with this mod
-issueTrackerURL="http://nosite.comm" #optional
+issueTrackerURL="https://github.com/shopperycraft/shoppery/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
 modId="shoppery" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="1.0.0" #mandatory
+version="0.0.1" #mandatory
  # A display name for the mod
 displayName="ShopperyCraft" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="http://nosite.comm" #optional
+updateJSONURL="https://shopperycraft.github.io/versions.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="http://nosite.comm" #optional
+displayURL="https://shopperycraft.github.io" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="http://nosite.comm" #optional
+logoFile="shoppery_banner.png" #optional
 # A text field displayed in the mod UI
 credits="Ki11er_wolf" #optional
 # A text field displayed in the mod UI

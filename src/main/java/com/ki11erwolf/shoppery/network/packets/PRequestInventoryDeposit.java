@@ -17,24 +17,49 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Sent by clients to request the server take all the
+ * notes/coins in the given players inventory and add
+ * the sum to their wallets balance.
+ */
 public class PRequestInventoryDeposit extends Packet<PRequestInventoryDeposit> {
 
+    /**
+     * The player requesting the inventory deposit.
+     */
     private final String playerUUID;
 
+    /**
+     * Constructor.
+     *
+     * @param playerUUID The player requesting the inventory deposit.
+     */
     public PRequestInventoryDeposit(String playerUUID){
         this.playerUUID = playerUUID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     BiConsumer<PRequestInventoryDeposit, PacketBuffer> getEncoder() {
         return (packet, buffer) -> writeString(packet.playerUUID, buffer);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Function<PacketBuffer, PRequestInventoryDeposit> getDecoder() {
         return (buffer) -> new PRequestInventoryDeposit(readString(buffer));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Sums up the worth of all the notes and coins in the
+     * players inventory and adds it to their wallet balance.
+     */
     @Override
     BiConsumer<PRequestInventoryDeposit, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
@@ -68,7 +93,7 @@ public class PRequestInventoryDeposit extends Packet<PRequestInventoryDeposit> {
                 }
 
             } catch (Exception e){
-                ShopperyMod.getNewLogger().error("Failed to send back player balance", e);
+                ShopperyMod.getNewLogger().error("Failed to deposit players inventory", e);
             }
         });
     }

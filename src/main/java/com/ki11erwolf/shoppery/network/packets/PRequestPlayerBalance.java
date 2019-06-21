@@ -15,26 +15,48 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Sent by clients to request the server send back
+ * the players balance (excluding cents)
+ * as a {@code long} ({@link Wallet#getBalance()}).
+ */
 public class PRequestPlayerBalance extends Packet<PRequestPlayerBalance> {
 
+    /**
+     * The player whose balance we're requesting.
+     */
     private final String playerUUID;
 
+    /**
+     * Constructor.
+     *
+     * @param playerUUID The player whose balance we're requesting.
+     */
     public PRequestPlayerBalance(String playerUUID){
         this.playerUUID = playerUUID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     BiConsumer<PRequestPlayerBalance, PacketBuffer> getEncoder() {
-        return (packet, buffer) -> {
-            writeString(packet.playerUUID, buffer);
-        };
+        return (packet, buffer) -> writeString(packet.playerUUID, buffer);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Function<PacketBuffer, PRequestPlayerBalance> getDecoder() {
         return (buffer) -> new PRequestPlayerBalance(readString(buffer));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Sends back a packet containing the players balance (excluding cents).
+     */
     @Override
     BiConsumer<PRequestPlayerBalance, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {

@@ -16,20 +16,46 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Sent by clients to request the server put the requested
+ * coin/note in the players inventory provided they have
+ * enough funds.
+ */
 public class PRequestMoney extends Packet<PRequestMoney> {
 
+    /**
+     * The player who's requesting the money.
+     */
     private final String playerUUID;
 
+    /**
+     * True if it's a note item, false
+     * if it's a coin item.
+     */
     private final boolean isNote;
 
+    /**
+     * The worth of the coin/note.
+     */
     private final int amount;
 
+    /**
+     * Constructor
+     *
+     * @param playerUUID The player who's requesting the money.
+     * @param isNote True if it's a note item, false
+     * if it's a coin item.
+     * @param amount The worth of the coin/note.
+     */
     public PRequestMoney(String playerUUID, boolean isNote, int amount){
         this.playerUUID = playerUUID;
         this.isNote = isNote;
         this.amount = amount;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     BiConsumer<PRequestMoney, PacketBuffer> getEncoder() {
         return (packet, buffer) -> {
@@ -39,11 +65,20 @@ public class PRequestMoney extends Packet<PRequestMoney> {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Function<PacketBuffer, PRequestMoney> getDecoder() {
         return (buffer) -> new PRequestMoney(readString(buffer), buffer.readBoolean(), buffer.readInt());
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Gives the player the requested amount as a note/coin
+     * provided they have enough funds.
+     */
     @Override
     BiConsumer<PRequestMoney, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
@@ -64,6 +99,7 @@ public class PRequestMoney extends Packet<PRequestMoney> {
 
             if(isNote){
                 if(senderWallet.subtract(amount)) {
+                    //Notes
                     switch (amount) {
                         case 1:
                             player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE));
@@ -106,6 +142,7 @@ public class PRequestMoney extends Packet<PRequestMoney> {
                 }
             } else {
                 if(senderWallet.subtract(0, (byte)amount)) {
+                    //Coins
                     switch (amount) {
                         case 1:
                             player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.COIN_ONE));

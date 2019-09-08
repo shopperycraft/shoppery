@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.util.PlayerUtil;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import org.apache.logging.log4j.Logger;
 
 import java.text.NumberFormat;
@@ -51,7 +51,7 @@ public class Wallet {
     /**
      * The player this wallet belongs to.
      */
-    private final EntityPlayer player;
+    private final PlayerEntity player;
 
     /**
      * The balance of this wallet
@@ -75,7 +75,7 @@ public class Wallet {
      * @param cents the cents (leading decimals) of the players
      *              balance (100 > cents > 0).
      */
-    Wallet(EntityPlayer player, long balance, byte cents){
+    Wallet(PlayerEntity player, long balance, byte cents){
         this.player = Objects.requireNonNull(player, "Wallet player cannot be null.");
 
         if(cents > 100 || cents < 0)
@@ -238,8 +238,10 @@ public class Wallet {
             if(values.length != 2 || values[1].length() != 2)
                 throw new NumberFormatException("Balance not in correct format (decimals): " + balance);
 
+            //noinspection UnnecessaryBoxing
             add(Long.valueOf(values[0]), Byte.valueOf(values[1]));
         } else {//Has no cents(decimal)
+            //noinspection UnnecessaryBoxing
             add(Long.valueOf(balance));
         }
     }
@@ -356,8 +358,10 @@ public class Wallet {
             if(values.length != 2 || values[1].length() != 2)
                 throw new NumberFormatException("Balance not in correct format (decimals): " + balance);
 
+            //noinspection UnnecessaryBoxing
             return subtract(Long.valueOf(values[0]), Byte.valueOf(values[1]));
         } else {//Has no cents(decimal)
+            //noinspection UnnecessaryBoxing
             return subtract(Long.valueOf(balance));
         }
     }
@@ -428,7 +432,7 @@ public class Wallet {
     /**
      * @return the player this wallet belongs to.
      */
-    public EntityPlayer getPlayer(){
+    public PlayerEntity getPlayer(){
         return this.player;
     }
 
@@ -558,7 +562,7 @@ public class Wallet {
      * if the json wallet object couldn't be parsed.
      */
     @SuppressWarnings("WeakerAccess")
-    static Wallet createWalletFromJsonObject(JsonObject jWallet, EntityPlayer player){
+    static Wallet createWalletFromJsonObject(JsonObject jWallet, PlayerEntity player){
         JsonElement jBalance = jWallet.get(WalletObjectKeys.BALANCE.value);
         JsonElement jCents = jWallet.get(WalletObjectKeys.CENTS.value);
 

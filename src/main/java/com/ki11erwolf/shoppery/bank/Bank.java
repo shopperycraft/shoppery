@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.ki11erwolf.shoppery.util.PlayerUtil;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public class Bank {
 
         //If player has no wallet.
         if(givenWallet == null){
-            EntityPlayer player = PlayerUtil.getPlayerFromUUID(playerUUID);
+            PlayerEntity player = PlayerUtil.getPlayerFromUUID(playerUUID);
 
             //If not player can be found.
             if(player == null)
@@ -99,7 +99,7 @@ public class Bank {
      * for the player if the player does not have
      * a wallet.
      */
-    public Wallet getWallet(EntityPlayer player){
+    public Wallet getWallet(PlayerEntity player){
         return getWallet(player.getUniqueID());
     }
 

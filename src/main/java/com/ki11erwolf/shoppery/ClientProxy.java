@@ -1,6 +1,5 @@
 package com.ki11erwolf.shoppery;
 
-import com.ki11erwolf.shoppery.gui.ShopperyButton;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -16,8 +15,6 @@ public class ClientProxy extends ServerProxy {
     public void setup(FMLCommonSetupEvent event) {
         //Do registration for the server as well (dedicated server)
         super.setup(event);
-
-        ShopperyButton.init();
     }
 
     /**

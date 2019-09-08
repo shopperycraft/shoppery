@@ -5,7 +5,7 @@ import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
 import com.ki11erwolf.shoppery.item.CoinItem;
 import com.ki11erwolf.shoppery.item.NoteItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -64,7 +64,7 @@ public class PRequestInventoryDeposit extends Packet<PRequestInventoryDeposit> {
     BiConsumer<PRequestInventoryDeposit, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
             try{
-                EntityPlayer player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
+                PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
                         .getPlayerList().getPlayerByUUID(UUID.fromString(packet.playerUUID));
 
                 if(player == null){

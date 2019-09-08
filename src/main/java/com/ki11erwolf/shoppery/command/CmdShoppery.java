@@ -1,6 +1,6 @@
 package com.ki11erwolf.shoppery.command;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -36,7 +36,7 @@ class CmdShoppery extends Command {
      * @param world the world the player issued the command in.
      */
     @Override
-    void onCommandCalled(String[] arguments, EntityPlayer player, World world) {
+    void onCommandCalled(String[] arguments, PlayerEntity player, World world) {
         if(arguments.length == 0){
             StringBuilder message = new StringBuilder(TextFormatting.GOLD + "Shoppery Commands:\n");
             forEach((s, command) -> message.append(TextFormatting.GREEN).append("Usage: ")
@@ -67,7 +67,7 @@ class CmdShoppery extends Command {
      * @return {@code true}
      */
     @Override
-    boolean canExecute(EntityPlayer player, World world) {
+    boolean canExecute(PlayerEntity player, World world) {
         return true;
     }
 

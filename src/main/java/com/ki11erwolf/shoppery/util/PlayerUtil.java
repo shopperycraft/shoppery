@@ -1,6 +1,6 @@
 package com.ki11erwolf.shoppery.util;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
@@ -29,7 +29,7 @@ public final class PlayerUtil {
      * @return the player. Returns null if
      * the player cannot be found or the UUID is null.
      */
-    public static EntityPlayer getPlayerFromUUID(UUID playerUUID){
+    public static PlayerEntity getPlayerFromUUID(UUID playerUUID){
         if(playerUUID == null)
             return null;
 

@@ -2,7 +2,7 @@ package com.ki11erwolf.shoppery.command;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -35,7 +35,7 @@ class CmdBalance extends Command{
      * @param world the world the player issued the command in.
      */
     @Override
-    void onCommandCalled(String[] arguments, EntityPlayer player, World world) {
+    void onCommandCalled(String[] arguments, PlayerEntity player, World world) {
         if(player.isCreative()){
             message(player, "Balance: " + TextFormatting.GREEN + "Infinite");
             return;
@@ -50,7 +50,7 @@ class CmdBalance extends Command{
      * {@inheritDoc}
      */
     @Override
-    boolean canExecute(EntityPlayer player, World world) {
+    boolean canExecute(PlayerEntity player, World world) {
         return true;
     }
 

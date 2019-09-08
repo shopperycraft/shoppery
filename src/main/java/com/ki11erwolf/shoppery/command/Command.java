@@ -1,8 +1,8 @@
 package com.ki11erwolf.shoppery.command;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -82,7 +82,7 @@ public abstract class Command {
     /**
      * Called when a player attempts to issue
      * this command. Will only execute if
-     * {@link #canExecute(EntityPlayer, World)}
+     * {@link #canExecute(net.minecraft.entity.player.PlayerEntity, World)}
      * {@code returns true}.
      *
      * @param arguments the arguments given by the player.
@@ -90,7 +90,7 @@ public abstract class Command {
      * @param player the player that issued the command.
      * @param world the world the player issued the command in.
      */
-    abstract void onCommandCalled(String[] arguments, EntityPlayer player, World world);
+    abstract void onCommandCalled(String[] arguments, PlayerEntity player, World world);
 
     /**
      * Called before the command is executed to
@@ -103,7 +103,7 @@ public abstract class Command {
      * @return {@code true} if the player can issue the command,
      * {@code false} otherwise.
      */
-    abstract boolean canExecute(EntityPlayer player, World world);
+    abstract boolean canExecute(PlayerEntity player, World world);
 
     /**
      * @return Should return a string showing
@@ -123,8 +123,8 @@ public abstract class Command {
      * @param player the player to send the message to.
      * @param message the message.
      */
-    static void message(EntityPlayer player, String message){
-        player.sendMessage(new TextComponentString(message));
+    static void message(PlayerEntity player, String message){
+        player.sendMessage(new StringTextComponent(message));
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class Command {
             String message = event.getParseResults().getReader().getString();
 
             try {
-                EntityPlayer player = event.getParseResults().getContext().getSource().asPlayer();
+                PlayerEntity player = event.getParseResults().getContext().getSource().asPlayer();
                 World world = player.getEntityWorld();
                 message = message.replace("/", "");
                 String[] args = message.split(" ");

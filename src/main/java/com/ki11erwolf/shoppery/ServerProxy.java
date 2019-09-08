@@ -2,9 +2,8 @@ package com.ki11erwolf.shoppery;
 
 import com.ki11erwolf.shoppery.command.Command;
 import com.ki11erwolf.shoppery.network.packets.Packet;
-import com.ki11erwolf.shoppery.util.TolerantArrayList;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -29,15 +28,16 @@ public class ServerProxy implements Proxy {
     public void onEntityJoinWorld(EntityJoinWorldEvent joinWorldEvent){
         Entity entity = joinWorldEvent.getEntity();
 
-        if(!(entity instanceof EntityPlayer))
+        if(!(entity instanceof PlayerEntity))
             return;
 
-        EntityPlayer player = (EntityPlayer)entity;
+        PlayerEntity player = (PlayerEntity) entity;
 
-        if(! (player.inventoryContainer.inventorySlots instanceof TolerantArrayList)){
-            player.inventoryContainer.inventorySlots = new TolerantArrayList<>(
-                    player.inventoryContainer.inventorySlots
-            );
-        }
+//        if(! (player.inventoryContainer.inventorySlots instanceof TolerantArrayList)){
+//            //TODO: Reflection
+////            player.inventoryContainer.inventorySlots = new TolerantArrayList<>(
+////                    player.inventoryContainer.inventorySlots
+////            );
+//        }
     }
 }

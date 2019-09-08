@@ -7,7 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.util.PlayerUtil;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
@@ -173,7 +173,7 @@ public enum BankManager {
      * @param player the player who's wallet we're retrieving.
      * @return the players wallet for the given world.
      */
-    public static Wallet _getWallet(World world, EntityPlayer player){
+    public static Wallet _getWallet(World world, PlayerEntity player){
         return _getBank(world).getWallet(player);
     }
 
@@ -201,7 +201,7 @@ public enum BankManager {
      * @return the players wallet for the world they are currently in.
      */
     public static Wallet _getWallet(UUID playerUUID){
-        EntityPlayer player = PlayerUtil.getPlayerFromUUID(playerUUID);
+        PlayerEntity player = PlayerUtil.getPlayerFromUUID(playerUUID);
         return _getBank(player.getEntityWorld()).getWallet(player);
     }
 
@@ -213,7 +213,7 @@ public enum BankManager {
      * @param player the the player who's wallet we're retrieving.
      * @return the players wallet for the world they are currently in.
      */
-    public static Wallet _getWallet(EntityPlayer player){
+    public static Wallet _getWallet(PlayerEntity player){
         return _getBank(player.getEntityWorld()).getWallet(player);
     }
 
@@ -227,7 +227,7 @@ public enum BankManager {
      * @return the players wallet for the world they are currently in.
      */
     public static Wallet _getWallet(GameProfile playerProfile){
-        EntityPlayer player = PlayerUtil.getPlayerFromUUID(playerProfile.getId());
+        PlayerEntity player = PlayerUtil.getPlayerFromUUID(playerProfile.getId());
         return _getBank(player.getEntityWorld()).getWallet(player);
     }
 

@@ -4,7 +4,7 @@ import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
 import com.ki11erwolf.shoppery.item.ShopperyItems;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -82,7 +82,7 @@ public class PRequestMoney extends Packet<PRequestMoney> {
     @Override
     BiConsumer<PRequestMoney, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
-            EntityPlayer player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
+            PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
                     .getPlayerList().getPlayerByUUID(UUID.fromString(packet.playerUUID));
 
             if(player == null){

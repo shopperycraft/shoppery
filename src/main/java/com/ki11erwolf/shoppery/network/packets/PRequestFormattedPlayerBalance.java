@@ -3,7 +3,7 @@ package com.ki11erwolf.shoppery.network.packets;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -67,7 +67,7 @@ public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlay
     private static void handle(final PRequestFormattedPlayerBalance message, Supplier<NetworkEvent.Context> ctx){
         handle(ctx, () -> {
             try{
-                EntityPlayer player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
+                PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
                         .getPlayerList().getPlayerByUUID(UUID.fromString(message.playerUUID));
 
                 if(player == null){

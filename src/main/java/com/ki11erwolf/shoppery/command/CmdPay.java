@@ -3,7 +3,7 @@ package com.ki11erwolf.shoppery.command;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -39,8 +39,8 @@ class CmdPay extends Command{
      * @param world the world the player issued the command in.
      */
     @Override
-    void onCommandCalled(String[] arguments, EntityPlayer player, World world) {
-        EntityPlayer toPlayer
+    void onCommandCalled(String[] arguments, PlayerEntity player, World world) {
+        PlayerEntity toPlayer
                 = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(arguments[0]);
         String amount = arguments[1];
 
@@ -95,7 +95,7 @@ class CmdPay extends Command{
      * @return true
      */
     @Override
-    boolean canExecute(EntityPlayer player, World world) {
+    boolean canExecute(PlayerEntity player, World world) {
         return true;
     }
 

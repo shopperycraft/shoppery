@@ -3,7 +3,7 @@ package com.ki11erwolf.shoppery.command;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
 import com.ki11erwolf.shoppery.item.ShopperyItems;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -38,7 +38,7 @@ class CmdMoney extends Command {
      * @param world the world the player issued the command in.
      */
     @Override
-    void onCommandCalled(String[] arguments, EntityPlayer player, World world) {
+    void onCommandCalled(String[] arguments, PlayerEntity player, World world) {
         Wallet playerWallet = BankManager._getWallet(world, player);
 
         switch (arguments[0].toLowerCase()){
@@ -121,7 +121,7 @@ class CmdMoney extends Command {
      * {@inheritDoc}
      */
     @Override
-    boolean canExecute(EntityPlayer player, World world) {
+    boolean canExecute(PlayerEntity player, World world) {
         return true;
     }
 

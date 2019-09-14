@@ -46,6 +46,8 @@ public abstract class Command {
      */
     public static final CmdBalance BALANCE_COMMAND;
 
+    public static final CmdPrice PRICE_COMMAND;
+
     //*******
     // Logic
     //*******
@@ -235,5 +237,6 @@ public abstract class Command {
         SHOPPERY_COMMAND = new CmdShoppery();
         MONEY_COMMAND = new CmdMoney();
         BALANCE_COMMAND = new CmdBalance();
+        PRICE_COMMAND = new CmdPrice();
     }
 }

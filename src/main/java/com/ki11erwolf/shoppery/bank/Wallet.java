@@ -416,8 +416,20 @@ public class Wallet {
         else return CURRENCY_SYMBOL + NumberFormat.getInstance().format(balance) + "." + cents;
     }
 
-
-    public String getFormattedBalance(){
+    /**
+     * @return the players balance as a shortened string
+     * with currency and separator symbols.
+     * Examples:
+     * 1000 to $1k
+     * 5821 to $5.8k
+     * 10500 to $10k
+     * 101800 to $101k
+     * 2000000 to $2m
+     * 7800000 to $7.8m
+     * 92150000 to $92m
+     * 123200000 to $123m
+     */
+    public String getShortenedBalance(){
         if(balance == 0)
             if(cents < 10){
                 return "0.0" + cents + 'c';
@@ -453,7 +465,7 @@ public class Wallet {
      *
      * This includes making sure
      * the balance is always above
-     * 0 and that the cents is ever
+     * 0 and that the cents is never
      * over 100 (will add the excess
      * to the balance if it is).
      */

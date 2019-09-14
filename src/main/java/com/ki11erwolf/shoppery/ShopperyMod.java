@@ -1,6 +1,7 @@
 package com.ki11erwolf.shoppery;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
+import com.ki11erwolf.shoppery.price.PriceAPI;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -66,6 +67,7 @@ public class ShopperyMod {
      * Sets up mod event listeners & callbacks.
      */
     public ShopperyMod() {
+        PriceAPI.loadPriceRegistry();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);

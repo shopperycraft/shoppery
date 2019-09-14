@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 /**
  * Used to send clients (EntityPlayerMP) their formatted balance
- * {@link Wallet#getFormattedBalance()}.
+ * {@link Wallet#getShortenedBalance()}.
  *
  * This class saves the last received balance so it can
  * be retrieved easily, however, it is recommended a

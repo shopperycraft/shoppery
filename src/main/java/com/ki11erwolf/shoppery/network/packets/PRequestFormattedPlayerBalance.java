@@ -80,7 +80,7 @@ public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlay
                 Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
                 send(
                         PacketDistributor.PLAYER.with(() -> ctx.get().getSender()),
-                        new PReceiveFormattedPlayerBalance(senderWallet.getFormattedBalance())
+                        new PReceiveFormattedPlayerBalance(senderWallet.getShortenedBalance())
                 );
             } catch (Exception e){
                 ShopperyMod.getNewLogger().error("Failed to send back player balance", e);

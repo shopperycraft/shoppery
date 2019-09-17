@@ -5,7 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.price.ItemPrice;
+import com.ki11erwolf.shoppery.price.PriceAPI;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.fml.ModList;
 import org.apache.logging.log4j.Logger;
 
@@ -29,7 +31,7 @@ public class ShopperyPricesLoader extends Loader {
             return null;
         }
 
-        List<ItemPrice> pricesList = new ArrayList<>();
+        List<ItemPrice> pricesList = new ArrayList<>(PriceAPI.minExpectedNumberOfEntries);
 
         //For each mod
         prices.entrySet().forEach((price) -> {
@@ -44,15 +46,23 @@ public class ShopperyPricesLoader extends Loader {
                 results.logAffectedMod(modid);
                 //For each value
                 price.getValue().getAsJsonObject().entrySet().forEach((priceDef) -> {
-                    ResourceLocation id = new ResourceLocation(modid, priceDef.getKey());
-                    JsonElement json = priceDef.getValue();
+                    ResourceLocation id;
+                    try{
+                        id = new ResourceLocation(modid, priceDef.getKey());
+                    } catch (ResourceLocationException e){
+                        results.logInvalidEntry(modid + ":" + priceDef.getKey());
+                        id = null;
+                    }
 
-                    ItemPrice itemPrice = ItemPrice.getFromJson(id, json);
+                    if(id != null){
+                        JsonElement json = priceDef.getValue();
+                        ItemPrice itemPrice = ItemPrice.getFromJson(id, json);
 
-                    if(itemPrice != null) {
-                        pricesList.add(itemPrice);
-                        results.logRegistered(itemPrice);
-                    } else results.logInvalidEntry(id.toString() + " -> " + json.toString());
+                        if(itemPrice != null) {
+                            pricesList.add(itemPrice);
+                            results.logRegistered(itemPrice);
+                        } else results.logInvalidEntry(id.toString() + " -> " + json.toString());
+                    }
                 });
             } else {
                 results.logUnaffectedMod(modid);

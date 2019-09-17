@@ -7,22 +7,15 @@ class Prices {
 
     private final LoadOrder loadOrder;
 
-    private final boolean cache;
-
     private final JsonObject prices;
 
     Prices(JsonObject json){
         loadOrder = getLoadOrder(json);
-        cache = shouldCache(json);
         prices = getPrices(json);
     }
 
-    public LoadOrder getLoadOrder(){
+    LoadOrder getLoadOrder(){
         return loadOrder;
-    }
-
-    public boolean cache(){
-        return cache;
     }
 
     JsonObject getPrices(){
@@ -51,11 +44,6 @@ class Prices {
             return LoadOrder.LAST;
 
         return LoadOrder.NONE;
-    }
-
-    private boolean shouldCache(JsonObject json){
-        return hasMetadata(json) && json.getAsJsonObject("metadata").has("cache")
-                && json.getAsJsonObject("metadata").get("cache").getAsBoolean();
     }
 
     private JsonObject getPrices(JsonObject json){

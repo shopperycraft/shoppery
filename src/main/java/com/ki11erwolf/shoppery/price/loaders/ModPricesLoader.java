@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.price.ItemPrice;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.fml.ModList;
 import org.apache.logging.log4j.Logger;
 
@@ -103,20 +104,29 @@ public class ModPricesLoader extends Loader{
                 this.results.logAffectedMod(modid);
                 //For each value
                 price.getValue().getAsJsonObject().entrySet().forEach((priceDef) -> {
-                    ResourceLocation id = new ResourceLocation(modid, priceDef.getKey());
-                    JsonElement json = priceDef.getValue();
+                    ResourceLocation id;
+                    try{
+                        id = new ResourceLocation(modid, priceDef.getKey());
+                    } catch (ResourceLocationException e){
+                        results.logInvalidEntry(modid + ":" + priceDef.getKey());
+                        this.results.logInvalidEntry(modid + ":" + priceDef.getKey());
+                        id = null;
+                    }
 
-                    ItemPrice itemPrice = ItemPrice.getFromJson(id, json);
+                    if(id != null){
+                        JsonElement json = priceDef.getValue();
+                        ItemPrice itemPrice = ItemPrice.getFromJson(id, json);
 
-                    if(itemPrice != null) {
-                        pricesList.add(itemPrice);
-                        results.logRegistered(itemPrice);
-                        this.results.logRegistered(itemPrice);
-                        results.setNumberOfEntries(results.getNumberOfEntries() + 1);
-                    } else {
-                        String entry = id.toString() + " -> " + json.toString();
-                        results.logInvalidEntry(entry);
-                        this.results.logInvalidEntry(entry);
+                        if(itemPrice != null) {
+                            pricesList.add(itemPrice);
+                            results.logRegistered(itemPrice);
+                            this.results.logRegistered(itemPrice);
+                            results.setNumberOfEntries(results.getNumberOfEntries() + 1);
+                        } else {
+                            String entry = id.toString() + " -> " + json.toString();
+                            results.logInvalidEntry(entry);
+                            this.results.logInvalidEntry(entry);
+                        }
                     }
                 });
             } else {

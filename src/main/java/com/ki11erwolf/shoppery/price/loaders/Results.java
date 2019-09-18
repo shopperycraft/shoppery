@@ -28,7 +28,7 @@ public class Results{
 
     private List<String> errors = new ArrayList<>();
 
-    private List<ItemPrice> registered = new ArrayList<>();
+    private List<ItemPrice> registeredEntries = new ArrayList<>();
 
     Results(){}
 
@@ -92,6 +92,7 @@ public class Results{
     }
 
     public void flagAsErrored(){
+        logError("Loader has failed fatally.");
         this.errored = true;
     }
 
@@ -110,15 +111,15 @@ public class Results{
         return errors.toArray(new String[0]);
     }
 
-    public void logRegistered(ItemPrice itemPrice){
-        this.registered.add(itemPrice);
+    public void logRegisteredEntry(ItemPrice itemPrice){
+        this.registeredEntries.add(itemPrice);
     }
 
-    public ItemPrice[] getRegistered(){
-        if(registered.size() == 0)
+    public ItemPrice[] getRegisteredEntries(){
+        if(registeredEntries.size() == 0)
             return null;
 
-        return registered.toArray(new ItemPrice[0]);
+        return registeredEntries.toArray(new ItemPrice[0]);
     }
 
     //Printing
@@ -134,7 +135,7 @@ public class Results{
         sResults.append("------------- Debug Results: ").append(getName()).append(" -------------\n");
 
         sResults.append("Loaded entries:").append("\n");
-        for(ItemPrice registeredIP : registered){
+        for(ItemPrice registeredIP : registeredEntries){
             sResults.append(registeredIP.getItem().toString());
             sResults.append(" -> ").append(registeredIP.toString()).append("\n");
         }

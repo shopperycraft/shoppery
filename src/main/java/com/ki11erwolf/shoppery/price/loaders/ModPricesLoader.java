@@ -119,8 +119,8 @@ public class ModPricesLoader extends Loader{
 
                         if(itemPrice != null) {
                             pricesList.add(itemPrice);
-                            results.logRegistered(itemPrice);
-                            this.results.logRegistered(itemPrice);
+                            results.logRegisteredEntry(itemPrice);
+                            this.results.logRegisteredEntry(itemPrice);
                             results.setNumberOfEntries(results.getNumberOfEntries() + 1);
                         } else {
                             String entry = id.toString() + " -> " + json.toString();

@@ -60,7 +60,7 @@ public class ShopperyPricesLoader extends Loader {
 
                         if(itemPrice != null) {
                             pricesList.add(itemPrice);
-                            results.logRegistered(itemPrice);
+                            results.logRegisteredEntry(itemPrice);
                         } else results.logInvalidEntry(id.toString() + " -> " + json.toString());
                     }
                 });

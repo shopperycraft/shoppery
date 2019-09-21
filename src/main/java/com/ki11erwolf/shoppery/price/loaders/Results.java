@@ -7,32 +7,96 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the results of running a {@link Loader}.
+ * Every Loader has its own Results object that gives
+ * the details from the load. This includes:
+ *
+ * <ul>
+ *     <li>The name of the loader.</li>
+ *     <li>The number of item price entries the loader loaded.</li>
+ *     <li>The number of item price entries in registry replaced by this loader.</li>
+ *     <li>A flag that indicates if this loader failed.</li>
+ *     <li>A list of item price entries that are invalid.</li>
+ *     <li>A list of affected mods - mods that has prices loaded for their items.</li>
+ *     <li>A list of unaffected mods - unloaded/not-installed mods with item prices defined for them.</li>
+ *     <li>A list of errors that occurred during the load - will only be displayed if the loader completely fails.</li>
+ *     <li>A list of all entries that were found.</li>
+ * </ul>
+ *
+ * <p/>The results object is modified from both the loader
+ * and the registry. IT'S UNWISE TO MODIFY THIS OBJECT!
+ *
+ * <p/>At the end of the registry load cycle, every results
+ * object will be called to print itself to the console.
+ */
 @SuppressWarnings("WeakerAccess")
 public class Results{
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = ShopperyMod.getNewLogger();
 
+    /**
+     * The name of the loader (or mod) this results object belongs to.
+     */
     private String name;
 
+    /**
+     * The total number of entries loaded by this loader. Usually
+     * set by the registry.
+     */
     private int numberOfEntries = 0;
 
+    /**
+     * The number of entries in the registry replace with
+     * entries from this loader. Usually set by the registry.
+     */
     private int numberOfReplacements = 0;
 
+    /**
+     * Flag that indicates if the loader has failed
+     * or not.
+     */
     private boolean errored = false;
 
+    /**
+     * List of entries loaded by the loader that are invalid -
+     * entries that could not be parsed into a valid price.
+     */
     private List<String> invalidEntries = new ArrayList<>();
 
+    /**
+     * List of mods (mod ids) that have had prices loaded for their
+     * items/blocks by this loader.
+     */
     private List<String> affectedMods = new ArrayList<>();
 
+    /**
+     * List of mods that are not installed but have had ItemPrices
+     * loaded for them. These item prices are discarded.
+     */
     private List<String> unaffectedMods = new ArrayList<>();
 
+    /**
+     * The list of errors that occurred during the load process.
+     * Will only be displayed if the loader errored.
+     */
     private List<String> errors = new ArrayList<>();
 
+    /**
+     * The full list of ItemPrices that were successfully loaded
+     * by this loader.
+     */
     private List<ItemPrice> registeredEntries = new ArrayList<>();
 
+    /**Package-private constructor*/
     Results(){}
 
+    // *****************
     // Getters & Setters
+    // *****************
 
     public void setName(String name){
         this.name = name;
@@ -122,14 +186,25 @@ public class Results{
         return registeredEntries.toArray(new ItemPrice[0]);
     }
 
-    //Printing
+    // ********
+    // Printing
+    // ********
 
+    /**
+     * Prints out both the normal and debug results from
+     * this results object.
+     */
     public void print(){
         LOG.info(getAsStandardResultString());
         if(!errored)
             LOG.debug(getAsDebugResultString());
     }
 
+    /**
+     * @return this object as a visual String to be
+     * printed in the console at the debug level. Contains
+     * a list of every loaded item price.
+     */
     protected String getAsDebugResultString(){
         StringBuilder sResults = new StringBuilder("\n");
         sResults.append("------------- Debug Results: ").append(getName()).append(" -------------\n");
@@ -144,6 +219,10 @@ public class Results{
         return sResults.toString();
     }
 
+    /**
+     * @return this object as a visual String to be printed
+     * in the console at the info level.
+     */
     protected String getAsStandardResultString(){
         String error = getAsErrorResultString();
 
@@ -186,6 +265,10 @@ public class Results{
         return sResults.toString();
     }
 
+    /**
+     * @return this object as a visual String to be printed
+     * in the console at the info level. Only printed when errored.
+     */
     protected String getAsErrorResultString(){
         if(hasErrored()){
             StringBuilder sResults = new StringBuilder("\n");

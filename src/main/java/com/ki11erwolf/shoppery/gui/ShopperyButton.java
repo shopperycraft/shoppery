@@ -139,8 +139,10 @@ public abstract class ShopperyButton extends ImageButton {
             //Create and add new button
             ShopperyButton button = new ShopperyButton(
                     screen.getGuiLeft() + 104 + 21, screen.height / 2 - 22) {
+                //Wait time
                 long requestWaitTime = 1000;//ms
 
+                //Short balance.
                 long lastSBalanceRequestTime = System.currentTimeMillis();
                 @Override
                 protected String getShortenedBalance() {
@@ -154,6 +156,7 @@ public abstract class ShopperyButton extends ImageButton {
                     return PReceiveFormattedPlayerBalance.getLastKnownBalance();
                 }
 
+                //Full balance
                 long lastFBalanceRequestTime;
                 @Override
                 protected String getFullBalance() {

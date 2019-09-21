@@ -15,12 +15,31 @@ import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Price registry loader responsible for loading in
+ * prices defined from this mod, in the shoppery-prices.json
+ * file. These are prices for Minecraft and Shoppery Items
+ * and Blocks.
+ */
 public class ShopperyPricesLoader extends Loader {
 
+    /**
+     * Logger for this mod.
+     */
     private static final Logger LOG = ShopperyMod.getNewLogger();
 
+    /**
+     * The path to the prices.json file.
+     */
     private static final String PRICES_FILE = "/shoppery-prices.json";
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>Loads in the prices from shoppery's prices.json file.
+     *
+     * @return the list of ItemPrices from shoppery.
+     */
     @Override
     public ItemPrice[] load() {
         JsonObject prices = getPricesJson();
@@ -72,6 +91,9 @@ public class ShopperyPricesLoader extends Loader {
         return pricesList.toArray(new ItemPrice[0]);
     }
 
+    /**
+     * @return the json object contained in shoppery's prices.json file.
+     */
     private JsonObject getPricesJson(){
         try{
             BufferedInputStream reader = new BufferedInputStream(this.getClass().getResourceAsStream(PRICES_FILE));

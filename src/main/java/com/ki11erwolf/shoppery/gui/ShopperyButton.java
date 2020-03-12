@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.ImageButton;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -56,12 +57,13 @@ public abstract class ShopperyButton extends ImageButton {
 
     /**
      * {@code true} if the inventory gui screen had the
-     * recipe gui open when opened.
+     * recipe gui open when opened, and is therefore
+     * bigger.
      *
      * Used to determine if the gui changed size
      * and the button needs to be repositioned.
      */
-    private boolean enlargedGUI;
+    private boolean isEnlarged;
 
     /**
      * Constructor that allows specifying button position.
@@ -76,7 +78,7 @@ public abstract class ShopperyButton extends ImageButton {
         );
 
         this.inventoryGUI = inventoryGUI;
-        this.enlargedGUI = inventoryGUI.getRecipeGui().isVisible();
+        this.isEnlarged = inventoryGUI.getRecipeGui().isVisible();
     }
 
     // ******
@@ -101,19 +103,18 @@ public abstract class ShopperyButton extends ImageButton {
 
         //Button text
         drawCenteredString(
-                renderer, getShortenedBalance(),
-                this.x + (this.width / 2), this.y + (this.height / 3) - 1,
-                0xffffff
+                renderer, getShortenedBalance(), this.x + (this.width / 2),
+                this.y + (this.height / 3) - 1, 0xffffff
         );
 
-        //Button Tooltip
-        if((x > this.x && x < this.x + this.width) && (y > this.y && y < this.y + height)){
-            drawCenteredString(
-                    renderer, getFullBalance(),
-                    this.x + (this.width / 2), this.y + (this.height),
-                    0xffffff
-            );
-        }
+//        Button Tooltip
+
+//        if((x > this.x && x < this.x + this.width) && (y > this.y && y < this.y + height)){
+//            drawCenteredString(
+//                    renderer, getFullBalance(), this.x + (this.width / 2),
+//                    this.y + (this.height), 0xffffff
+//            );
+//        }
     }
 
     /**
@@ -122,13 +123,13 @@ public abstract class ShopperyButton extends ImageButton {
      * accordingly.
      */
     private void posUpdateCheck(){
-        if(inventoryGUI.getRecipeGui().isVisible() != enlargedGUI){
+        if(inventoryGUI.getRecipeGui().isVisible() != isEnlarged){
             boolean toEnlarged = inventoryGUI.getRecipeGui().isVisible();
             if(toEnlarged)          this.x += 77;
             else                    this.x -= 77;
 
             //reset size change flag.
-            this.enlargedGUI = !enlargedGUI;
+            this.isEnlarged = !isEnlarged;
         }
     }
 
@@ -163,7 +164,26 @@ public abstract class ShopperyButton extends ImageButton {
      * @param button the button instance that was pressed.
      */
     private static void onPressed(Button button){
-        //TODO: add and open gui
+        PlayerEntity player = Minecraft.getInstance().player;
+        Screen currentScreen = Minecraft.getInstance().currentScreen;
+
+        //No player, no screens.
+        if(player == null)
+            return;
+
+        //To Shoppery inventory
+        if(currentScreen instanceof InventoryScreen)
+            Minecraft.getInstance().displayGuiScreen(new ShopperyInventoryScreen(
+                    Minecraft.getInstance().player
+            ));
+
+        //To normal Minecraft inventory
+        if(currentScreen instanceof ShopperyInventoryScreen)
+            Minecraft.getInstance().displayGuiScreen(new InventoryScreen(
+                    Minecraft.getInstance().player
+            ));
+
+        //We won't do anything if we don't know what the gui screen is.
     }
 
     // ***********************
@@ -171,78 +191,88 @@ public abstract class ShopperyButton extends ImageButton {
     // ***********************
 
     /**
-     * Called when a gui screen is initialized and displayed.
-     *
-     * <p/>Handles creating the shoppery button and adding it to the
-     * players survival inventory gui screen.
+     * Called when a gui screen is initialized and displayed. Acts
+     * on ShopperyInventoryScreen and Survival InventoryScreen. Handles
+     * creating the shoppery button and adding it to the players
+     * survival/shoppery inventory gui screen.
      *
      * @param event forge event.
      */
     @OnlyIn(Dist.CLIENT)
     private static void guiInitialized(GuiScreenEvent.InitGuiEvent.Post event){
+        PlayerEntity player = Minecraft.getInstance().player;
         Screen gui = event.getGui();
 
         //No player, no button!
-        if(Minecraft.getInstance().player == null){
+        if(player == null){
             LOGGER.error("Player is NULL. Skipping guiInitialized(GuiScreenEvent.InitGuiEvent.Post)...");
             return;
         }
 
-        //Finally!
-        if (gui instanceof InventoryScreen) {
+        //If either Shoppery or survival inventory is up, make the button.
+        if(ShopperyInventoryScreen.isSurvivalInventoryDisplayed()
+                || ShopperyInventoryScreen.isShopperyInventoryDisplayed()) {
             InventoryScreen screen = (InventoryScreen) event.getGui();
 
-            try {
-                screen.getRecipeGui().isVisible();
-            } catch (NullPointerException e) {
-                //We're on a creative screen. Do nothing.
-                return;
-            }
-
-            //Request balance
+            //First request balance
             Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(
-                    Minecraft.getInstance().player.getUniqueID().toString()
+                    player.getUniqueID().toString()
             ));
             Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFullPlayerBalance(
-                    Minecraft.getInstance().player.getUniqueID().toString()
+                    player.getUniqueID().toString()
             ));
 
-            //Create and add new button
-            ShopperyButton button = new ShopperyButton(
-                    screen.getGuiLeft() + REL_X, screen.height / 2 - REL_INV_Y, screen) {
-                //Wait time
-                long requestWaitTime = 1000;//ms
-
-                //Short balance.
-                long lastSBalanceRequestTime = System.currentTimeMillis();
-                @Override
-                protected String getShortenedBalance() {
-                    if(lastSBalanceRequestTime < System.currentTimeMillis()){
-                        lastSBalanceRequestTime = System.currentTimeMillis() + requestWaitTime;
-                        Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(
-                                Minecraft.getInstance().player.getUniqueID().toString()
-                        ));
-                    }
-
-                    return PReceiveFormattedPlayerBalance.getLastKnownBalance();
-                }
-
-                //Full balance
-                long lastFBalanceRequestTime;
-                @Override
-                protected String getFullBalance() {
-                    if(lastFBalanceRequestTime < System.currentTimeMillis()){
-                        lastFBalanceRequestTime = System.currentTimeMillis() + requestWaitTime;
-                        Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFullPlayerBalance(
-                                Minecraft.getInstance().player.getUniqueID().toString()
-                        ));
-                    }
-
-                    return PReceiveFullPlayerBalance.getLastKnownBalance();
-                }
-            };
+            //Then create and add new button
+            ShopperyButton button = makeButton(screen, player);
             event.addWidget(button);
         }
+    }
+
+    /**
+     * Creates the new Shoppery button, for the Inventory
+     * GUI, with the calculated layout for the specific
+     * Inventory GUI.
+     *
+     * @param screen the ShopperyButtons inventory screen
+     *               displayed to the user.
+     * @return the newly created ShopperyButton for the
+     * given InventoryScreen.
+     */
+    private static ShopperyButton makeButton(InventoryScreen screen, PlayerEntity player){
+        return new ShopperyButton(
+                screen.getGuiLeft() + REL_X, screen.height / 2 - REL_INV_Y, screen) {
+            long requestWaitTime = 1000;//Wait time, in ms
+
+            //Short balance.
+            long lastSBalanceRequestTime = System.currentTimeMillis();
+
+            @Override
+            protected String getShortenedBalance() {
+                if(lastSBalanceRequestTime < System.currentTimeMillis()){
+                    lastSBalanceRequestTime = System.currentTimeMillis() + requestWaitTime;
+                    Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(
+                            player.getUniqueID().toString()
+                    ));
+                }
+
+                return PReceiveFormattedPlayerBalance.getLastKnownBalance();
+            }
+
+            //Full balance
+            long lastFBalanceRequestTime;
+
+            @Override
+            protected String getFullBalance() {
+                if(lastFBalanceRequestTime < System.currentTimeMillis()){
+                    lastFBalanceRequestTime = System.currentTimeMillis() + requestWaitTime;
+                    Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFullPlayerBalance(
+                            player.getUniqueID().toString()
+                    ));
+                }
+
+                return PReceiveFullPlayerBalance.getLastKnownBalance();
+            }
+        };
     }
 
     // ****

@@ -1,8 +1,6 @@
 {
   "itemGroup.shoppery":                                   "ShopperyCraft",
 
-  "item.shoppery.deposit":                                "Deposit Money In Inventory.",
-
   "item.shoppery.coin_one":                               "One Cents (1¢)",
   "item.shoppery.coin_five":                              "Five Cents (5¢)",
   "item.shoppery.coin_ten":                               "Ten Cents (10¢)",
@@ -22,5 +20,10 @@
   "item.shoppery.note_five_k":                            "Five-Thousand Dollars ($5,000)",
   "item.shoppery.note_ten_k":                             "Ten-Thousand Dollars ($10,000)",
   "item.shoppery.note_fifty_k":                           "Fifty-Thousand Dollars ($50,000)",
-  "item.shoppery.note_one_hundred_k":                     "One-Hundred-Thousand Dollars ($100,000)"
+  "item.shoppery.note_one_hundred_k":                     "One-Hundred-Thousand Dollars ($100,000)",
+
+  "$":
+  "Below translations follow the 'shoppery.domain.sub_domain.*' style of grouping.",
+
+  "shoppery.title.screen.inventory_bank":                 "Personal Shoppery Bank"
 }

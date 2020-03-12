@@ -46,7 +46,8 @@ public class Wallet {
     /**
      * The symbol to represent the currency.
      */
-    private static final char CURRENCY_SYMBOL = '$';
+    //TODO: Config? Fix
+    public static final char CURRENCY_SYMBOL = '$';
 
     /**
      * The player this wallet belongs to.
@@ -408,12 +409,16 @@ public class Wallet {
     }
 
     /**
+     * @param currencySymbol {@code true} to include the currency
+     *                                   symbol in the balance.
      * @return the players full balance (with commas & currency symbol).
      * E.g. $100.00, $1,000.00 $1,000,000.00
      */
-    public String getFullBalance(){
-        if(cents < 10) return CURRENCY_SYMBOL + NumberFormat.getInstance().format(balance) + ".0" + cents;
-        else return CURRENCY_SYMBOL + NumberFormat.getInstance().format(balance) + "." + cents;
+    public String getFullBalance(boolean currencySymbol){
+        if(cents < 10) return (currencySymbol ? CURRENCY_SYMBOL : "")
+                + NumberFormat.getInstance().format(balance) + ".0" + cents;
+        else return (currencySymbol ? CURRENCY_SYMBOL : "")
+                + NumberFormat.getInstance().format(balance) + "." + cents;
     }
 
     /**
@@ -455,7 +460,7 @@ public class Wallet {
     public String toString(){
         return String.format(
                 "Wallet[player: %s, balance: %s, cents: %s, full: %s]",
-                getPlayer().getName().getString(), balance, cents, getFullBalance()
+                getPlayer().getName().getString(), balance, cents, getFullBalance(true)
         );
     }
 

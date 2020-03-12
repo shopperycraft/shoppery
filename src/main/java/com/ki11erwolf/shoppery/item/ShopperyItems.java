@@ -25,8 +25,6 @@ public final class ShopperyItems extends QueueRegisterer<Item> {
     //   Public Item Instances
     //############################
 
-    public static final DepositItem DEPOSIT_ITEM = new DepositItem().queueRegistration();
-
     /**
      * The one(1) cents coin item.
      */
@@ -141,7 +139,7 @@ public final class ShopperyItems extends QueueRegisterer<Item> {
      *
      * @param item the item to queue.
      */
-    static void queueItem(ShopperyItem item){
+    static void queueItem(ShopperyItem<?> item){
         INSTANCE.queueForRegistration(item);
     }
 }

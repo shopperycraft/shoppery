@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 /**
  * Used to send clients (EntityPlayerMP) their full balance
- * {@link Wallet#getFullBalance()}}.
+ * {@link Wallet#getFullBalance(boolean)}}.
  *
  * This class saves the last received full balance so it can
  * be retrieved easily, however, it is recommended a

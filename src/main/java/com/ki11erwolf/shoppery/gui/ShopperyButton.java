@@ -20,7 +20,9 @@ import org.apache.logging.log4j.Logger;
 /**
  * The player inventory button added by shoppery to display
  * the players balance and allows them to deposit/withdraw
- * money. Once initialized, the button will handle itself.
+ * money.
+ *
+ * <p/>Once initialized, the button will handle itself.
  */
 @OnlyIn(Dist.CLIENT)
 public abstract class ShopperyButton extends ImageButton {
@@ -31,10 +33,35 @@ public abstract class ShopperyButton extends ImageButton {
     private static final Logger LOGGER = ShopperyMod.getNewLogger();
 
     /**
+     * Constant value defining button
+     * dimensions/positions.
+     */
+    private static final int
+            SIZE_DIFF   = 77,             //Normal vs Expanded GUI size diff.
+            WIDTH       = 46,             //Button width.
+            HEIGHT      = 18,             //Button height.
+            REL_X       = 125,            //Relative X position to gui.
+            REL_INV_Y   = 22;             //Relative -Y position to half gui height.
+
+    /**
      * The textures for the button.
      */
     private static final ResourceLocation TEXTURE
             = new ResourceLocation("shoppery", "textures/gui/shoppery_button.png");
+
+    /**
+     * The inventory gui screen this button is attached to.
+     */
+    private final InventoryScreen inventoryGUI;
+
+    /**
+     * {@code true} if the inventory gui screen had the
+     * recipe gui open when opened.
+     *
+     * Used to determine if the gui changed size
+     * and the button needs to be repositioned.
+     */
+    private boolean enlargedGUI;
 
     /**
      * Constructor that allows specifying button position.
@@ -42,11 +69,14 @@ public abstract class ShopperyButton extends ImageButton {
      * @param x the x coordinate of the button.
      * @param y the y coordinate of the button.
      */
-    private ShopperyButton(int x, int y) {
+    private ShopperyButton(int x, int y, InventoryScreen inventoryGUI) {
         super(
                 x, y, 46, 18, 0, 0,
                 19, TEXTURE, ShopperyButton::onPressed
         );
+
+        this.inventoryGUI = inventoryGUI;
+        this.enlargedGUI = inventoryGUI.getRecipeGui().isVisible();
     }
 
     // ******
@@ -63,9 +93,11 @@ public abstract class ShopperyButton extends ImageButton {
      * @param z i have no clue.
      */
     public void renderButton(int x, int y, float z) {
+        FontRenderer renderer = Minecraft.getInstance().fontRenderer;
         super.renderButton(x, y, z);
 
-        FontRenderer renderer = Minecraft.getInstance().fontRenderer;
+        //Have to respond to gui size chnages here.
+        posUpdateCheck();
 
         //Button text
         drawCenteredString(
@@ -81,6 +113,22 @@ public abstract class ShopperyButton extends ImageButton {
                     this.x + (this.width / 2), this.y + (this.height),
                     0xffffff
             );
+        }
+    }
+
+    /**
+     * Checks if the inventories size has changed,
+     * and if so, updates the buttons position
+     * accordingly.
+     */
+    private void posUpdateCheck(){
+        if(inventoryGUI.getRecipeGui().isVisible() != enlargedGUI){
+            boolean toEnlarged = inventoryGUI.getRecipeGui().isVisible();
+            if(toEnlarged)          this.x += 77;
+            else                    this.x -= 77;
+
+            //reset size change flag.
+            this.enlargedGUI = !enlargedGUI;
         }
     }
 
@@ -105,7 +153,9 @@ public abstract class ShopperyButton extends ImageButton {
      */
     protected abstract String getFullBalance();
 
+    // **********
     // On Pressed
+    // **********
 
     /**
      * Called when the button is pressed by the player.
@@ -132,13 +182,22 @@ public abstract class ShopperyButton extends ImageButton {
     private static void guiInitialized(GuiScreenEvent.InitGuiEvent.Post event){
         Screen gui = event.getGui();
 
+        //No player, no button!
         if(Minecraft.getInstance().player == null){
             LOGGER.error("Player is NULL. Skipping guiInitialized(GuiScreenEvent.InitGuiEvent.Post)...");
             return;
         }
 
-        if (event.getGui() instanceof InventoryScreen) {
+        //Finally!
+        if (gui instanceof InventoryScreen) {
             InventoryScreen screen = (InventoryScreen) event.getGui();
+
+            try {
+                screen.getRecipeGui().isVisible();
+            } catch (NullPointerException e) {
+                //We're on a creative screen. Do nothing.
+                return;
+            }
 
             //Request balance
             Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(
@@ -150,7 +209,7 @@ public abstract class ShopperyButton extends ImageButton {
 
             //Create and add new button
             ShopperyButton button = new ShopperyButton(
-                    screen.getGuiLeft() + 104 + 21, screen.height / 2 - 22) {
+                    screen.getGuiLeft() + REL_X, screen.height / 2 - REL_INV_Y, screen) {
                 //Wait time
                 long requestWaitTime = 1000;//ms
 

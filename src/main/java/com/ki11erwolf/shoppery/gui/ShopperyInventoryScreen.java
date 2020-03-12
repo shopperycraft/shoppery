@@ -5,7 +5,6 @@ import com.ki11erwolf.shoppery.network.packets.PReceiveFullPlayerBalance;
 import com.ki11erwolf.shoppery.network.packets.PRequestFullPlayerBalance;
 import com.ki11erwolf.shoppery.network.packets.Packet;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
-import com.ki11erwolf.shoppery.util.LocaleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
@@ -158,8 +157,9 @@ public class ShopperyInventoryScreen extends InventoryScreen {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
         //Title
-        font.drawString(LocaleUtil.get(LocaleDomains.TITLE.sub(LocaleDomains.SCREEN),
-                "player_bank"), X(5), Y(7), 0x3F3F3F
+        font.drawString(LocaleDomains.TITLE.sub(LocaleDomains.SCREEN)
+                .format("player_bank", player.getDisplayName().getString()),
+                X(5), Y(7), 0x3F3F3F
         );
 
         //Balance

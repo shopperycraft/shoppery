@@ -25,5 +25,7 @@
   "$":
   "Below translations follow the 'shoppery.domain.sub_domain.*' style of grouping.",
 
-  "shoppery.title.screen.player_bank":                     "ShopperyCraft Bank"
+  "shoppery.title.screen.player_bank":                    "%s's Bank",
+
+  "shoppery.error.balance":                               " < Balance Error >"
 }

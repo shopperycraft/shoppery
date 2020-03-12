@@ -18,7 +18,7 @@ public final class PlayerUtil {
      * @throws IllegalAccessException Always thrown - no creating instances of this class!
      */
     private PlayerUtil() throws IllegalAccessException {
-        throw new IllegalAccessException("No creating instances of this class! Bad!");
+        throw new IllegalAccessException("Instance creation not allowed!");
     }
 
     /**

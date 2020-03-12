@@ -1,11 +1,9 @@
 package com.ki11erwolf.shoppery.util;
 
-import net.minecraft.client.resources.I18n;
-
 /**
- * List of Shoppery {@link LocaleUtil.LocaleDomain}s.
+ * List of Shoppery {@link LocaleDomain}.
  */
-public enum LocaleDomains implements LocaleUtil.LocaleDomain {
+public enum LocaleDomains implements LocaleDomain {
 
     /**
      * No domain grouping.
@@ -30,10 +28,15 @@ public enum LocaleDomains implements LocaleUtil.LocaleDomain {
     TITLE("title"),
 
     /**
-     * Used to group all translation done in relation
+     * Used to group all translations done in relation
      * to GUI screens.
      */
-    SCREEN("screen");
+    SCREEN("screen"),
+
+    /**
+     * Groups all error message translations.
+     */
+    ERROR("error");
 
     /**
      * @param name the single identifying
@@ -76,42 +79,28 @@ public enum LocaleDomains implements LocaleUtil.LocaleDomain {
      * @return the new domain title made of the parent and
      * sub domain.
      */
-    public LocaleUtil.LocaleDomain sub(LocaleUtil.LocaleDomain subDomain){
+    public LocaleDomain sub(LocaleDomain subDomain){
         return new LocaleDomainString(this, subDomain);
-    }
-
-    /**
-     * @see LocaleUtil#format(LocaleUtil.LocaleDomain, String, Object...) LocaleUtil.format()
-     */
-    public static String format(LocaleUtil.LocaleDomain domain, String identifier, Object... params){
-        return LocaleUtil.format(domain, identifier, params);
-    }
-
-    /**
-     * @see LocaleUtil#get(LocaleUtil.LocaleDomain, String) LocaleUtil.get()
-     */
-    public static String get(LocaleUtil.LocaleDomain domain, String identifier){
-        return I18n.format(domain.getDomain() + identifier);
     }
 
     /**
      * A LocaleDomain implementation that allows us to create
      * strings of domains and sub domains as a new instance.
      *
-     * @see #sub(LocaleUtil.LocaleDomain) sub( LocaleUtil.LocaleDomain )
+     * @see #sub(LocaleDomain) sub( LocaleUtil.LocaleDomain )
      */
-    private static class LocaleDomainString implements LocaleUtil.LocaleDomain {
+    private static class LocaleDomainString implements LocaleDomain {
 
         /**
          * The higher priority domain grouping.
          */
-        private final LocaleUtil.LocaleDomain parent;
+        private final LocaleDomain parent;
 
         /**
          * The lower priority domain grouped under
          * the parent domain.
          */
-        private final LocaleUtil.LocaleDomain child;
+        private final LocaleDomain child;
 
         /**
          * Creates a single new domain comprised of a string
@@ -120,7 +109,7 @@ public enum LocaleDomains implements LocaleUtil.LocaleDomain {
          * @param parent the top level parent domain - the higher level grouping.
          * @param sub the lower level grouping sub domain.
          */
-        private LocaleDomainString(LocaleUtil.LocaleDomain parent, LocaleUtil.LocaleDomain sub){
+        private LocaleDomainString(LocaleDomain parent, LocaleDomain sub){
             this.parent = parent; this.child = sub;
         }
 

@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.price.ItemPrice;
-import com.ki11erwolf.shoppery.price.PriceAPI;
+import com.ki11erwolf.shoppery.price.ItemPrices;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.fml.ModList;
@@ -50,7 +50,7 @@ public class ShopperyPricesLoader extends Loader {
             return null;
         }
 
-        List<ItemPrice> pricesList = new ArrayList<>(PriceAPI.minExpectedNumberOfEntries);
+        List<ItemPrice> pricesList = new ArrayList<>(ItemPrices.minExpectedNumberOfEntries);
 
         //For each mod
         prices.entrySet().forEach((price) -> {

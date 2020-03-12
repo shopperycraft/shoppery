@@ -1,7 +1,7 @@
 package com.ki11erwolf.shoppery.command;
 
 import com.ki11erwolf.shoppery.price.ItemPrice;
-import com.ki11erwolf.shoppery.price.PriceAPI;
+import com.ki11erwolf.shoppery.price.ItemPrices;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -34,7 +34,7 @@ class CmdPrice extends Command{
             return;
         }
 
-        ItemPrice price = PriceAPI.getPrice(heldItem);
+        ItemPrice price = ItemPrices.getPrice(heldItem);
 
         if(price == null)
             playerEntity.sendMessage(new StringTextComponent(

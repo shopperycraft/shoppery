@@ -8,11 +8,11 @@ import static com.ki11erwolf.shoppery.price.PriceRegistry.INSTANCE;
 
 /**
  * Static methods used to interface with the price registry. This
- * includes getters, setters and a few other misc methods. Any
- * interactions with the price registry must be done through
+ * includes getters, setters and a few other miscellaneous methods.
+ * Any interactions with the price registry must be done through
  * this class.
  */
-public class PriceAPI {
+public class ItemPrices {
 
     /**
      * The minimum number of entries the price registry is expected
@@ -20,11 +20,10 @@ public class PriceAPI {
      * List/Map initial capacities.
      */
     //The amount of entries in shoppery-prices.json basically.
-    //Put here for lack of a better place.
     public static final int minExpectedNumberOfEntries = 435;
 
     /**Private constructor.*/
-    private PriceAPI(){}
+    private ItemPrices(){}
 
     // ****
     // Load
@@ -112,7 +111,7 @@ public class PriceAPI {
                 //Keep thread usage down
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                //NO-OP
+                //NO-OP - Should not happen.
             }
         }
     }

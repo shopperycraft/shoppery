@@ -1,5 +1,6 @@
 package com.ki11erwolf.shoppery.gui;
 
+import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.network.packets.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -14,6 +15,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The player inventory button added by shoppery to display
@@ -22,6 +24,11 @@ import net.minecraftforge.fml.network.PacketDistributor;
  */
 @OnlyIn(Dist.CLIENT)
 public abstract class ShopperyButton extends ImageButton {
+
+    /**
+     * Logging Object
+     */
+    private static final Logger LOGGER = ShopperyMod.getNewLogger();
 
     /**
      * The textures for the button.
@@ -124,6 +131,11 @@ public abstract class ShopperyButton extends ImageButton {
     @OnlyIn(Dist.CLIENT)
     private static void guiInitialized(GuiScreenEvent.InitGuiEvent.Post event){
         Screen gui = event.getGui();
+
+        if(Minecraft.getInstance().player == null){
+            LOGGER.error("Player is NULL. Skipping guiInitialized(GuiScreenEvent.InitGuiEvent.Post)...");
+            return;
+        }
 
         if (event.getGui() instanceof InventoryScreen) {
             InventoryScreen screen = (InventoryScreen) event.getGui();

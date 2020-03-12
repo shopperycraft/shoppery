@@ -61,7 +61,7 @@ public class CoinItem extends ShopperyItem<CoinItem> {
         if(world.isRemote)
             return super.onItemRightClick(world, player, hand);
 
-        if(player.isSneaking() && BankManager._getWallet(world, player).subtract(0, this.worth)){
+        if(player.isShiftKeyDown() && BankManager._getWallet(world, player).subtract(0, this.worth)){
             //Always increase stack size to indicate success.
             if(player.getHeldItem(hand).getCount() >= 64)
                 player.addItemStackToInventory(new ItemStack(player.getHeldItem(hand).getItem(), 1));

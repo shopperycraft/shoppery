@@ -147,7 +147,7 @@ enum PriceRegistry {
      */
     //LinkedHashMap - we want a predictable iteration order.
     private final Map<ResourceLocation, ItemPrice> priceMap
-            = new LinkedHashMap<>(PriceAPI.minExpectedNumberOfEntries);
+            = new LinkedHashMap<>(ItemPrices.minExpectedNumberOfEntries);
 
     /**
      * Flag set to true once the registry has been completely

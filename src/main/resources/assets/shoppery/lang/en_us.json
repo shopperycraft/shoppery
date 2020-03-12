@@ -25,5 +25,5 @@
   "$":
   "Below translations follow the 'shoppery.domain.sub_domain.*' style of grouping.",
 
-  "shoppery.title.screen.inventory_bank":                 "Personal Shoppery Bank"
+  "shoppery.title.screen.player_bank":                     "ShopperyCraft Bank"
 }

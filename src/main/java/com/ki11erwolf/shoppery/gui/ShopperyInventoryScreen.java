@@ -149,11 +149,6 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     // Foreground
     // **********
 
-    @SuppressWarnings("SameParameterValue")
-    private void drawTrueString(String string, float x, float y, int color){
-        this.font.drawString(string, trueX + x, trueY + y, color);
-    }
-
     /**
      * {@inheritDoc}, specifically the text displayed atop
      * the background.
@@ -163,17 +158,13 @@ public class ShopperyInventoryScreen extends InventoryScreen {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
         //Title
-        drawTrueString(
-                LocaleUtil.get(
-                        LocaleDomains.TITLE.sub(LocaleDomains.SCREEN),
-                        "inventory_bank"
-                ), 6, 7, 4210752
+        font.drawString(LocaleUtil.get(LocaleDomains.TITLE.sub(LocaleDomains.SCREEN),
+                "player_bank"), X(5), Y(7), 0x3F3F3F
         );
 
         //Balance
-        drawCenteredString(
-                font, Wallet.CURRENCY_SYMBOL + getBalance(),
-                trueX + 70, trueY + 22,0xFFFFFF
+        drawCenteredString(font, Wallet.CURRENCY_SYMBOL + getBalance(),
+                X(70), Y(23), 0x00E500
         );
     }
 
@@ -204,6 +195,16 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     // ************
     // Util Methods
     // ************
+
+    /**
+     * Shorthand for  {@link #trueX} {@code + input}.
+     */
+    private int X(Number i) { return trueX + i.intValue(); }
+
+    /**
+     * Shorthand for  {@link #trueY} {@code + input}.
+     */
+    private int Y(Number i) { return trueY + i.intValue(); }
 
     /**
      * Checks if the current screen displayed

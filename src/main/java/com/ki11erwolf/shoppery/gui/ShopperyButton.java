@@ -29,13 +29,19 @@ import org.apache.logging.log4j.Logger;
 public abstract class ShopperyButton extends ImageButton {
 
     /**
+     * The textures map for Shoppery buttons.
+     */
+    public static final ResourceLocation BUTTON_TEXTURES
+            = new ResourceLocation("shoppery", "textures/gui/shoppery_buttons.png");
+
+    /**
      * Logging Object
      */
     private static final Logger LOGGER = ShopperyMod.getNewLogger();
 
     /**
-     * Constant value defining button
-     * dimensions/positions.
+     * Constant value defining button dimensions,
+     * positions, and layout.
      */
     private static final int
             SIZE_DIFF   = 77,             //Normal vs Expanded GUI size diff.
@@ -43,12 +49,6 @@ public abstract class ShopperyButton extends ImageButton {
             HEIGHT      = 18,             //Button height.
             REL_X       = 125,            //Relative X position to gui.
             REL_INV_Y   = 22;             //Relative -Y position to half gui height.
-
-    /**
-     * The textures for the button.
-     */
-    private static final ResourceLocation TEXTURE
-            = new ResourceLocation("shoppery", "textures/gui/shoppery_button.png");
 
     /**
      * The inventory gui screen this button is attached to.
@@ -74,7 +74,7 @@ public abstract class ShopperyButton extends ImageButton {
     private ShopperyButton(int x, int y, InventoryScreen inventoryGUI) {
         super(
                 x, y, 46, 18, 0, 0,
-                19, TEXTURE, ShopperyButton::onPressed
+                19, BUTTON_TEXTURES, ShopperyButton::onPressed
         );
 
         this.inventoryGUI = inventoryGUI;
@@ -106,15 +106,6 @@ public abstract class ShopperyButton extends ImageButton {
                 renderer, getShortenedBalance(), this.x + (this.width / 2),
                 this.y + (this.height / 3) - 1, 0xffffff
         );
-
-//        Button Tooltip
-
-//        if((x > this.x && x < this.x + this.width) && (y > this.y && y < this.y + height)){
-//            drawCenteredString(
-//                    renderer, getFullBalance(), this.x + (this.width / 2),
-//                    this.y + (this.height), 0xffffff
-//            );
-//        }
     }
 
     /**
@@ -143,16 +134,6 @@ public abstract class ShopperyButton extends ImageButton {
      * the users balance in short form (e.g. $100K)
      */
     protected abstract String getShortenedBalance();
-
-    /**
-     * Called by the renderer to get the text to
-     * display as the buttons tooltip. This is normally
-     * the players full balance. Called very frequently!
-     *
-     * @return the text to display as the buttons tooltip -
-     * the users full balance (e.g. $100,000.00).
-     */
-    protected abstract String getFullBalance();
 
     // **********
     // On Pressed
@@ -203,22 +184,19 @@ public abstract class ShopperyButton extends ImageButton {
         PlayerEntity player = Minecraft.getInstance().player;
         Screen gui = event.getGui();
 
-        //No player, no button!
-        if(player == null){
-            LOGGER.error("Player is NULL. Skipping guiInitialized(GuiScreenEvent.InitGuiEvent.Post)...");
-            return;
-        }
-
-        //If either Shoppery or survival inventory is up, make the button.
+        //If either Shoppery or survival inventory is up
         if(ShopperyInventoryScreen.isSurvivalInventoryDisplayed()
                 || ShopperyInventoryScreen.isShopperyInventoryDisplayed()) {
             InventoryScreen screen = (InventoryScreen) event.getGui();
 
-            //First request balance
+            //and we have a player
+            if(player == null){
+                LOGGER.warn("Player is null, skipping shoppery button injection...");
+                return;
+            }
+
+            //First request balance, for button.
             Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(
-                    player.getUniqueID().toString()
-            ));
-            Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFullPlayerBalance(
                     player.getUniqueID().toString()
             ));
 
@@ -256,21 +234,6 @@ public abstract class ShopperyButton extends ImageButton {
                 }
 
                 return PReceiveFormattedPlayerBalance.getLastKnownBalance();
-            }
-
-            //Full balance
-            long lastFBalanceRequestTime;
-
-            @Override
-            protected String getFullBalance() {
-                if(lastFBalanceRequestTime < System.currentTimeMillis()){
-                    lastFBalanceRequestTime = System.currentTimeMillis() + requestWaitTime;
-                    Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFullPlayerBalance(
-                            player.getUniqueID().toString()
-                    ));
-                }
-
-                return PReceiveFullPlayerBalance.getLastKnownBalance();
             }
         };
     }

@@ -32,6 +32,12 @@ public class ShopperyInventoryScreen extends InventoryScreen {
             = new ResourceLocation("shoppery", "textures/gui/money_gui.png");
 
     /**
+     * The error message displayed as the players balance, if any error
+     * occurs and the balance could not be retrieved.
+     */
+    private static final String ERROR_MESSAGE = LocaleDomains.ERROR.get("balance");
+
+    /**
      * The width of the money section background in pixels.
      */
     private static final int WIDTH = 256;
@@ -176,7 +182,7 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     protected static String getBalance(){
         PlayerEntity player = Minecraft.getInstance().player;
         if(player == null) //No player, no balance.
-            return "Not a player!";//TODO: I18n
+            return ERROR_MESSAGE;
 
         //Timer to prevent spamming the server every gui redraw.
         //TODO: Config packet lag.
@@ -189,7 +195,7 @@ public class ShopperyInventoryScreen extends InventoryScreen {
         }
 
         return PReceiveFullPlayerBalance.getLastKnownBalance() == null ?
-                "<ERROR>" : PReceiveFullPlayerBalance.getLastKnownBalance();
+                ERROR_MESSAGE : PReceiveFullPlayerBalance.getLastKnownBalance();
     }
 
     // ************

@@ -3,6 +3,8 @@ package com.ki11erwolf.shoppery.bank;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.util.PlayerUtil;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,8 +16,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * The Bank is a {@link Wallet} storage, and
- * access and retrieval system. It's responsible
+ * The Bank is a {@link Wallet} storage
+ * and access system. It's responsible
  * for storing Wallets as well as providing
  * a solid API for accessing Wallets.
  *
@@ -79,7 +81,9 @@ public class Bank {
             if(player == null)
                 return null;
 
-            givenWallet = new Wallet(player, 0, (byte)0);
+            givenWallet = new Wallet(
+                    player, ShopperyConfig.GENERAL_CONFIG.getCategory(General.class).getStartingBalance(), (byte)0
+            );
             walletMap.put(playerUUID, givenWallet);
         }
 

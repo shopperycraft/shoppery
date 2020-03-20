@@ -20,7 +20,6 @@ import net.minecraft.util.ResourceLocation;
  * prohibiting buy, selling, or both. When prohibited,
  * the item cannot be bought, sold, or both.
  */
-//TODO: investigate making ItemPrice subclasses for memory usage improvements.
 public class ItemPrice {
 
     /**

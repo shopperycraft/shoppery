@@ -22,10 +22,9 @@
   "item.shoppery.note_fifty_k":                           "Fifty-Thousand Dollars ($50,000)",
   "item.shoppery.note_one_hundred_k":                     "One-Hundred-Thousand Dollars ($100,000)",
 
-  "$":
-  "Below translations follow the 'shoppery.domain.sub_domain.*' style of grouping.",
+  "$": "Below translations follow the 'shoppery.domain.sub_domain.*' style of grouping.",
 
-  "shoppery.title.screen.player_bank":                    "%s's Bank",
+  "shoppery.title.screen.player_bank":                    "%s's Wallet",
 
   "shoppery.error.balance":                               " < Balance Error >"
 }

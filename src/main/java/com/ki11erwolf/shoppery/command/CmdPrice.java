@@ -9,19 +9,41 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+/**
+ * Command (/price) that allows players to check
+ * the price of the item they're holding.
+ */
 class CmdPrice extends Command{
 
+    /**
+     * Creates the command object with name (/price).
+     */
     CmdPrice() {
         super("price");
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>Checks the price of the item the issuing player
+     * is currently holding and prints it in chat.
+     *
+     * @param arguments the arguments given by the player.
+     *                  May be empty!
+     * @param player the player that issued the command.
+     * @param world the world the player issued the command in.
+     */
     @Override
     void onCommandCalled(String[] arguments, PlayerEntity player, World world) {
-        if(arguments.length == 0){
-            giveHeldItemPrice(player);
-        }
+        giveHeldItemPrice(player);
     }
 
+    /**
+     * Checks the price of the item the given player is
+     * currently holding and prints it in chat.
+     *
+     * @param playerEntity the given player issuing the command.
+     */
     private void giveHeldItemPrice(PlayerEntity playerEntity){
         ItemStack heldItem = playerEntity.getHeldItemMainhand();
         if(heldItem.getItem() == Items.AIR)
@@ -52,18 +74,36 @@ class CmdPrice extends Command{
             );
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    boolean checkArguments(String[] args){
+        return args.length == 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     boolean canExecute(PlayerEntity player, World world) {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     String getUsage() {
-        return "TODO";
+        return "/price";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     String getFunction() {
-        return "TODO";
+        return "Displays the prices of the current item in your main hand.";
     }
 }

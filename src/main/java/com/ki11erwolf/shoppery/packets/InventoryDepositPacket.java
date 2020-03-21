@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * notes/coins in the given players inventory and add
  * the sum to their wallets balance.
  */
-public class PRequestInventoryDeposit extends Packet<PRequestInventoryDeposit> {
+public class InventoryDepositPacket extends Packet<InventoryDepositPacket> {
 
     /**
      * The player requesting the inventory deposit.
@@ -34,7 +34,7 @@ public class PRequestInventoryDeposit extends Packet<PRequestInventoryDeposit> {
      *
      * @param playerUUID The player requesting the inventory deposit.
      */
-    public PRequestInventoryDeposit(String playerUUID){
+    public InventoryDepositPacket(String playerUUID){
         this.playerUUID = playerUUID;
     }
 
@@ -42,7 +42,7 @@ public class PRequestInventoryDeposit extends Packet<PRequestInventoryDeposit> {
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PRequestInventoryDeposit, PacketBuffer> getEncoder() {
+    BiConsumer<InventoryDepositPacket, PacketBuffer> getEncoder() {
         return (packet, buffer) -> writeString(packet.playerUUID, buffer);
     }
 
@@ -50,8 +50,8 @@ public class PRequestInventoryDeposit extends Packet<PRequestInventoryDeposit> {
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PRequestInventoryDeposit> getDecoder() {
-        return (buffer) -> new PRequestInventoryDeposit(readString(buffer));
+    Function<PacketBuffer, InventoryDepositPacket> getDecoder() {
+        return (buffer) -> new InventoryDepositPacket(readString(buffer));
     }
 
     /**
@@ -61,7 +61,7 @@ public class PRequestInventoryDeposit extends Packet<PRequestInventoryDeposit> {
      * players inventory and adds it to their wallet balance.
      */
     @Override
-    BiConsumer<PRequestInventoryDeposit, Supplier<NetworkEvent.Context>> getHandler() {
+    BiConsumer<InventoryDepositPacket, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
             try{
                 PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())

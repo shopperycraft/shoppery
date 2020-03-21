@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * Sent by clients to request the server send back
  * the given players cents balance ({@link Wallet#getCents()}.
  */
-public class PRequestPlayerCents extends Packet<PRequestPlayerCents> {
+public class PlayerCentsReqPacket extends Packet<PlayerCentsReqPacket> {
 
     /**
      * The UUID of the player who's
@@ -33,7 +33,7 @@ public class PRequestPlayerCents extends Packet<PRequestPlayerCents> {
      * @param playerUUID the uuid of the player who's
      *                   balance we're requesting.
      */
-    public PRequestPlayerCents(String playerUUID){
+    public PlayerCentsReqPacket(String playerUUID){
         this.playerUUID = playerUUID;
     }
 
@@ -41,7 +41,7 @@ public class PRequestPlayerCents extends Packet<PRequestPlayerCents> {
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PRequestPlayerCents, PacketBuffer> getEncoder() {
+    BiConsumer<PlayerCentsReqPacket, PacketBuffer> getEncoder() {
         return (packet, buffer) -> writeString(packet.playerUUID, buffer);
     }
 
@@ -49,8 +49,8 @@ public class PRequestPlayerCents extends Packet<PRequestPlayerCents> {
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PRequestPlayerCents> getDecoder() {
-        return (buffer) -> new PRequestPlayerCents(readString(buffer));
+    Function<PacketBuffer, PlayerCentsReqPacket> getDecoder() {
+        return (buffer) -> new PlayerCentsReqPacket(readString(buffer));
     }
 
     /**
@@ -59,7 +59,7 @@ public class PRequestPlayerCents extends Packet<PRequestPlayerCents> {
      * Sends back the players cents balance in a new packet.
      */
     @Override
-    BiConsumer<PRequestPlayerCents, Supplier<NetworkEvent.Context>> getHandler() {
+    BiConsumer<PlayerCentsReqPacket, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
             try{
                 PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
@@ -75,7 +75,7 @@ public class PRequestPlayerCents extends Packet<PRequestPlayerCents> {
                 Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
                 send(
                         PacketDistributor.PLAYER.with(() -> ctx.get().getSender()),
-                        new PReceivePlayerCents(senderWallet.getCents())
+                        new PlayerCentsRecPacket(senderWallet.getCents())
                 );
             } catch (Exception e){
                 ShopperyMod.getNewLogger().error("Failed to send back player balance", e);

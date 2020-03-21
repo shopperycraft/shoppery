@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import net.minecraft.network.PacketBuffer;
@@ -148,7 +148,7 @@ public abstract class Packet<S extends Packet<S>> {
          * @param packet the given packet object instance.
          */
         @SuppressWarnings("unchecked")
-        void register(Packet packet){
+        void register(@SuppressWarnings("rawtypes") Packet packet){
             handler.registerMessage(
                     lastID++, packet.getClass(),
                     packet.getEncoder(), packet.getDecoder(), packet.getHandler()
@@ -183,20 +183,20 @@ public abstract class Packet<S extends Packet<S>> {
         & registration.
      */
     static {
-        MANAGER.register(new PRequestFormattedPlayerBalance(null));
-        MANAGER.register(new PReceiveFormattedPlayerBalance(null));
+        MANAGER.register(new FormattedBalanceReqPacket(null));
+        MANAGER.register(new FormattedBalanceRecPacket(null));
 
-        MANAGER.register(new PRequestFullPlayerBalance(null));
-        MANAGER.register(new PReceiveFullPlayerBalance(null));
+        MANAGER.register(new FullBalanceReqPacket(null));
+        MANAGER.register(new FullBalanceRecPacket(null));
 
-        MANAGER.register(new PRequestPlayerBalance(null));
-        MANAGER.register(new PReceivePlayerBalance(0));
+        MANAGER.register(new PlayerBalanceReqPacket(null));
+        MANAGER.register(new PlayerBalanceRecPacket(0));
 
-        MANAGER.register(new PRequestPlayerCents(null));
-        MANAGER.register(new PReceivePlayerCents((byte)0));
+        MANAGER.register(new PlayerCentsReqPacket(null));
+        MANAGER.register(new PlayerCentsRecPacket((byte)0));
 
-        MANAGER.register(new PRequestInventoryDeposit(null));
-
-        MANAGER.register(new PRequestMoney(null, false, 0));
+        MANAGER.register(new InventoryDepositPacket(null));
+        MANAGER.register(new MoneyWithdrawPacket(null, false, 0));
+        MANAGER.register(new PlayerMessagePacket(null, null, null));
     }
 }

@@ -1,14 +1,15 @@
 package com.ki11erwolf.shoppery.command;
 
+import com.ki11erwolf.shoppery.packets.PlayerMessagePacket;
+import com.ki11erwolf.shoppery.util.LocaleDomains;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 /**
  * Used to list commands and get information on
  * specific commands.
  */
-class CmdShoppery extends Command {
+class ShopperyCommand extends Command {
 
     /**
      * Name of the command.
@@ -18,7 +19,7 @@ class CmdShoppery extends Command {
     /**
      * Shoppery command constructor.
      */
-    CmdShoppery() {
+    ShopperyCommand() {
         super(NAME);
     }
 
@@ -38,21 +39,28 @@ class CmdShoppery extends Command {
     @Override
     void onCommandCalled(String[] arguments, PlayerEntity player, World world) {
         if(arguments.length == 0){
-            StringBuilder message = new StringBuilder(getLocalizedMessage("help_message"));
+            localeMessage(player, "help_message");
 
-            message.append("\n\n").append(getLocalizedMessage("commands"));
-
-            forEach((s, command) -> message
-                    .append(command.getUsage()).append(TextFormatting.WHITE).append(" - ")
-                    .append(command.getDescription()).append("\n"));
-            message(player, message.toString());
+            forEach((s, command) -> {
+                PlayerMessagePacket.send(
+                        player, LocaleDomains.COMMAND.sub(LocaleDomains.USAGE), command.getName()
+                );
+                PlayerMessagePacket.send(
+                        player, LocaleDomains.COMMAND.sub(LocaleDomains.DESCRIPTION), command.getName()
+                );
+            });
         } else {
             Command cmd = get(arguments[0].toLowerCase());
 
             if(cmd == null){
-                message(player, getLocalizedMessage("command_not_found"));
+                localeMessage(player, "command_not_found");
             } else {
-                message(player, cmd.getUsage() + TextFormatting.WHITE + " - " + cmd.getDescription());
+                PlayerMessagePacket.send(
+                        player, LocaleDomains.COMMAND.sub(LocaleDomains.USAGE), cmd.getName()
+                );
+                PlayerMessagePacket.send(
+                        player, LocaleDomains.COMMAND.sub(LocaleDomains.DESCRIPTION), cmd.getName()
+                );
             }
         }
     }
@@ -75,5 +83,15 @@ class CmdShoppery extends Command {
     @Override
     boolean checkArguments(String[] args){
         return args.length <= 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    void localeMessage(PlayerEntity playerEntity, String identifier, Object... params){
+        PlayerMessagePacket.send(
+                playerEntity, Command.COMMAND_MESSAGES.sub(() -> "shopperycraft"), identifier, params
+        );
     }
 }

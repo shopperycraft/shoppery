@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * Receives the balance of the clients EntityPlayer sent by
  * the server and caches it.
  */
-public class PReceivePlayerCents extends Packet<PReceivePlayerCents> {
+public class PlayerCentsRecPacket extends Packet<PlayerCentsRecPacket> {
 
     /**
      * The cents balance contained in the last
@@ -30,7 +30,7 @@ public class PReceivePlayerCents extends Packet<PReceivePlayerCents> {
      *
      * @param cents the cents balance of the player.
      */
-    PReceivePlayerCents(byte cents){
+    PlayerCentsRecPacket(byte cents){
         this.cents = cents;
     }
 
@@ -38,7 +38,7 @@ public class PReceivePlayerCents extends Packet<PReceivePlayerCents> {
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PReceivePlayerCents, PacketBuffer> getEncoder() {
+    BiConsumer<PlayerCentsRecPacket, PacketBuffer> getEncoder() {
         return (packet, buffer) -> buffer.writeByte(packet.cents);
     }
 
@@ -46,8 +46,8 @@ public class PReceivePlayerCents extends Packet<PReceivePlayerCents> {
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PReceivePlayerCents> getDecoder() {
-        return (buffer -> new PReceivePlayerCents(buffer.readByte()));
+    Function<PacketBuffer, PlayerCentsRecPacket> getDecoder() {
+        return (buffer -> new PlayerCentsRecPacket(buffer.readByte()));
     }
 
     /**
@@ -56,7 +56,7 @@ public class PReceivePlayerCents extends Packet<PReceivePlayerCents> {
      * Caches the cents balance in the received packet.
      */
     @Override
-    BiConsumer<PReceivePlayerCents, Supplier<NetworkEvent.Context>> getHandler() {
+    BiConsumer<PlayerCentsRecPacket, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> lastReceivedBalance = packet.cents);
     }
 

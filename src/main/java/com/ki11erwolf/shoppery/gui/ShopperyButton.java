@@ -1,7 +1,9 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.network.packets.*;
+import com.ki11erwolf.shoppery.packets.FormattedBalanceRecPacket;
+import com.ki11erwolf.shoppery.packets.FormattedBalanceReqPacket;
+import com.ki11erwolf.shoppery.packets.Packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -196,7 +198,7 @@ public abstract class ShopperyButton extends ImageButton {
             }
 
             //First request balance, for button.
-            Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(
+            Packet.send(PacketDistributor.SERVER.noArg(), new FormattedBalanceReqPacket(
                     player.getUniqueID().toString()
             ));
 
@@ -228,12 +230,12 @@ public abstract class ShopperyButton extends ImageButton {
             protected String getShortenedBalance() {
                 if(lastSBalanceRequestTime < System.currentTimeMillis()){
                     lastSBalanceRequestTime = System.currentTimeMillis() + requestWaitTime;
-                    Packet.send(PacketDistributor.SERVER.noArg(), new PRequestFormattedPlayerBalance(
+                    Packet.send(PacketDistributor.SERVER.noArg(), new FormattedBalanceReqPacket(
                             player.getUniqueID().toString()
                     ));
                 }
 
-                return PReceiveFormattedPlayerBalance.getLastKnownBalance();
+                return FormattedBalanceRecPacket.getLastKnownBalance();
             }
         };
     }

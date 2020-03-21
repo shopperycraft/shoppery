@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * This packet will intercept itself and send back
  * the requested balance when received.
  */
-public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlayerBalance> {
+public class FormattedBalanceReqPacket extends Packet<FormattedBalanceReqPacket> {
 
     /**
      * The player requesting their balance.
@@ -32,7 +32,7 @@ public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlay
     /**
      * @param playerUUID the player requesting their balance.
      */
-    public PRequestFormattedPlayerBalance(String playerUUID){
+    public FormattedBalanceReqPacket(String playerUUID){
         this.playerUUID = playerUUID;
     }
 
@@ -43,7 +43,7 @@ public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlay
      * @param msg given packet.
      * @param buf given buffer.
      */
-    private static void encode(PRequestFormattedPlayerBalance msg, PacketBuffer buf){
+    private static void encode(FormattedBalanceReqPacket msg, PacketBuffer buf){
         writeString(msg.playerUUID, buf);
     }
 
@@ -54,8 +54,8 @@ public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlay
      * @param buf the given buffer.
      * @return the created packet.
      */
-    private static PRequestFormattedPlayerBalance decode(PacketBuffer buf){
-        return new PRequestFormattedPlayerBalance(readString(buf));
+    private static FormattedBalanceReqPacket decode(PacketBuffer buf){
+        return new FormattedBalanceReqPacket(readString(buf));
     }
 
     /**
@@ -64,7 +64,7 @@ public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlay
      * @param message the received packet.
      * @param ctx the sender.
      */
-    private static void handle(final PRequestFormattedPlayerBalance message, Supplier<NetworkEvent.Context> ctx){
+    private static void handle(final FormattedBalanceReqPacket message, Supplier<NetworkEvent.Context> ctx){
         handle(ctx, () -> {
             try{
                 PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
@@ -80,7 +80,7 @@ public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlay
                 Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
                 send(
                         PacketDistributor.PLAYER.with(() -> ctx.get().getSender()),
-                        new PReceiveFormattedPlayerBalance(senderWallet.getShortenedBalance())
+                        new FormattedBalanceRecPacket(senderWallet.getShortenedBalance())
                 );
             } catch (Exception e){
                 ShopperyMod.getNewLogger().error("Failed to send back player balance", e);
@@ -92,23 +92,23 @@ public class PRequestFormattedPlayerBalance extends Packet<PRequestFormattedPlay
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PRequestFormattedPlayerBalance, PacketBuffer> getEncoder() {
-        return PRequestFormattedPlayerBalance::encode;
+    BiConsumer<FormattedBalanceReqPacket, PacketBuffer> getEncoder() {
+        return FormattedBalanceReqPacket::encode;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PRequestFormattedPlayerBalance> getDecoder() {
-        return PRequestFormattedPlayerBalance::decode;
+    Function<PacketBuffer, FormattedBalanceReqPacket> getDecoder() {
+        return FormattedBalanceReqPacket::decode;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PRequestFormattedPlayerBalance, Supplier<NetworkEvent.Context>> getHandler() {
-        return PRequestFormattedPlayerBalance::handle;
+    BiConsumer<FormattedBalanceReqPacket, Supplier<NetworkEvent.Context>> getHandler() {
+        return FormattedBalanceReqPacket::handle;
     }
 }

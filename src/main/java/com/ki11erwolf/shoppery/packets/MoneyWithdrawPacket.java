@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
@@ -21,7 +21,7 @@ import java.util.function.Supplier;
  * coin/note in the players inventory provided they have
  * enough funds.
  */
-public class PRequestMoney extends Packet<PRequestMoney> {
+public class MoneyWithdrawPacket extends Packet<MoneyWithdrawPacket> {
 
     /**
      * The player who's requesting the money.
@@ -47,7 +47,7 @@ public class PRequestMoney extends Packet<PRequestMoney> {
      * if it's a coin item.
      * @param amount The worth of the coin/note.
      */
-    public PRequestMoney(String playerUUID, boolean isNote, int amount){
+    public MoneyWithdrawPacket(String playerUUID, boolean isNote, int amount){
         this.playerUUID = playerUUID;
         this.isNote = isNote;
         this.amount = amount;
@@ -57,7 +57,7 @@ public class PRequestMoney extends Packet<PRequestMoney> {
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PRequestMoney, PacketBuffer> getEncoder() {
+    BiConsumer<MoneyWithdrawPacket, PacketBuffer> getEncoder() {
         return (packet, buffer) -> {
             writeString(packet.playerUUID, buffer);
             buffer.writeBoolean(packet.isNote);
@@ -69,8 +69,8 @@ public class PRequestMoney extends Packet<PRequestMoney> {
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PRequestMoney> getDecoder() {
-        return (buffer) -> new PRequestMoney(readString(buffer), buffer.readBoolean(), buffer.readInt());
+    Function<PacketBuffer, MoneyWithdrawPacket> getDecoder() {
+        return (buffer) -> new MoneyWithdrawPacket(readString(buffer), buffer.readBoolean(), buffer.readInt());
     }
 
     /**
@@ -80,7 +80,7 @@ public class PRequestMoney extends Packet<PRequestMoney> {
      * provided they have enough funds.
      */
     @Override
-    BiConsumer<PRequestMoney, Supplier<NetworkEvent.Context>> getHandler() {
+    BiConsumer<MoneyWithdrawPacket, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
             PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
                     .getPlayerList().getPlayerByUUID(UUID.fromString(packet.playerUUID));

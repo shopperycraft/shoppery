@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * Retrieves the players {@code long balance} from the sending
  * server and caches it.
  */
-public class PReceivePlayerBalance extends Packet<PReceivePlayerBalance> {
+public class PlayerBalanceRecPacket extends Packet<PlayerBalanceRecPacket> {
 
     /**
      * The last received player long balance.
@@ -32,7 +32,7 @@ public class PReceivePlayerBalance extends Packet<PReceivePlayerBalance> {
      *                when sending/receiving the
      *                packet.
      */
-    PReceivePlayerBalance(long balance){
+    PlayerBalanceRecPacket(long balance){
         this.balance = balance;
     }
 
@@ -40,7 +40,7 @@ public class PReceivePlayerBalance extends Packet<PReceivePlayerBalance> {
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PReceivePlayerBalance, PacketBuffer> getEncoder() {
+    BiConsumer<PlayerBalanceRecPacket, PacketBuffer> getEncoder() {
         return (packet, buffer) -> buffer.writeLong(packet.balance);
     }
 
@@ -48,15 +48,15 @@ public class PReceivePlayerBalance extends Packet<PReceivePlayerBalance> {
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PReceivePlayerBalance> getDecoder() {
-        return (buffer -> new PReceivePlayerBalance(buffer.readLong()));
+    Function<PacketBuffer, PlayerBalanceRecPacket> getDecoder() {
+        return (buffer -> new PlayerBalanceRecPacket(buffer.readLong()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PReceivePlayerBalance, Supplier<NetworkEvent.Context>> getHandler() {
+    BiConsumer<PlayerBalanceRecPacket, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> lastReceivedBalance = packet.balance);
     }
 

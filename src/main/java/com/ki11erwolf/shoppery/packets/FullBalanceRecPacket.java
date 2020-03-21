@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import com.ki11erwolf.shoppery.bank.Wallet;
 import net.minecraft.network.PacketBuffer;
@@ -14,10 +14,10 @@ import java.util.function.Supplier;
  *
  * This class saves the last received full balance so it can
  * be retrieved easily, however, it is recommended a
- * {@link PRequestFullPlayerBalance} is sent to keep
+ * {@link FullBalanceReqPacket} is sent to keep
  * the balance in sync before retrieving the balance.
  */
-public class PReceiveFullPlayerBalance extends Packet<PReceiveFullPlayerBalance> {
+public class FullBalanceRecPacket extends Packet<FullBalanceRecPacket> {
 
     /**
      * The full balance given from the last
@@ -34,7 +34,7 @@ public class PReceiveFullPlayerBalance extends Packet<PReceiveFullPlayerBalance>
     /**
      * @param fullBalance The players full balance.
      */
-    PReceiveFullPlayerBalance(String fullBalance){
+    FullBalanceRecPacket(String fullBalance){
         this.fullBalance = fullBalance;
     }
 
@@ -45,7 +45,7 @@ public class PReceiveFullPlayerBalance extends Packet<PReceiveFullPlayerBalance>
      * @param msg given packet.
      * @param buf given buffer.
      */
-    private static void encode(PReceiveFullPlayerBalance msg, PacketBuffer buf){
+    private static void encode(FullBalanceRecPacket msg, PacketBuffer buf){
         writeString(msg.fullBalance, buf);
     }
 
@@ -56,8 +56,8 @@ public class PReceiveFullPlayerBalance extends Packet<PReceiveFullPlayerBalance>
      * @param buf the given buffer.
      * @return the created packet.
      */
-    private static PReceiveFullPlayerBalance decode(PacketBuffer buf){
-        return new PReceiveFullPlayerBalance(readString(buf));
+    private static FullBalanceRecPacket decode(PacketBuffer buf){
+        return new FullBalanceRecPacket(readString(buf));
     }
 
     /**
@@ -67,7 +67,7 @@ public class PReceiveFullPlayerBalance extends Packet<PReceiveFullPlayerBalance>
      * @param message the received packet.
      * @param ctx the sender.
      */
-    private static void handle(final PReceiveFullPlayerBalance message, Supplier<NetworkEvent.Context> ctx){
+    private static void handle(final FullBalanceRecPacket message, Supplier<NetworkEvent.Context> ctx){
         handle(ctx, () -> lastReceivedBalance = message.fullBalance);
     }
 
@@ -84,23 +84,23 @@ public class PReceiveFullPlayerBalance extends Packet<PReceiveFullPlayerBalance>
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PReceiveFullPlayerBalance, PacketBuffer> getEncoder() {
-        return PReceiveFullPlayerBalance::encode;
+    BiConsumer<FullBalanceRecPacket, PacketBuffer> getEncoder() {
+        return FullBalanceRecPacket::encode;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PReceiveFullPlayerBalance> getDecoder() {
-        return PReceiveFullPlayerBalance::decode;
+    Function<PacketBuffer, FullBalanceRecPacket> getDecoder() {
+        return FullBalanceRecPacket::decode;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PReceiveFullPlayerBalance, Supplier<NetworkEvent.Context>> getHandler() {
-        return PReceiveFullPlayerBalance::handle;
+    BiConsumer<FullBalanceRecPacket, Supplier<NetworkEvent.Context>> getHandler() {
+        return FullBalanceRecPacket::handle;
     }
 }

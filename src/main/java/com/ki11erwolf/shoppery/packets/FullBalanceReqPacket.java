@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * This packet will intercept itself and send back
  * the requested balance when received.
  */
-public class PRequestFullPlayerBalance extends Packet<PRequestFullPlayerBalance> {
+public class FullBalanceReqPacket extends Packet<FullBalanceReqPacket> {
 
     /**
      * The player requesting their balance.
@@ -32,7 +32,7 @@ public class PRequestFullPlayerBalance extends Packet<PRequestFullPlayerBalance>
     /**
      * @param playerUUID the player requesting their balance.
      */
-    public PRequestFullPlayerBalance(String playerUUID){
+    public FullBalanceReqPacket(String playerUUID){
         this.playerUUID = playerUUID;
     }
 
@@ -43,7 +43,7 @@ public class PRequestFullPlayerBalance extends Packet<PRequestFullPlayerBalance>
      * @param msg given packet.
      * @param buf given buffer.
      */
-    private static void encode(PRequestFullPlayerBalance msg, PacketBuffer buf){
+    private static void encode(FullBalanceReqPacket msg, PacketBuffer buf){
         writeString(msg.playerUUID, buf);
     }
 
@@ -54,8 +54,8 @@ public class PRequestFullPlayerBalance extends Packet<PRequestFullPlayerBalance>
      * @param buf the given buffer.
      * @return the created packet.
      */
-    private static PRequestFullPlayerBalance decode(PacketBuffer buf){
-        return new PRequestFullPlayerBalance(readString(buf));
+    private static FullBalanceReqPacket decode(PacketBuffer buf){
+        return new FullBalanceReqPacket(readString(buf));
     }
 
     /**
@@ -64,7 +64,7 @@ public class PRequestFullPlayerBalance extends Packet<PRequestFullPlayerBalance>
      * @param message the received packet.
      * @param ctx the sender.
      */
-    private static void handle(final PRequestFullPlayerBalance message, Supplier<NetworkEvent.Context> ctx){
+    private static void handle(final FullBalanceReqPacket message, Supplier<NetworkEvent.Context> ctx){
         handle(ctx, () -> {
             try{
                 PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())
@@ -80,7 +80,7 @@ public class PRequestFullPlayerBalance extends Packet<PRequestFullPlayerBalance>
                 Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
                 send(
                         PacketDistributor.PLAYER.with(() -> ctx.get().getSender()),
-                        new PReceiveFullPlayerBalance(senderWallet.getFullBalance(false))
+                        new FullBalanceRecPacket(senderWallet.getFullBalance(false))
                 );
             } catch (Exception e){
                 ShopperyMod.getNewLogger().error("Failed to send back player balance", e);
@@ -92,23 +92,23 @@ public class PRequestFullPlayerBalance extends Packet<PRequestFullPlayerBalance>
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PRequestFullPlayerBalance, PacketBuffer> getEncoder() {
-        return PRequestFullPlayerBalance::encode;
+    BiConsumer<FullBalanceReqPacket, PacketBuffer> getEncoder() {
+        return FullBalanceReqPacket::encode;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PRequestFullPlayerBalance> getDecoder() {
-        return PRequestFullPlayerBalance::decode;
+    Function<PacketBuffer, FullBalanceReqPacket> getDecoder() {
+        return FullBalanceReqPacket::decode;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PRequestFullPlayerBalance, Supplier<NetworkEvent.Context>> getHandler() {
-        return PRequestFullPlayerBalance::handle;
+    BiConsumer<FullBalanceReqPacket, Supplier<NetworkEvent.Context>> getHandler() {
+        return FullBalanceReqPacket::handle;
     }
 }

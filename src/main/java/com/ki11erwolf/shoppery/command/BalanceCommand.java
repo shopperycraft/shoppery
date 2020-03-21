@@ -9,7 +9,7 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 /**
  * Displays the players balance in chat.
  */
-class CmdBalance extends Command{
+class BalanceCommand extends Command{
 
     /**
      * The command name.
@@ -19,7 +19,7 @@ class CmdBalance extends Command{
     /**
      * Creates a new command.
      */
-    CmdBalance() {
+    BalanceCommand() {
         super(NAME);
     }
 
@@ -40,22 +40,21 @@ class CmdBalance extends Command{
         if(arguments.length == 0){
             //Creative check
             if(player.isCreative()){
-                message(player, formatLocalizedMessage(
-                        "balance", getLocalizedMessage("infinite_balance")
-                ));
+                localeMessage(player, "balance_infinite");
                 return;
             }
 
             //Balance message
             Wallet wallet = BankManager._getWallet(world, player);
-            message(player, formatLocalizedMessage("balance", wallet.getShortenedBalance()));
+            localeMessage(player, "balance", wallet.getShortenedBalance());
         }
 
         //Named player balance check.
         if (arguments.length == 1){
             //Permission check.
             if(!(player.hasPermissionLevel(ServerLifecycleHooks.getCurrentServer().getOpPermissionLevel()))){
-                message(player, getLocalizedMessage("not_op"));
+                localeMessage(player, "not_op");
+                return;
             }
 
             //Get player
@@ -65,15 +64,13 @@ class CmdBalance extends Command{
 
             //Check player
             if(target == null){
-                message(player, formatLocalizedMessage(
-                        "player_not_found", playerName)
-                );
+                localeMessage(player, "player_not_found", playerName);
                 return;
             }
 
             //Balance
-            message(player, formatLocalizedMessage("balance_op", target.getName().getString(),
-                    BankManager._getBank(world).getWallet(target).getShortenedBalance())
+            localeMessage(player, "balance_op", target.getName().getString(),
+                    BankManager._getBank(world).getWallet(target).getShortenedBalance()
             );
         }
     }

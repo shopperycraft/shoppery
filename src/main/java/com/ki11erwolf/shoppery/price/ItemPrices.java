@@ -20,7 +20,7 @@ public class ItemPrices {
      * List/Map initial capacities.
      */
     //The amount of entries in shoppery-prices.json basically.
-    public static final int minExpectedNumberOfEntries = 435;
+    public static final int minExpectedNumberOfEntries = 600;
 
     /**Private constructor.*/
     private ItemPrices(){}

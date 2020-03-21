@@ -13,12 +13,12 @@ import net.minecraft.world.World;
  * Command (/price) that allows players to check
  * the price of the item they're holding.
  */
-class CmdPrice extends Command{
+class PriceCommand extends Command{
 
     /**
      * Creates the command object with name (/price).
      */
-    CmdPrice() {
+    PriceCommand() {
         super("price");
     }
 
@@ -50,27 +50,26 @@ class CmdPrice extends Command{
             heldItem = playerEntity.getHeldItemOffhand();
 
         if(heldItem.getItem() == Items.AIR){
-            message(playerEntity, getLocalizedMessage("no_item"));
+            localeMessage(playerEntity, "no_item");
             return;
         }
 
         ItemPrice price = ItemPrices.getPrice(heldItem);
 
         if(price == null)
-            message(playerEntity, getLocalizedMessage("no_price"));
+            localeMessage(playerEntity, "no_price");
         else
-            message(playerEntity, formatLocalizedMessage(
-                    "price",
+            localeMessage(playerEntity, "price",
                     price.getItem(), ((price.allowsBuying())
-                            ? ShopperyConfig.GENERAL_CONFIG .getCategory(General.class)
+                            ? ShopperyConfig.GENERAL_CONFIG.getCategory(General.class)
                             .getCurrencySymbol() + price.getBuyPrice()
-                            : getLocalizedMessage("buy_prohibited")),
+                            : "-1"),
                     ((price.allowsSelling())
-                            ? ShopperyConfig.GENERAL_CONFIG .getCategory(General.class)
+                            ? ShopperyConfig.GENERAL_CONFIG.getCategory(General.class)
                             .getCurrencySymbol() + price.getSellPrice()
-                            : getLocalizedMessage("sell_prohibited")),
+                            : "-1"),
                     price.getPriceFluctuation()
-            ));
+            );
     }
 
 

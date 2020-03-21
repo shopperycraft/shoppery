@@ -1,18 +1,20 @@
 package com.ki11erwolf.shoppery.command;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.packets.PlayerMessagePacket;
 import com.ki11erwolf.shoppery.util.LocaleDomain;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
@@ -40,7 +42,7 @@ public abstract class Command {
      * The locale domain that holds all general messages
      * related to commands.
      */
-    private static final LocaleDomain COMMAND_MESSAGES
+    protected static final LocaleDomain COMMAND_MESSAGES
             = LocaleDomains.COMMAND.sub(LocaleDomains.MESSAGE);
 
     //**************************
@@ -50,27 +52,27 @@ public abstract class Command {
     /**
      * Instance of the pay command.
      */
-    public static final CmdPay PAY_COMMAND;
+    public static final PayCommand PAY_COMMAND;
 
     /**
      * Instance of the shoppery command.
      */
-    public static final CmdShoppery SHOPPERY_COMMAND;
+    public static final ShopperyCommand SHOPPERY_COMMAND;
 
     /**
      * Instance of the money command.
      */
-    public static final CmdMoney MONEY_COMMAND;
+    public static final MoneyCommand MONEY_COMMAND;
 
     /**
      * Instance of the balance command.
      */
-    public static final CmdBalance BALANCE_COMMAND;
+    public static final BalanceCommand BALANCE_COMMAND;
 
     /**
      * Instance of the price command.
      */
-    public static final CmdPrice PRICE_COMMAND;
+    public static final PriceCommand PRICE_COMMAND;
 
     //*******
     // Logic
@@ -97,6 +99,10 @@ public abstract class Command {
 
         this.name = commandName;
         CommandListener.COMMAND_MAP.put(commandName.toLowerCase(), this);
+    }
+
+    String getName(){
+        return name;
     }
 
     /**
@@ -141,30 +147,17 @@ public abstract class Command {
      */
     abstract boolean canExecute(PlayerEntity player, World world);
 
-    // **************
-    // Locale Methods
-    // **************
-
     /**
-     * @return Should return a string showing
-     * how to use the command. This is normally
-     * done by the base class ({@link Command}),
-     * using localization, however, the implementing
-     * command class is free to override it.
+     * Utility method used to send a localized message under
+     * the command messages domain to a player from the
+     * server side executed command.
+     *
+     * @param playerEntity the player to send the message to.
+     * @param identifier the messages identifier.
+     * @param params the formatting parameters.
      */
-    String getUsage(){
-        return COMMAND_USAGES.get(this.name);
-    }
-
-    /**
-     * @return Should return a string describing
-     * what the command does. This is normally
-     * done by the base class ({@link Command}),
-     * using localization, however, the implementing
-     * command class is free to override it.
-     */
-    String getDescription(){
-        return COMMAND_DESCRIPTIONS.get(this.name);
+    void localeMessage(PlayerEntity playerEntity, String identifier, Object... params){
+        PlayerMessagePacket.send(playerEntity, COMMAND_MESSAGES.sub(() -> name), identifier, params);
     }
 
     /**
@@ -185,30 +178,6 @@ public abstract class Command {
      */
     static void forEach(BiConsumer<String, Command> action){
         CommandListener.COMMAND_MAP.forEach(action);
-    }
-
-    /**
-     * Allows getting a specific named localized message
-     * for a command.
-     *
-     * @param messageIdentifier the message identifier.
-     * @return the localized message or the message identifier
-     * if no translated message exists.
-     */
-    String getLocalizedMessage(String messageIdentifier){
-        return COMMAND_MESSAGES.sub(() -> name).get(messageIdentifier);
-    }
-
-    /**
-     * Allows getting and formatting a specific named
-     * localized message for a command.
-     *
-     * @param messageIdentifier the message identifier.
-     * @return the localized message or the message identifier
-     * if no translated message exists.
-     */
-    String formatLocalizedMessage(String messageIdentifier, Object... params){
-        return COMMAND_MESSAGES.sub(() -> name).format(messageIdentifier, params);
     }
 
     /**
@@ -274,8 +243,11 @@ public abstract class Command {
                     LOGGER.info("Calling command: " + event.getParseResults().getReader().getString());
 
                     if(!command.checkArguments(args)){
-                        message(player,
-                                command.getUsage() + TextFormatting.WHITE + " - " + command.getDescription()
+                        PlayerMessagePacket.send(
+                                player, LocaleDomains.COMMAND.sub(LocaleDomains.USAGE), command.getName()
+                        );
+                        PlayerMessagePacket.send(
+                                player, LocaleDomains.COMMAND.sub(LocaleDomains.DESCRIPTION), command.getName()
                         );
                         event.setCanceled(true);
                         return;
@@ -302,10 +274,10 @@ public abstract class Command {
         MinecraftForge.EVENT_BUS.register(CommandListener.INSTANCE);
 
         //Instance initialization.
-        PAY_COMMAND = new CmdPay();
-        SHOPPERY_COMMAND = new CmdShoppery();
-        MONEY_COMMAND = new CmdMoney();
-        BALANCE_COMMAND = new CmdBalance();
-        PRICE_COMMAND = new CmdPrice();
+        PAY_COMMAND = new PayCommand();
+        SHOPPERY_COMMAND = new ShopperyCommand();
+        MONEY_COMMAND = new MoneyCommand();
+        BALANCE_COMMAND = new BalanceCommand();
+        PRICE_COMMAND = new PriceCommand();
     }
 }

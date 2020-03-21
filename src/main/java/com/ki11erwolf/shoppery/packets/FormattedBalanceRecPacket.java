@@ -1,4 +1,4 @@
-package com.ki11erwolf.shoppery.network.packets;
+package com.ki11erwolf.shoppery.packets;
 
 import com.ki11erwolf.shoppery.bank.Wallet;
 import net.minecraft.network.PacketBuffer;
@@ -14,10 +14,10 @@ import java.util.function.Supplier;
  *
  * This class saves the last received balance so it can
  * be retrieved easily, however, it is recommended a
- * {@link PRequestFormattedPlayerBalance} is sent to keep
+ * {@link FormattedBalanceReqPacket} is sent to keep
  * the balance in sync before retrieving the balance.
  */
-public class PReceiveFormattedPlayerBalance extends Packet<PReceiveFormattedPlayerBalance> {
+public class FormattedBalanceRecPacket extends Packet<FormattedBalanceRecPacket> {
 
     /**
      * The formatted balance given from the last
@@ -34,7 +34,7 @@ public class PReceiveFormattedPlayerBalance extends Packet<PReceiveFormattedPlay
     /**
      * @param formattedBalance The players formatted balance.
      */
-    PReceiveFormattedPlayerBalance(String formattedBalance){
+    FormattedBalanceRecPacket(String formattedBalance){
         this.formattedBalance = formattedBalance;
     }
 
@@ -45,7 +45,7 @@ public class PReceiveFormattedPlayerBalance extends Packet<PReceiveFormattedPlay
      * @param msg given packet.
      * @param buf given buffer.
      */
-    private static void encode(PReceiveFormattedPlayerBalance msg, PacketBuffer buf){
+    private static void encode(FormattedBalanceRecPacket msg, PacketBuffer buf){
         writeString(msg.formattedBalance, buf);
     }
 
@@ -56,8 +56,8 @@ public class PReceiveFormattedPlayerBalance extends Packet<PReceiveFormattedPlay
      * @param buf the given buffer.
      * @return the created packet.
      */
-    private static PReceiveFormattedPlayerBalance decode(PacketBuffer buf){
-        return new PReceiveFormattedPlayerBalance(readString(buf));
+    private static FormattedBalanceRecPacket decode(PacketBuffer buf){
+        return new FormattedBalanceRecPacket(readString(buf));
     }
 
     /**
@@ -67,7 +67,7 @@ public class PReceiveFormattedPlayerBalance extends Packet<PReceiveFormattedPlay
      * @param message the received packet.
      * @param ctx the sender.
      */
-    private static void handle(final PReceiveFormattedPlayerBalance message, Supplier<NetworkEvent.Context> ctx){
+    private static void handle(final FormattedBalanceRecPacket message, Supplier<NetworkEvent.Context> ctx){
         handle(ctx, () -> lastReceivedBalance = message.formattedBalance);
     }
 
@@ -84,23 +84,23 @@ public class PReceiveFormattedPlayerBalance extends Packet<PReceiveFormattedPlay
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PReceiveFormattedPlayerBalance, PacketBuffer> getEncoder() {
-        return PReceiveFormattedPlayerBalance::encode;
+    BiConsumer<FormattedBalanceRecPacket, PacketBuffer> getEncoder() {
+        return FormattedBalanceRecPacket::encode;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, PReceiveFormattedPlayerBalance> getDecoder() {
-        return PReceiveFormattedPlayerBalance::decode;
+    Function<PacketBuffer, FormattedBalanceRecPacket> getDecoder() {
+        return FormattedBalanceRecPacket::decode;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<PReceiveFormattedPlayerBalance, Supplier<NetworkEvent.Context>> getHandler() {
-        return PReceiveFormattedPlayerBalance::handle;
+    BiConsumer<FormattedBalanceRecPacket, Supplier<NetworkEvent.Context>> getHandler() {
+        return FormattedBalanceRecPacket::handle;
     }
 }

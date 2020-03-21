@@ -14,7 +14,7 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
  * another player given they have sufficient
  * funds.
  */
-class CmdPay extends Command{
+class PayCommand extends Command{
 
     /**
      * Name of the command.
@@ -24,7 +24,7 @@ class CmdPay extends Command{
     /**
      * Pay command constructor.
      */
-    CmdPay() {
+    PayCommand() {
         super(NAME);
     }
 
@@ -46,14 +46,14 @@ class CmdPay extends Command{
         String amount = arguments[1];
 
         if(player.isCreative()){
-            message(player, getLocalizedMessage("creative_mode"));
+            localeMessage(player, "creative_mode");
             return;
         }
 
         if(toPlayer != null){
             if(!player.getEntityWorld().getWorldInfo().getWorldName()
                     .equals(toPlayer.getEntityWorld().getWorld().getWorldInfo().getWorldName())){
-                message(player, getLocalizedMessage("world_mismatch"));
+                localeMessage(player, "world_mismatch");
                 return;
             }
 
@@ -63,25 +63,25 @@ class CmdPay extends Command{
             if(fromPlayerWallet.subtract(amount)){
                 try{
                     toPlayerWallet.add(amount);
-                    message(player, formatLocalizedMessage("received",
+                    localeMessage(player, "received",
                             player.getName().getString(), ShopperyConfig.GENERAL_CONFIG
-                                    .getCategory(General.class).getCurrencySymbol() + amount
-                    ));
-                    message(toPlayer, formatLocalizedMessage("paid",
+                            .getCategory(General.class).getCurrencySymbol() + amount
+                    );
+                    localeMessage(player, "paid",
                             ShopperyConfig.GENERAL_CONFIG
-                                    .getCategory(General.class).getCurrencySymbol()
-                                    + amount, player.getName().getString()
-                    ));
+                            .getCategory(General.class).getCurrencySymbol()
+                            + amount, player.getName().getString()
+                    );
                 } catch (NumberFormatException e){
-                    message(player, getLocalizedMessage("format_error"));
+                    localeMessage(player, "format_error");
                     ShopperyMod.getNewLogger().warn("Number format exception: " + amount, e);
                 }
             } else {
-                message(player, getLocalizedMessage("insufficient_funds"));
+                localeMessage(player, "insufficient_funds");
             }
 
         } else {
-            message(player, formatLocalizedMessage("player_not_found", arguments[0]));
+            localeMessage(player, "player_not_found", arguments[0]);
         }
     }
 

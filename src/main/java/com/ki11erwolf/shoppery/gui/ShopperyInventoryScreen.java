@@ -2,9 +2,9 @@ package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.config.ShopperyConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
-import com.ki11erwolf.shoppery.network.packets.PReceiveFullPlayerBalance;
-import com.ki11erwolf.shoppery.network.packets.PRequestFullPlayerBalance;
-import com.ki11erwolf.shoppery.network.packets.Packet;
+import com.ki11erwolf.shoppery.packets.FullBalanceRecPacket;
+import com.ki11erwolf.shoppery.packets.FullBalanceReqPacket;
+import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
@@ -194,13 +194,13 @@ public class ShopperyInventoryScreen extends InventoryScreen {
         if(System.currentTimeMillis() > lastPktSendTime + 250 /*Time between*/ || lastPktSendTime == -1){
             Packet.send(
                     PacketDistributor.SERVER.noArg(),
-                    new PRequestFullPlayerBalance(player.getUniqueID().toString())
+                    new FullBalanceReqPacket(player.getUniqueID().toString())
             );
             lastPktSendTime = System.currentTimeMillis();
         }
 
-        return PReceiveFullPlayerBalance.getLastKnownBalance() == null ?
-                ERROR_MESSAGE : PReceiveFullPlayerBalance.getLastKnownBalance();
+        return FullBalanceRecPacket.getLastKnownBalance() == null ?
+                ERROR_MESSAGE : FullBalanceRecPacket.getLastKnownBalance();
     }
 
     // ************

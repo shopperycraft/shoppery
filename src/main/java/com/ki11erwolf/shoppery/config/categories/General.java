@@ -2,6 +2,7 @@ package com.ki11erwolf.shoppery.config.categories;
 
 import com.ki11erwolf.shoppery.config.ConfigCategory;
 import com.ki11erwolf.shoppery.config.IntegerConfigValue;
+import com.ki11erwolf.shoppery.config.StringConfigValue;
 
 /**
  * Config category for general/miscellaneous
@@ -33,6 +34,17 @@ public class General extends ConfigCategory {
     );
 
     /**
+     * Config properties to allow changing the symbol Shoppery
+     * uses to represent its currency.
+     */
+    private final StringConfigValue currencySymbol = new StringConfigValue(
+            "currency symbol",
+            "The currency symbol ($, £, ¥, ect) Shoppery uses to represent its currency. " +
+                      "The symbol can be anything.",
+            "$", this
+    );
+
+    /**
      * Config category for general/miscellaneous
      * config settings.
      */
@@ -55,5 +67,13 @@ public class General extends ConfigCategory {
      */
     public int getStartingBalance(){
         return startingBalance.getValue();
+    }
+
+    /**
+     * @return the config defined symbol Shoppery
+     * uses to represent its currency.
+     */
+    public String getCurrencySymbol() {
+        return currencySymbol.getValue();
     }
 }

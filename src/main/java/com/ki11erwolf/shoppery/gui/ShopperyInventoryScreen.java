@@ -1,6 +1,7 @@
 package com.ki11erwolf.shoppery.gui;
 
-import com.ki11erwolf.shoppery.bank.Wallet;
+import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.network.packets.PReceiveFullPlayerBalance;
 import com.ki11erwolf.shoppery.network.packets.PRequestFullPlayerBalance;
 import com.ki11erwolf.shoppery.network.packets.Packet;
@@ -10,6 +11,8 @@ import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 /**
@@ -23,6 +26,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
  * the Money section as though it were our own GUI, without
  * interfering with the Vanilla survival inventory GUI.
  */
+@OnlyIn(Dist.CLIENT)
 public class ShopperyInventoryScreen extends InventoryScreen {
 
     /**
@@ -169,7 +173,8 @@ public class ShopperyInventoryScreen extends InventoryScreen {
         );
 
         //Balance
-        drawCenteredString(font, Wallet.CURRENCY_SYMBOL + getBalance(),
+        drawCenteredString(font, ShopperyConfig.GENERAL_CONFIG
+                        .getCategory(General.class).getCurrencySymbol() + getBalance(),
                 X(70), Y(23), 0x00E500
         );
     }

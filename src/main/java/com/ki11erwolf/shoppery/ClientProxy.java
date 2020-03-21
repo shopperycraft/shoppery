@@ -1,5 +1,6 @@
 package com.ki11erwolf.shoppery;
 
+import com.ki11erwolf.shoppery.gui.ShopperyButton;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -21,7 +22,7 @@ public class ClientProxy extends ServerProxy {
      * {@inheritDoc}
      */
     @Override
-    public void doClientStuff(FMLClientSetupEvent event) {
-
+    public void clientOnlySetup(FMLClientSetupEvent event) {
+        ShopperyButton.init();
     }
 }

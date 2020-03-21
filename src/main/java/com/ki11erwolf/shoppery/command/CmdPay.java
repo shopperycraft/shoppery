@@ -3,8 +3,9 @@ package com.ki11erwolf.shoppery.command;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
+import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.categories.General;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
@@ -45,14 +46,14 @@ class CmdPay extends Command{
         String amount = arguments[1];
 
         if(player.isCreative()){
-            message(player, TextFormatting.RED + "Cannot use /pay in creative mode.");
+            message(player, getLocalizedMessage("creative_mode"));
             return;
         }
 
         if(toPlayer != null){
             if(!player.getEntityWorld().getWorldInfo().getWorldName()
                     .equals(toPlayer.getEntityWorld().getWorld().getWorldInfo().getWorldName())){
-                message(player, TextFormatting.RED + "Player must be in the same world as you.");
+                message(player, getLocalizedMessage("world_mismatch"));
                 return;
             }
 
@@ -62,28 +63,25 @@ class CmdPay extends Command{
             if(fromPlayerWallet.subtract(amount)){
                 try{
                     toPlayerWallet.add(amount);
-                    message(
-                            player,
-                            "Paid: " + TextFormatting.RED + "$" + amount +
-                                    TextFormatting.WHITE + " to " + TextFormatting.BLUE +
-                                    player.getName().getString()
-                    );
-                    message(
-                            toPlayer,
-                            TextFormatting.BLUE + player.getName().getString() +
-                                    TextFormatting.WHITE + " sent you: " +
-                                    TextFormatting.GREEN + "$" + amount
-                    );
+                    message(player, formatLocalizedMessage("received",
+                            player.getName().getString(), ShopperyConfig.GENERAL_CONFIG
+                                    .getCategory(General.class).getCurrencySymbol() + amount
+                    ));
+                    message(toPlayer, formatLocalizedMessage("paid",
+                            ShopperyConfig.GENERAL_CONFIG
+                                    .getCategory(General.class).getCurrencySymbol()
+                                    + amount, player.getName().getString()
+                    ));
                 } catch (NumberFormatException e){
-                    message(player, TextFormatting.RED + "Given amount is in invalid format: " + amount);
+                    message(player, getLocalizedMessage("format_error"));
                     ShopperyMod.getNewLogger().warn("Number format exception: " + amount, e);
                 }
             } else {
-                message(player, TextFormatting.RED + "Insufficient funds!");
+                message(player, getLocalizedMessage("insufficient_funds"));
             }
 
         } else {
-            message(player, TextFormatting.RED + "Player: " + arguments[0] + " not found.");
+            message(player, formatLocalizedMessage("player_not_found", arguments[0]));
         }
     }
 
@@ -109,22 +107,5 @@ class CmdPay extends Command{
     @Override
     boolean checkArguments(String[] arguments){
         return arguments.length == 2;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    String getUsage() {
-        return "/pay <Player Name> <Amount>";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    String getFunction() {
-        return "Pays the specified player the specified amount from " +
-                "your in-game funds, provided you have enough.";
     }
 }

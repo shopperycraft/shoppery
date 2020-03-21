@@ -1,6 +1,8 @@
 package com.ki11erwolf.shoppery.command;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.util.LocaleDomain;
+import com.ki11erwolf.shoppery.util.LocaleDomains;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -21,6 +23,25 @@ import java.util.function.BiConsumer;
  */
 @SuppressWarnings({"WeakerAccess", "StaticInitializerReferencesSubClass"})
 public abstract class Command {
+
+    /**
+     * The locale domain where all command usage messages are stored.
+     */
+    protected static final LocaleDomain COMMAND_USAGES =
+            LocaleDomains.COMMAND.sub(LocaleDomains.USAGE);
+
+    /**
+     * The locale domain where all command description messages are stored.
+     */
+    protected static final LocaleDomain COMMAND_DESCRIPTIONS =
+            LocaleDomains.COMMAND.sub(LocaleDomains.DESCRIPTION);
+
+    /**
+     * The locale domain that holds all general messages
+     * related to commands.
+     */
+    private static final LocaleDomain COMMAND_MESSAGES
+            = LocaleDomains.COMMAND.sub(LocaleDomains.MESSAGE);
 
     //**************************
     // Command Object Instances
@@ -46,6 +67,9 @@ public abstract class Command {
      */
     public static final CmdBalance BALANCE_COMMAND;
 
+    /**
+     * Instance of the price command.
+     */
     public static final CmdPrice PRICE_COMMAND;
 
     //*******
@@ -53,15 +77,25 @@ public abstract class Command {
     //*******
 
     /**
+     * The name of this command, which
+     * is also the name used to issue
+     * the command in chat.
+     */
+    private final String name;
+
+    /**
      * Creates a new command.
      *
-     * @param commandName the name the command is called by.
+     * @param commandName the name the command, which
+     *                    is also the name used to issue
+     *                    the command in chat.
      *                    Must be unique.
      */
     Command(String commandName){
         if(CommandListener.COMMAND_MAP.containsKey(commandName))
             throw new IllegalArgumentException("Duplicate command names cannot exist: " + commandName);
 
+        this.name = commandName;
         CommandListener.COMMAND_MAP.put(commandName.toLowerCase(), this);
     }
 
@@ -107,23 +141,37 @@ public abstract class Command {
      */
     abstract boolean canExecute(PlayerEntity player, World world);
 
+    // **************
+    // Locale Methods
+    // **************
+
     /**
      * @return Should return a string showing
-     * how to use the command.
+     * how to use the command. This is normally
+     * done by the base class ({@link Command}),
+     * using localization, however, the implementing
+     * command class is free to override it.
      */
-    abstract String getUsage();
+    String getUsage(){
+        return COMMAND_USAGES.get(this.name);
+    }
 
     /**
      * @return Should return a string describing
-     * what the command does.
+     * what the command does. This is normally
+     * done by the base class ({@link Command}),
+     * using localization, however, the implementing
+     * command class is free to override it.
      */
-    abstract String getFunction();
+    String getDescription(){
+        return COMMAND_DESCRIPTIONS.get(this.name);
+    }
 
     /**
      * Util method to send a player a message.
      *
      * @param player the player to send the message to.
-     * @param message the message.
+     * @param message the translated message or the identifier if no.
      */
     static void message(PlayerEntity player, String message){
         player.sendMessage(new StringTextComponent(message));
@@ -137,6 +185,30 @@ public abstract class Command {
      */
     static void forEach(BiConsumer<String, Command> action){
         CommandListener.COMMAND_MAP.forEach(action);
+    }
+
+    /**
+     * Allows getting a specific named localized message
+     * for a command.
+     *
+     * @param messageIdentifier the message identifier.
+     * @return the localized message or the message identifier
+     * if no translated message exists.
+     */
+    String getLocalizedMessage(String messageIdentifier){
+        return COMMAND_MESSAGES.sub(() -> name).get(messageIdentifier);
+    }
+
+    /**
+     * Allows getting and formatting a specific named
+     * localized message for a command.
+     *
+     * @param messageIdentifier the message identifier.
+     * @return the localized message or the message identifier
+     * if no translated message exists.
+     */
+    String formatLocalizedMessage(String messageIdentifier, Object... params){
+        return COMMAND_MESSAGES.sub(() -> name).format(messageIdentifier, params);
     }
 
     /**
@@ -202,11 +274,8 @@ public abstract class Command {
                     LOGGER.info("Calling command: " + event.getParseResults().getReader().getString());
 
                     if(!command.checkArguments(args)){
-                        message(
-                                player,
-                                TextFormatting.GREEN + "Usage: " + command.getUsage() +
-                                        TextFormatting.WHITE + " - " +
-                                        TextFormatting.BLUE + command.getFunction()
+                        message(player,
+                                command.getUsage() + TextFormatting.WHITE + " - " + command.getDescription()
                         );
                         event.setCanceled(true);
                         return;
@@ -214,7 +283,7 @@ public abstract class Command {
 
                     command.onCommandCalled(args, player, world);
                 } else {
-                    message(player, TextFormatting.RED + "You cannot use that command!");
+                    message(player, LocaleDomains.COMMAND.sub(LocaleDomains.MESSAGE).get("denied"));
                 }
 
                 event.setCanceled(true);

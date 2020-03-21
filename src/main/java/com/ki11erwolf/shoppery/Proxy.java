@@ -26,7 +26,7 @@ public interface Proxy {
      *
      * @param event forge provided event.
      */
-    default void doClientStuff(final FMLClientSetupEvent event){}
+    default void clientOnlySetup(final FMLClientSetupEvent event){}
 
     /**
      * InterModCommunication message send event.

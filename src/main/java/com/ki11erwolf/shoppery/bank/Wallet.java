@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.util.PlayerUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import org.apache.logging.log4j.Logger;
@@ -42,12 +44,6 @@ public class Wallet {
      * Original Library/Origin: Regex Buddy (https://www.regexbuddy.com/)
      */
     private static final String BALANCE_REGEX = "^[+-]?[0-9]{1,3}(?:,?[0-9]{3})*(?:\\.[0-9]{2})?$";
-
-    /**
-     * The symbol to represent the currency.
-     */
-    //TODO: Config? Fix
-    public static final char CURRENCY_SYMBOL = '$';
 
     /**
      * The player this wallet belongs to.
@@ -415,9 +411,11 @@ public class Wallet {
      * E.g. $100.00, $1,000.00 $1,000,000.00
      */
     public String getFullBalance(boolean currencySymbol){
-        if(cents < 10) return (currencySymbol ? CURRENCY_SYMBOL : "")
+        if(cents < 10) return (currencySymbol ? ShopperyConfig.GENERAL_CONFIG
+                .getCategory(General.class).getCurrencySymbol() : "")
                 + NumberFormat.getInstance().format(balance) + ".0" + cents;
-        else return (currencySymbol ? CURRENCY_SYMBOL : "")
+        else return (currencySymbol ? ShopperyConfig.GENERAL_CONFIG
+                .getCategory(General.class).getCurrencySymbol() : "")
                 + NumberFormat.getInstance().format(balance) + "." + cents;
     }
 
@@ -442,8 +440,10 @@ public class Wallet {
                 return "0." + cents + 'c';
             }
 
-        if(cents < 10) return CURRENCY_SYMBOL + format(balance);
-        else return CURRENCY_SYMBOL + format(balance);
+        if(cents < 10) return ShopperyConfig.GENERAL_CONFIG
+                .getCategory(General.class).getCurrencySymbol() + format(balance);
+        else return ShopperyConfig.GENERAL_CONFIG
+                .getCategory(General.class).getCurrencySymbol() + format(balance);
     }
 
     /**

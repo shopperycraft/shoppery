@@ -1,12 +1,12 @@
 package com.ki11erwolf.shoppery.command;
 
+import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.price.ItemPrice;
 import com.ki11erwolf.shoppery.price.ItemPrices;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 /**
@@ -50,28 +50,27 @@ class CmdPrice extends Command{
             heldItem = playerEntity.getHeldItemOffhand();
 
         if(heldItem.getItem() == Items.AIR){
-            playerEntity.sendMessage(new StringTextComponent(
-                    TextFormatting.RED + "Must be holding an item!"
-            ));
+            message(playerEntity, getLocalizedMessage("no_item"));
             return;
         }
 
         ItemPrice price = ItemPrices.getPrice(heldItem);
 
         if(price == null)
-            playerEntity.sendMessage(new StringTextComponent(
-                    TextFormatting.RED + "Item does not have a price!"
-            ));
+            message(playerEntity, getLocalizedMessage("no_price"));
         else
-            playerEntity.sendMessage(new StringTextComponent(
-                    "Item price for: " +  price.getItem() + ":"
-                            + TextFormatting.RED + " buy: "
-                            + ((price.allowsBuying()) ? "$" + price.getBuyPrice() : "prohibited")
-                            + TextFormatting.GREEN + " sell: "
-                            + ((price.allowsSelling()) ? "$" + price.getSellPrice() : "prohibited")
-                            + TextFormatting.BLUE + " Price Fluctuation: " + price.getPriceFluctuation() + "%"
-                    )
-            );
+            message(playerEntity, formatLocalizedMessage(
+                    "price",
+                    price.getItem(), ((price.allowsBuying())
+                            ? ShopperyConfig.GENERAL_CONFIG .getCategory(General.class)
+                            .getCurrencySymbol() + price.getBuyPrice()
+                            : getLocalizedMessage("buy_prohibited")),
+                    ((price.allowsSelling())
+                            ? ShopperyConfig.GENERAL_CONFIG .getCategory(General.class)
+                            .getCurrencySymbol() + price.getSellPrice()
+                            : getLocalizedMessage("sell_prohibited")),
+                    price.getPriceFluctuation()
+            ));
     }
 
 
@@ -89,21 +88,5 @@ class CmdPrice extends Command{
     @Override
     boolean canExecute(PlayerEntity player, World world) {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    String getUsage() {
-        return "/price";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    String getFunction() {
-        return "Displays the prices of the current item in your main hand.";
     }
 }

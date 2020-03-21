@@ -71,7 +71,7 @@ public class ShopperyMod {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientOnlySetup);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -91,9 +91,9 @@ public class ShopperyMod {
      *
      * @param event forge provided event.
      */
-    private void doClientStuff(final FMLClientSetupEvent event) {
+    private void clientOnlySetup(final FMLClientSetupEvent event) {
         if(proxy instanceof ClientProxy)
-            proxy.doClientStuff(event);
+            proxy.clientOnlySetup(event);
     }
 
     /**

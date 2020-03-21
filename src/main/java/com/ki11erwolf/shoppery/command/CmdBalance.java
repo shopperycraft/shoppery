@@ -3,8 +3,8 @@ package com.ki11erwolf.shoppery.command;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 /**
  * Displays the players balance in chat.
@@ -36,16 +36,46 @@ class CmdBalance extends Command{
      */
     @Override
     void onCommandCalled(String[] arguments, PlayerEntity player, World world) {
-        if(player.isCreative()){
-            message(player, "Balance: " + TextFormatting.GREEN + "Infinite");
-            return;
+        //Normal balance check
+        if(arguments.length == 0){
+            //Creative check
+            if(player.isCreative()){
+                message(player, formatLocalizedMessage(
+                        "balance", getLocalizedMessage("infinite_balance")
+                ));
+                return;
+            }
+
+            //Balance message
+            Wallet wallet = BankManager._getWallet(world, player);
+            message(player, formatLocalizedMessage("balance", wallet.getShortenedBalance()));
         }
 
-        Wallet wallet = BankManager._getWallet(world, player);
-        message(
-                player, "Balance: " + TextFormatting.GREEN +
-                        wallet.getFullBalance(true) + " (" + wallet.getShortenedBalance() + ")"
-        );
+        //Named player balance check.
+        if (arguments.length == 1){
+            //Permission check.
+            if(!(player.hasPermissionLevel(ServerLifecycleHooks.getCurrentServer().getOpPermissionLevel()))){
+                message(player, getLocalizedMessage("not_op"));
+            }
+
+            //Get player
+            String playerName = arguments[0];
+            PlayerEntity target = ServerLifecycleHooks
+                    .getCurrentServer().getPlayerList().getPlayerByUsername(playerName);
+
+            //Check player
+            if(target == null){
+                message(player, formatLocalizedMessage(
+                        "player_not_found", playerName)
+                );
+                return;
+            }
+
+            //Balance
+            message(player, formatLocalizedMessage("balance_op", target.getName().getString(),
+                    BankManager._getBank(world).getWallet(target).getShortenedBalance())
+            );
+        }
     }
 
     /**
@@ -61,22 +91,6 @@ class CmdBalance extends Command{
      */
     @Override
     boolean checkArguments(String[] args){
-        return args.length == 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    String getUsage() {
-        return "/balance";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    String getFunction() {
-        return "Displays your in-game balance.";
+        return args.length == 0 || args.length == 1;
     }
 }

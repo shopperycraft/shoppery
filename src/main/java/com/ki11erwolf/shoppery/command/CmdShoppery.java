@@ -38,23 +38,21 @@ class CmdShoppery extends Command {
     @Override
     void onCommandCalled(String[] arguments, PlayerEntity player, World world) {
         if(arguments.length == 0){
-            StringBuilder message = new StringBuilder(TextFormatting.GOLD + "Shoppery Commands:\n");
-            forEach((s, command) -> message.append(TextFormatting.GREEN).append("Usage: ")
+            StringBuilder message = new StringBuilder(getLocalizedMessage("help_message"));
+
+            message.append("\n\n").append(getLocalizedMessage("commands"));
+
+            forEach((s, command) -> message
                     .append(command.getUsage()).append(TextFormatting.WHITE).append(" - ")
-                    .append(TextFormatting.BLUE).append(command.getFunction()).append("\n"));
+                    .append(command.getDescription()).append("\n"));
             message(player, message.toString());
         } else {
             Command cmd = get(arguments[0].toLowerCase());
 
             if(cmd == null){
-                message(player, TextFormatting.RED + "Command not found!");
+                message(player, getLocalizedMessage("command_not_found"));
             } else {
-                message(
-                        player,
-                        TextFormatting.GREEN + "Usage: " +
-                                cmd.getUsage() + TextFormatting.WHITE + " - " +
-                                TextFormatting.BLUE + cmd.getFunction() + "\n"
-                );
+                message(player, cmd.getUsage() + TextFormatting.WHITE + " - " + cmd.getDescription());
             }
         }
     }
@@ -77,21 +75,5 @@ class CmdShoppery extends Command {
     @Override
     boolean checkArguments(String[] args){
         return args.length <= 1;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    String getUsage() {
-        return "/shoppery [<Command>]";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    String getFunction() {
-        return "Displays the list of ShopperyCraft commands or displays information on a specific command.";
     }
 }

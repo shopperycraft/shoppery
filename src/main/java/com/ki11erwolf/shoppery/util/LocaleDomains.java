@@ -36,7 +36,28 @@ public enum LocaleDomains implements LocaleDomain {
     /**
      * Groups all error message translations.
      */
-    ERROR("error");
+    ERROR("error"),
+
+    /**
+     * Groups all message translations related
+     * to commands.
+     */
+    COMMAND("command"),
+
+    /**
+     * Holds the usage message translations for all commands.
+     */
+    USAGE("usage"),
+
+    /**
+     * Holds the description message translations for all commands.
+     */
+    DESCRIPTION("description"),
+
+    /**
+     * Groups all general and specific message translation.
+     */
+    MESSAGE("message");
 
     /**
      * @param name the single identifying

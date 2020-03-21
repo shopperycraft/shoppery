@@ -14,8 +14,8 @@ public class General extends ConfigCategory {
      * Config property to allow changing the delay time (in ms)
      * imposed between the sending of request packets.
      */
-    private final IntegerConfigValue packetDelay = new IntegerConfigValue(
-            "packet delay",
+    private final IntegerConfigValue packetWaitTime = new IntegerConfigValue(
+            "packet wait time",
             "The time delay (in milliseconds) between sending packets. Lowering this number "
             + "will improve client responsiveness, but may impact server & network performance. "
             + "Use wisely on dedicated servers; offline singleplayer games should suffer less "
@@ -57,8 +57,8 @@ public class General extends ConfigCategory {
      * milliseconds) imposed before a clint
      * side request packet can be sent again.
      */
-    public int getPacketDelay(){
-        return packetDelay.getValue();
+    public int getPacketWaitTime(){
+        return packetWaitTime.getValue();
     }
 
     /**

@@ -6,6 +6,7 @@ import com.ki11erwolf.shoppery.packets.FullBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FullBalanceReqPacket;
 import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
+import com.ki11erwolf.shoppery.util.WaitTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
@@ -42,6 +43,13 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     private static final String ERROR_MESSAGE = LocaleDomains.ERROR.get("balance");
 
     /**
+     * WaitTimer that tracks and limits the sending of
+     * multiple balance requests.
+     */
+    private static final WaitTimer BALANCE_REQUEST_TIMER
+            = new WaitTimer(ShopperyConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime());
+
+    /**
      * The width of the money section background in pixels.
      */
     private static final int WIDTH = 256;
@@ -75,13 +83,6 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      * the screen.
      */
     private int trueX, trueY;
-
-    /**
-     * The time when the lastMoneySlotRefreshTime
-     * full balance request packet was sent. Used
-     * to prevent sending packets in quick succession.
-     */
-    private static long lastPktSendTime = -1;
 
     /**
      * @param player the player the inventory belongs/is showed to.
@@ -189,15 +190,13 @@ public class ShopperyInventoryScreen extends InventoryScreen {
         if(player == null) //No player, no balance.
             return ERROR_MESSAGE;
 
-        //Timer to prevent spamming the server every gui redraw.
-        //TODO: Config packet lag.
-        if(System.currentTimeMillis() > lastPktSendTime + 250 /*Time between*/ || lastPktSendTime == -1){
+        BALANCE_REQUEST_TIMER.time((x) -> {
             Packet.send(
                     PacketDistributor.SERVER.noArg(),
                     new FullBalanceReqPacket(player.getUniqueID().toString())
             );
-            lastPktSendTime = System.currentTimeMillis();
-        }
+            return null;
+        });
 
         return FullBalanceRecPacket.getLastKnownBalance() == null ?
                 ERROR_MESSAGE : FullBalanceRecPacket.getLastKnownBalance();

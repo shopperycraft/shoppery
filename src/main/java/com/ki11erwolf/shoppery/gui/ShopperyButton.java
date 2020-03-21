@@ -1,9 +1,12 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.packets.FormattedBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FormattedBalanceReqPacket;
 import com.ki11erwolf.shoppery.packets.Packet;
+import com.ki11erwolf.shoppery.util.WaitTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -51,6 +54,19 @@ public abstract class ShopperyButton extends ImageButton {
             HEIGHT      = 18,             //Button height.
             REL_X       = 125,            //Relative X position to gui.
             REL_INV_Y   = 22;             //Relative -Y position to half gui height.
+
+    /**
+     * WaitTimer that tracks and limits the sending of
+     * multiple balance requests.
+     */
+    private static WaitTimer BALANCE_REQUEST_TIMER;
+
+    static{
+        if(BALANCE_REQUEST_TIMER == null)
+            BALANCE_REQUEST_TIMER = new WaitTimer(
+                    ShopperyConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime()
+            );
+    }
 
     /**
      * The inventory gui screen this button is attached to.
@@ -221,23 +237,29 @@ public abstract class ShopperyButton extends ImageButton {
     private static ShopperyButton makeButton(InventoryScreen screen, PlayerEntity player){
         return new ShopperyButton(
                 screen.getGuiLeft() + REL_X, screen.height / 2 - REL_INV_Y, screen) {
-            long requestWaitTime = 1000;//Wait time, in ms
-
-            //Short balance.
-            long lastSBalanceRequestTime = System.currentTimeMillis();
 
             @Override
             protected String getShortenedBalance() {
-                if(lastSBalanceRequestTime < System.currentTimeMillis()){
-                    lastSBalanceRequestTime = System.currentTimeMillis() + requestWaitTime;
-                    Packet.send(PacketDistributor.SERVER.noArg(), new FormattedBalanceReqPacket(
-                            player.getUniqueID().toString()
-                    ));
-                }
-
+                ShopperyButton.requestBalance(player);
                 return FormattedBalanceRecPacket.getLastKnownBalance();
             }
         };
+    }
+
+    /**
+     * Will request an update of the players balance from
+     * the server, within a WaitTimer.
+     *
+     * @param player the player who's balance we're requesting.
+     */
+    private static void requestBalance(PlayerEntity player){
+        BALANCE_REQUEST_TIMER.time((x) -> {
+            Packet.send(
+                    PacketDistributor.SERVER.noArg(),
+                    new FormattedBalanceReqPacket(player.getUniqueID().toString())
+            );
+            return null;
+        });
     }
 
     // ****

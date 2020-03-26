@@ -57,7 +57,17 @@ public enum LocaleDomains implements LocaleDomain {
     /**
      * Groups all general and specific message translation.
      */
-    MESSAGE("message");
+    MESSAGE("message"),
+
+    /**
+     * Groups all tooltip translations.
+     */
+    TOOLTIP("tooltip"),
+
+    /**
+     * Groups all translations related to buttons.
+     */
+    BUTTON("button");
 
     /**
      * @param name the single identifying

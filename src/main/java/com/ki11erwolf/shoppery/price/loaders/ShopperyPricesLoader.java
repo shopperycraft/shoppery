@@ -31,7 +31,7 @@ public class ShopperyPricesLoader extends Loader {
     /**
      * The path to the prices.json file.
      */
-    private static final String PRICES_FILE = "/shoppery-prices.json";
+    private static final String PRICES_FILE = "/prices.json";
 
     /**
      * {@inheritDoc}

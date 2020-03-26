@@ -93,6 +93,19 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     }
 
     /**
+     * {@inheritDoc}
+     * Constructs and initializes the gui screen
+     * and all sub components.
+     */
+    @Override
+    protected void init() {
+        super.init();
+        calculateOriginPosition();
+        this.addButton(new WikiButton(relX, relY));
+        this.addButton(new DepositButton(player, relX, relY));
+    }
+
+    /**
      * Instruction to render one frame of this screen.
      *
      * <p/>First call in the rendering chain
@@ -123,7 +136,7 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      */
     private void calculateOriginPosition(){
         //Centers Money section atop the inventory sections, recipe book included.
-        this.relX = guiLeft -  ( WIDTH_DIFF / 2 ) - ( getRecipeGui().isVisible() ? 77 : 0 );
+        this.relX = guiLeft - ( WIDTH_DIFF / 2 ) - ( getRecipeGui().isVisible() ? 77 : 0 );
         this.relY = guiTop - HEIGHT - 1;//-1 for spacing.
 
         this.trueX = (getRecipeGui().isVisible() ? -77 : 0) + (this.xSize / 2) - (WIDTH / 2);

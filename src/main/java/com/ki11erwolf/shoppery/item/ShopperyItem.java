@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
  * @generic T the class inheriting from this class.
  */
 @SuppressWarnings("WeakerAccess")
-public class ShopperyItem<T extends ShopperyItem> extends Item {
+public class ShopperyItem<T extends ShopperyItem<T>> extends Item {
 
     /**
      * Flag to prevent queuing an item

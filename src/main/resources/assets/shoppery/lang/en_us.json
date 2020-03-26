@@ -26,6 +26,9 @@
 
   "shoppery.title.screen.player_bank":                    "%s's Wallet",
 
+  "shoppery.tooltip.button.wiki":                         "Open the Wiki",
+  "shoppery.tooltip.button.deposit":                      "Deposit Cash",
+
   "shoppery.error.balance":                               "< Balance Error >",
 
   "$$": "Commands",

@@ -30,10 +30,16 @@ public class ItemPrices {
     // ****
 
     /**
-     * Instructs the price registry to begin loading
-     * itself. Should be called as soon as possible,
-     * can only be called once. The registry can only
-     * be used after the load is complete.
+     * Instructs the price registry to begin loading itself
+     * from all possible sources supplying price information.
+     * This should be called as soon as possible!
+     *
+     * The registry can only be used after the load is
+     * complete. Any repeated calls to this method will
+     * result in an exception being thrown.
+     *
+     * @throws IllegalStateException if the registry is
+     * in the process of loading itself, or it is already loaded.
      */
     public static void loadPriceRegistry(){
         INSTANCE.load();
@@ -98,9 +104,9 @@ public class ItemPrices {
     // ****
 
     /**
-     * Will block the calling thread (using Thread.sleep(10))
-     * until the Price Registry has completely loaded, or returns
-     * if the Price Registry is already loaded.
+     * Will block the calling thread (using {@code Thread.sleep(10)})
+     * until the Price Registry has completely loaded. Always
+     * returns immediately if the Price Registry is already loaded.
      */
     private static void blockUntilLoaded(){
         if(INSTANCE.isLoadedAndCleaned())

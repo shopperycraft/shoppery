@@ -88,6 +88,9 @@ enum PriceRegistry {
      * <p/>
      * The registry can only be loaded once and can only be
      * used after it has been loaded and cleaned.
+     *
+     * @throws IllegalStateException if the registry is in
+     * the process of loading itself, or it is already loaded.
      */
     void load(){
         if(isLoaded)

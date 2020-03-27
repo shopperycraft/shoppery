@@ -1,7 +1,7 @@
 {
-  "money": {
+  "withdraw": {
     "category": "block",
-    "subtitle": "shoppery.subtitle.money",
-    "sounds": ["shoppery:money"]
+    "subtitle": "shoppery.subtitle.withdraw",
+    "sounds": ["shoppery:withdraw"]
   }
 }

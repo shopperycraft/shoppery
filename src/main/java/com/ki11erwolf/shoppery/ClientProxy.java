@@ -14,7 +14,7 @@ public class ClientProxy extends ServerProxy {
      */
     @Override
     public void setup(FMLCommonSetupEvent event) {
-        //Do registration for the server as well (dedicated server)
+        //Do registration for the internal server as well.
         super.setup(event);
     }
 

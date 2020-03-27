@@ -300,8 +300,8 @@ public class Wallet {
 
         newBalance -= balance;
 
-        if(newBalance == 0){
-            if (newCents == 0)
+        if(newBalance < 0){
+            if (newCents < 0)
                 return false;
         }
 
@@ -440,9 +440,7 @@ public class Wallet {
                 return "0." + cents + 'c';
             }
 
-        if(cents < 10) return ShopperyConfig.GENERAL_CONFIG
-                .getCategory(General.class).getCurrencySymbol() + format(balance);
-        else return ShopperyConfig.GENERAL_CONFIG
+        return ShopperyConfig.GENERAL_CONFIG
                 .getCategory(General.class).getCurrencySymbol() + format(balance);
     }
 

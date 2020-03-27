@@ -2,9 +2,7 @@ package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.config.ShopperyConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
-import com.ki11erwolf.shoppery.packets.FullBalanceRecPacket;
-import com.ki11erwolf.shoppery.packets.FullBalanceReqPacket;
-import com.ki11erwolf.shoppery.packets.Packet;
+import com.ki11erwolf.shoppery.packets.*;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import com.ki11erwolf.shoppery.util.WaitTimer;
 import net.minecraft.client.Minecraft;
@@ -15,6 +13,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
+
+import static com.ki11erwolf.shoppery.item.ShopperyItems.*;
 
 /**
  * Shoppery's Money section of players survival inventory GUI.
@@ -101,12 +101,13 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     protected void init() {
         super.init();
         calculateOriginPosition();
+        initCashSection();
         this.addButton(new WikiButton(relX, relY));
         this.addButton(new DepositButton(player, relX, relY));
     }
 
     /**
-     * Instruction to render one frame of this screen.
+     * Draws the inventory on the screen.
      *
      * <p/>First call in the rendering chain
      * (background, foreground), ultimately
@@ -115,14 +116,14 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      * <p/>Handles position and dimension
      * calculating for the scene as well.
      *
-     * @param x Obfuscation
-     * @param y is
-     * @param z wonderful :)
+     * @param x mouseX
+     * @param y mouseY
+     * @param time frame render time
      */
     @Override
-    public void render(int x, int y, float z) {
+    public void render(int x, int y, float time) {
         calculateOriginPosition();
-        super.render(x, y, z);
+        super.render(x, y, time);
     }
 
     /**
@@ -204,8 +205,7 @@ public class ShopperyInventoryScreen extends InventoryScreen {
             return ERROR_MESSAGE;
 
         BALANCE_REQUEST_TIMER.time((x) -> {
-            Packet.send(
-                    PacketDistributor.SERVER.noArg(),
+            Packet.send(PacketDistributor.SERVER.noArg(),
                     new FullBalanceReqPacket(player.getUniqueID().toString())
             );
             return null;
@@ -213,6 +213,58 @@ public class ShopperyInventoryScreen extends InventoryScreen {
 
         return FullBalanceRecPacket.getLastKnownBalance() == null ?
                 ERROR_MESSAGE : FullBalanceRecPacket.getLastKnownBalance();
+    }
+
+    /**
+     * Initializes and places the cash withdraw
+     * buttons on the gui.
+     */
+    protected void initCashSection(){
+        int beginX = relX + 144;
+        int beginY = relY + 6;
+
+        //Row 1
+        this.addButton(new MoneyButton(beginX, beginY, COIN_ONE, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, COIN_FIVE, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, COIN_TEN, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, COIN_TWENTY, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, COIN_FIFTY, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, COIN_EIGHTY, player));
+
+        //Row 2
+        beginX = relX + 144; beginY += 18;
+
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_ONE, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIVE, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_TEN, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_TWENTY, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIFTY, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_ONE_HUNDRED, player));
+
+        //Row 3
+        beginX = relX + 144; beginY += 18;
+
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIVE_HUNDRED, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_ONE_K, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIVE_K, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_TEN_K, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIFTY_K, player));
+        beginX += 18;
+        this.addButton(new MoneyButton(beginX, beginY, NOTE_ONE_HUNDRED_K, player));
     }
 
     // ************

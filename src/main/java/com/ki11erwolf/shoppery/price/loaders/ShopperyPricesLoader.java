@@ -17,9 +17,8 @@ import java.util.List;
 
 /**
  * Price registry loader responsible for loading in
- * prices defined from this mod, in the shoppery-prices.json
- * file. These are prices for Minecraft and Shoppery Items
- * and Blocks.
+ * prices defined from this mod, in the /prices.json
+ * file. These are prices for Minecraft and Shoppery.
  */
 public class ShopperyPricesLoader extends Loader {
 

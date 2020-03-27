@@ -145,6 +145,10 @@ public class ShopperyMod {
         proxy.onEntityJoinWorld(joinWorldEvent);
     }
 
+    // **************
+    // Accessor Utils
+    // **************
+
     /**
      * @return a new apache log4j logging instance.
      * Equivalent to {@link LogManager#getLogger()}.

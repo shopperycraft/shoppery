@@ -17,10 +17,10 @@ public class General extends ConfigCategory {
     private final IntegerConfigValue packetWaitTime = new IntegerConfigValue(
             "packet wait time",
             "The time delay (in milliseconds) between sending packets. Lowering this number "
-            + "will improve client responsiveness, but may impact server & network performance. "
+            + "will improve Shoppery gui's responsiveness, but may impact server & network performance. "
             + "Use wisely on dedicated servers; offline singleplayer games should suffer less "
             + "from a shorter delay.",
-            333, 100, 2000, this
+            250, 50, 1500, this
     );
 
     /**
@@ -30,7 +30,7 @@ public class General extends ConfigCategory {
     private final IntegerConfigValue startingBalance = new IntegerConfigValue(
             "player starting balance",
             "The amount of money every player will start the game with.",
-            100, 0, 10000, this
+            100, 0, 5000, this
     );
 
     /**
@@ -39,8 +39,8 @@ public class General extends ConfigCategory {
      */
     private final StringConfigValue currencySymbol = new StringConfigValue(
             "currency symbol",
-            "The currency symbol ($, £, ¥, ect) Shoppery uses to represent its currency. " +
-                      "The symbol can be anything.",
+            "The currency symbol (e.g. $) Shoppery uses to represent its currency. " +
+                      "The symbol can be series of letters.",
             "$", this
     );
 

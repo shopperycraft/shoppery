@@ -2,7 +2,10 @@ package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.config.ShopperyConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
-import com.ki11erwolf.shoppery.packets.*;
+import com.ki11erwolf.shoppery.packets.FullBalanceRecPacket;
+import com.ki11erwolf.shoppery.packets.FullBalanceReqPacket;
+import com.ki11erwolf.shoppery.packets.ItemPriceRecPacket;
+import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import com.ki11erwolf.shoppery.util.WaitTimer;
 import net.minecraft.client.Minecraft;
@@ -31,10 +34,11 @@ import static com.ki11erwolf.shoppery.item.ShopperyItems.*;
 public class ShopperyInventoryScreen extends InventoryScreen {
 
     /**
-     * The texture for the money section of the Shoppery inventory.
+     * The texture map for the various GUI backgrounds
+     * used by Shoppery.
      */
-    private static final ResourceLocation BACKGROUND_TEXTURE
-            = new ResourceLocation("shoppery", "textures/gui/money_gui.png");
+    public static final ResourceLocation SHOPPERY_GUIS
+            = new ResourceLocation("shoppery", "textures/gui/shoppery_guis.png");
 
     /**
      * The error message displayed as the players balance, if any error
@@ -64,6 +68,12 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      * and the normal survival inventory gui background.
      */
     private static final int WIDTH_DIFF = 80;
+
+    /**
+     * The widget acting as a slot that can both, deposit currency items
+     * into the wallet and request the price of any items put in the slot.
+     */
+    private InputSlot inputSlot;
 
     /**
      * The player this inventory belongs to.
@@ -100,10 +110,11 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     @Override
     protected void init() {
         super.init();
+
         calculateOriginPosition();
         initCashSection();
         this.addButton(new WikiButton(relX, relY));
-        this.addButton(new DepositButton(player, relX, relY));
+        this.addButton((this.inputSlot = new InputSlot(player, relX + 122, relY + 36)));
     }
 
     /**
@@ -165,7 +176,7 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      * the gui background, centered atop the normal gui.
      */
     private void drawMoneyBackgroundLayer(float partialTicks, int mouseX, int mouseY){
-        Minecraft.getInstance().getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+        Minecraft.getInstance().getTextureManager().bindTexture(SHOPPERY_GUIS);
         this.blit(relX, relY, 0, 0, WIDTH, HEIGHT);
     }
 
@@ -174,25 +185,83 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     // **********
 
     /**
-     * {@inheritDoc}, specifically the text displayed atop
-     * the background.
+     * {@inheritDoc}
      */
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
-        //Title
-        font.drawString(LocaleDomains.TITLE.sub(LocaleDomains.SCREEN)
-                .format("player_bank", player.getDisplayName().getString()),
-                X(5), Y(7), 0x3F3F3F
+        drawTitles();
+
+        //Info screen: balance/prices
+        if(inputSlot.isOccupied()) drawItemPrices();
+        else drawPlayerBalance();
+    }
+
+    /**
+     * Handles rendering the GUIs title(s)
+     * and other static text.
+     */
+    protected void drawTitles(){
+        if(inputSlot.isOccupied()){
+            font.drawString(LocaleDomains.TEXT.sub(LocaleDomains.SCREEN)
+                    .get("buy"), X(24), Y(7), 0x3F3F3F
+            );
+
+            font.drawString(LocaleDomains.TEXT.sub(LocaleDomains.SCREEN)
+                    .get("sell"), X(81), Y(7), 0x3F3F3F
+            );
+        } else {
+            font.drawString(LocaleDomains.TITLE.sub(LocaleDomains.SCREEN)
+                    .format("wallet", player.getDisplayName().getString()),
+                    X(5), Y(7), 0x3F3F3F
+            );
+        }
+    }
+
+    /**
+     * Draws the requested item prices onto the gui
+     * within the information screen section. Also
+     * draws the buy and sell headers atop the
+     * information screen.
+     */
+    protected void drawItemPrices(){
+        if(!ItemPriceRecPacket.doesLastReceivedHavePrice()){
+            drawCenteredString(font, LocaleDomains.TEXT.sub(LocaleDomains.SCREEN)
+                            .get("no_price"),
+                    X(73), Y(23), 0x9C1313
+            );
+            return;
+        }
+
+        //TODO: currency formatting e.g. $1.1 -> $1.10
+        drawCenteredString(font, ShopperyConfig.GENERAL_CONFIG
+                        .getCategory(General.class).getCurrencySymbol()
+                        + ItemPriceRecPacket.getLastReceivedBuyPrice(),
+                X(38), Y(23), 0xD11F1F
         );
 
-        //Balance
         drawCenteredString(font, ShopperyConfig.GENERAL_CONFIG
-                        .getCategory(General.class).getCurrencySymbol() + getBalance(),
-                X(70), Y(23), 0x00E500
+                        .getCategory(General.class).getCurrencySymbol()
+                        + ItemPriceRecPacket.getLastReceivedSellPrice(),
+                X(108), Y(23), 0x00E500
         );
     }
+
+    /**
+     * Draws the players balance onto the gui within the
+     * information screen section.
+     */
+    protected void drawPlayerBalance(){
+        drawCenteredString(font, ShopperyConfig.GENERAL_CONFIG
+                        .getCategory(General.class).getCurrencySymbol() + getBalance(),
+                X(73), Y(23), 0x00E500
+        );
+    }
+
+    // *****
+    // Logic
+    // *****
 
     /**
      * Gets the players last known balance from server.
@@ -213,6 +282,29 @@ public class ShopperyInventoryScreen extends InventoryScreen {
 
         return FullBalanceRecPacket.getLastKnownBalance() == null ?
                 ERROR_MESSAGE : FullBalanceRecPacket.getLastKnownBalance();
+    }
+
+    /**
+     * Checks to see the player has clicked outside of the gui
+     * bounds.
+     *
+     * <p/>This has been extended to take the extended
+     * {@link ShopperyInventoryScreen} bounds into account.
+     *
+     * @return {@code true} if the click was outside of the gui
+     * bounds, {@code false} otherwise.
+     */
+    @Override
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
+        guiLeft = guiLeft - ( WIDTH_DIFF / 2 ) - ( getRecipeGui().isVisible() ? 77 : 0 );
+        guiTop = guiTop - HEIGHT - 1;
+
+        if(super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)){
+            return mouseX < (double)guiLeft
+                    || mouseY < (double) guiTop
+                    || mouseX >= (double) (guiLeft + WIDTH)
+                    || mouseY >= (double)(guiTop + HEIGHT);
+        } else return false;
     }
 
     /**

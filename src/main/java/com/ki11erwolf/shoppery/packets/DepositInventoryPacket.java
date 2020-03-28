@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * notes/coins in the given players inventory and add
  * the sum to their wallets balance.
  */
-public class InventoryDepositPacket extends Packet<InventoryDepositPacket> {
+public class DepositInventoryPacket extends Packet<DepositInventoryPacket> {
 
     /**
      * The player requesting the inventory deposit.
@@ -34,7 +34,7 @@ public class InventoryDepositPacket extends Packet<InventoryDepositPacket> {
      *
      * @param playerUUID The player requesting the inventory deposit.
      */
-    public InventoryDepositPacket(String playerUUID){
+    public DepositInventoryPacket(String playerUUID){
         this.playerUUID = playerUUID;
     }
 
@@ -42,7 +42,7 @@ public class InventoryDepositPacket extends Packet<InventoryDepositPacket> {
      * {@inheritDoc}
      */
     @Override
-    BiConsumer<InventoryDepositPacket, PacketBuffer> getEncoder() {
+    BiConsumer<DepositInventoryPacket, PacketBuffer> getEncoder() {
         return (packet, buffer) -> writeString(packet.playerUUID, buffer);
     }
 
@@ -50,8 +50,8 @@ public class InventoryDepositPacket extends Packet<InventoryDepositPacket> {
      * {@inheritDoc}
      */
     @Override
-    Function<PacketBuffer, InventoryDepositPacket> getDecoder() {
-        return (buffer) -> new InventoryDepositPacket(readString(buffer));
+    Function<PacketBuffer, DepositInventoryPacket> getDecoder() {
+        return (buffer) -> new DepositInventoryPacket(readString(buffer));
     }
 
     /**
@@ -61,7 +61,7 @@ public class InventoryDepositPacket extends Packet<InventoryDepositPacket> {
      * players inventory and adds it to their wallet balance.
      */
     @Override
-    BiConsumer<InventoryDepositPacket, Supplier<NetworkEvent.Context>> getHandler() {
+    BiConsumer<DepositInventoryPacket, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
             try{
                 PlayerEntity player = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer())

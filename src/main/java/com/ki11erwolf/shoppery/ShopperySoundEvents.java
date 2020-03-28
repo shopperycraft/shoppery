@@ -17,6 +17,8 @@ public final class ShopperySoundEvents {
             ShopperyMod.MODID, "withdraw"
     ));
 
+    //TODO: Sounds events for: adding money to wallet and shop transactions.
+
     /**
      * Private constructor.
      */

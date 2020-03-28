@@ -195,8 +195,11 @@ public abstract class Packet<S extends Packet<S>> {
         MANAGER.register(new PlayerCentsReqPacket(null));
         MANAGER.register(new PlayerCentsRecPacket((byte)0));
 
-        MANAGER.register(new InventoryDepositPacket(null));
+        MANAGER.register(new DepositInventoryPacket(null));
         MANAGER.register(new MoneyWithdrawPacket(null, false, 0));
         MANAGER.register(new PlayerMessagePacket(null, null, null));
+        MANAGER.register(new DepositCashPacket(null, false));
+        MANAGER.register(new ItemPriceReqPacket(null));
+        MANAGER.register(new ItemPriceRecPacket(false, 0, 0));
     }
 }

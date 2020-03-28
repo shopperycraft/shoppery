@@ -6,6 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmOpenLinkScreen;
 import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.util.Util;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,6 +16,7 @@ import java.net.URISyntaxException;
  * The Wiki button, added to the {@link ShopperyInventoryScreen}
  * that links the player to the Wiki website.
  */
+@OnlyIn(Dist.CLIENT)
 class WikiButton extends ImageButton {
 
     /**
@@ -103,9 +106,9 @@ class WikiButton extends ImageButton {
     private void drawTooltip(int x, int y){
         drawCenteredString(
                 Minecraft.getInstance().fontRenderer,
-                LocaleDomains.TOOLTIP.sub(LocaleDomains.BUTTON).get("wiki"),
-                this.x + (width / 2) + 67,
-                this.y + (height / 2) - 4,
+                LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("wiki_button"),
+                this.x + (width / 2) + 56,
+                this.y + (height / 2) + 1,
                 0XF8F8F8
         );
     }

@@ -16,6 +16,8 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -29,6 +31,7 @@ import java.util.UUID;
  * <p/>The button will withdraw currency item
  * from the players wallet when clicked.
  */
+@OnlyIn(Dist.CLIENT)
 public class MoneyButton extends Button {
 
     /**
@@ -228,10 +231,10 @@ public class MoneyButton extends Button {
      */
     protected void renderOverlays(int x, int y){
         if(!affordable()){
-            Minecraft.getInstance().getTextureManager().bindTexture(ShopperyButton.BUTTON_TEXTURES);
+            Minecraft.getInstance().getTextureManager().bindTexture(ShopperyInventoryScreen.SHOPPERY_GUIS);
             RenderSystem.disableDepthTest();
 
-            blit(x, y, 0, 38, 16, 16);
+            blit(x, y, 0, 65, 16, 16);
             RenderSystem.enableDepthTest();
         }
     }
@@ -301,7 +304,7 @@ public class MoneyButton extends Button {
     public void playDownSound( SoundHandler soundHandler) {
         if(affordable())
             soundHandler.play(SimpleSound.master(ShopperySoundEvents.WITHDRAW,
-                    RandomUtils.nextFloat(1.3F, 2.0F), 0.50F
+                    RandomUtils.nextFloat(1.2F, 1.4F), 0.50F
             ));
     }
 }

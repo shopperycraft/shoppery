@@ -7,7 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
  * the client instance player from server side code without
  * a crash.
  */
-public class ClientPlayerUtil {
+public class ClientPlayerFetcher {
 
     /**
      * @return {@link net.minecraft.client.Minecraft#player}

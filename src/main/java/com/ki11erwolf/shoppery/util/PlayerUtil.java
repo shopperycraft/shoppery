@@ -14,12 +14,8 @@ public final class PlayerUtil {
 
     /**
      * Private constructor.
-     *
-     * @throws IllegalAccessException Always thrown - no creating instances of this class!
      */
-    private PlayerUtil() throws IllegalAccessException {
-        throw new IllegalAccessException("Instance creation not allowed!");
-    }
+    private PlayerUtil() {}
 
     /**
      * Gets a specific player given their UUID from the

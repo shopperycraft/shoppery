@@ -1,6 +1,6 @@
 package com.ki11erwolf.shoppery.packets;
 
-import com.ki11erwolf.shoppery.util.ClientPlayerUtil;
+import com.ki11erwolf.shoppery.util.ClientPlayerFetcher;
 import com.ki11erwolf.shoppery.util.LocaleDomain;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import com.ki11erwolf.shoppery.util.PlayerUtil;
@@ -131,7 +131,7 @@ public class PlayerMessagePacket extends Packet<PlayerMessagePacket> {
     BiConsumer<PlayerMessagePacket, Supplier<NetworkEvent.Context>> getHandler() {
         return (packet, ctx) -> handle(ctx, () -> {
             PlayerEntity player = ((FMLEnvironment.dist.isClient())
-                    ? ClientPlayerUtil.getClientPlayer()
+                    ? ClientPlayerFetcher.getClientPlayer()
                     : PlayerUtil.getPlayerFromUUID(UUID.fromString(packet.playerUUID))
             );
 

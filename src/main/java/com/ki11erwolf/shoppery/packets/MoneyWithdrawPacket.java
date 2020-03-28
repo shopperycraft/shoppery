@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 /**
  * Sent by clients to request the server put the requested
- * coin/note in the players inventory provided they have
+ * coin/note in the players inventory, provided they have
  * enough funds.
  */
 public class MoneyWithdrawPacket extends Packet<MoneyWithdrawPacket> {

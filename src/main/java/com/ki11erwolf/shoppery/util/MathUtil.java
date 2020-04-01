@@ -51,14 +51,30 @@ public final class MathUtil {
         return RANDOM_INSTANCE.nextInt((max - min) + 1) + min;
     }
 
+    /**
+     * @param min minimum possible value.
+     * @param max maximum possible value.
+     * @return a new random double within
+     * the range (inclusive) of {@code min}
+     * and {@code max}.
+     */
     public static double getRandomDoubleInRage(double min, double max){
         return ThreadLocalRandom.current().nextDouble(min, max + 0.01);
     }
 
+    /**
+     * @return a random boolean obtained from
+     * {@link #RANDOM_INSTANCE}.
+     */
     public static boolean getRandomBoolean(){
         return RANDOM_INSTANCE.nextBoolean();
     }
 
+    /**
+     * @param d the double to round.
+     * @return the given double rounded to
+     * a maximum of two decimals.
+     */
     public static double roundToTwoDecimals(double d){
         return Math.round(d * 100.0) / 100.0;
     }

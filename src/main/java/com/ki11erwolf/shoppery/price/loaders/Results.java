@@ -98,34 +98,65 @@ public class Results{
     // Getters & Setters
     // *****************
 
+    /**
+     * @param name the name of the loader (or mod) this results object belongs to.
+     */
     public void setName(String name){
         this.name = name;
     }
 
+    /**
+     * @return the name of the loader (or mod) this results object belongs to.
+     */
     public String getName(){
         return this.name;
     }
 
+    /**
+     * @param numberOfEntries The total number of entries loaded by
+     *                        this loader. Usually set by the registry.
+     */
     public void setNumberOfEntries(int numberOfEntries){
         this.numberOfEntries = numberOfEntries;
     }
 
+    /**
+     * @return The total number of entries loaded by this loader. Usually
+     * set by the registry.
+     */
     public int getNumberOfEntries(){
         return numberOfEntries;
     }
 
+    /**
+     * @param numberOfReplacements The number of entries in the registry replace with
+     * entries from this loader. Usually set by the registry.
+     */
     public void setNumberOfReplacements(int numberOfReplacements){
         this.numberOfReplacements = numberOfReplacements;
     }
 
+    /**
+     * @return The number of entries in the registry replace with
+     * entries from this loader. Usually set by the registry.
+     */
     public int getNumberOfReplacements(){
         return this.numberOfReplacements;
     }
 
+    /**
+     * Adds the given entry to the invalid entry log.
+     *
+     * @param invalidEntry the entry to log as invalid.
+     */
     public void logInvalidEntry(String invalidEntry){
         this.invalidEntries.add(invalidEntry);
     }
 
+    /**
+     * @return an array of all the entries logged
+     * as invalid.
+     */
     public String[] getInvalidEntries(){
         if(invalidEntries.size() == 0)
             return null;
@@ -133,10 +164,20 @@ public class Results{
         return invalidEntries.toArray(new String[0]);
     }
 
+    /**
+     * Adds the given mods name to the
+     * affected mods log.
+     *
+     * @param affectedMod the mod name to log.
+     */
     public void logAffectedMod(String affectedMod){
         this.affectedMods.add(affectedMod);
     }
 
+    /**
+     * @return an array of all the mod names logged
+     * as affected.
+     */
     public String[] getAffectedMods(){
         if(affectedMods.size() == 0)
             return null;
@@ -144,10 +185,20 @@ public class Results{
         return affectedMods.toArray(new String[0]);
     }
 
+    /**
+     * Adds the given mods name to the
+     * unaffected mods log.
+     *
+     * @param unaffectedMod the mod name to log.
+     */
     public void logUnaffectedMod(String unaffectedMod){
         this.unaffectedMods.add(unaffectedMod);
     }
 
+    /**
+     * @return an array of all the mod names logged
+     * as unaffected.
+     */
     public String[] getUnaffectedMods(){
         if(unaffectedMods.size() == 0)
             return null;
@@ -155,19 +206,39 @@ public class Results{
         return unaffectedMods.toArray(new String[0]);
     }
 
+    /**
+     * Mark this loader as invalid due to errors.
+     *
+     * Sets a flag in this loader that notifies
+     * all using facilities that this loader should
+     * not be used.
+     */
     public void flagAsErrored(){
         logError("Loader has failed fatally.");
         this.errored = true;
     }
 
+    /**
+     * @return {@code true} if the loader is invalid due
+     * to an error. Loader should not be used this is
+     * {@code true}.
+     */
     public boolean hasErrored(){
         return errored;
     }
 
+    /**
+     * Logs the given error message.
+     *
+     * @param error the error message to log.
+     */
     public void logError(String error){
         this.errors.add(error);
     }
 
+    /**
+     * @return an array of all logged error messages.
+     */
     public String[] getErrors(){
         if(errors.size() == 0)
             return null;
@@ -175,10 +246,19 @@ public class Results{
         return errors.toArray(new String[0]);
     }
 
+    /**
+     * Adds the given item price to the
+     * log of added item prices.
+     *
+     * @param itemPrice the item price to log.
+     */
     public void logRegisteredEntry(ItemPrice itemPrice){
         this.registeredEntries.add(itemPrice);
     }
 
+    /**
+     * @return an array of all logged item prices.
+     */
     public ItemPrice[] getRegisteredEntries(){
         if(registeredEntries.size() == 0)
             return null;

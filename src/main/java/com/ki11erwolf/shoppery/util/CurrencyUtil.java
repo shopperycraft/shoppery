@@ -1,11 +1,9 @@
 package com.ki11erwolf.shoppery.util;
 
-import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.config.ShopperyConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
 
 import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -35,8 +33,6 @@ public class CurrencyUtil {
      */
     public static String toFullString(double amount){
         String[] balance = (amount + "").replace(".", "-").split("-");
-
-        ShopperyMod.getNewLogger().info("Balance: " + Arrays.toString(balance));
 
         if(balance.length == 0){
             return toFullString(Long.parseLong(String.valueOf(amount)), (byte) 0);
@@ -78,8 +74,6 @@ public class CurrencyUtil {
      */
     public static String toShortString(double amount){
         String[] balance = (amount + "").split(".");
-
-        ShopperyMod.getNewLogger().info("Balance: " + Arrays.toString(balance));
 
         if(balance.length == 0){
             return toShortString(Long.parseLong(String.valueOf(amount)), (byte) 0);

@@ -6,6 +6,7 @@ import com.ki11erwolf.shoppery.packets.FullBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FullBalanceReqPacket;
 import com.ki11erwolf.shoppery.packets.ItemPriceRecPacket;
 import com.ki11erwolf.shoppery.packets.Packet;
+import com.ki11erwolf.shoppery.util.CurrencyUtil;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import com.ki11erwolf.shoppery.util.WaitTimer;
 import net.minecraft.client.Minecraft;
@@ -235,15 +236,13 @@ public class ShopperyInventoryScreen extends InventoryScreen {
         }
 
         //TODO: currency formatting e.g. $1.1 -> $1.10
-        drawCenteredString(font, ShopperyConfig.GENERAL_CONFIG
-                        .getCategory(General.class).getCurrencySymbol()
-                        + ItemPriceRecPacket.getLastReceivedBuyPrice(),
+        drawCenteredString(font, CurrencyUtil.CURRENCY_SYMBOL
+                        + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedBuyPrice()),
                 X(38), Y(23), 0xD11F1F
         );
 
-        drawCenteredString(font, ShopperyConfig.GENERAL_CONFIG
-                        .getCategory(General.class).getCurrencySymbol()
-                        + ItemPriceRecPacket.getLastReceivedSellPrice(),
+        drawCenteredString(font, CurrencyUtil.CURRENCY_SYMBOL
+                        + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedSellPrice()),
                 X(108), Y(23), 0x00E500
         );
     }
@@ -253,8 +252,7 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      * information screen section.
      */
     protected void drawPlayerBalance(){
-        drawCenteredString(font, ShopperyConfig.GENERAL_CONFIG
-                        .getCategory(General.class).getCurrencySymbol() + getBalance(),
+        drawCenteredString(font, CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
                 X(73), Y(23), 0x00E500
         );
     }

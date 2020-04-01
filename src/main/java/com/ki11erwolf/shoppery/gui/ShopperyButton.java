@@ -6,6 +6,7 @@ import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.packets.FormattedBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FormattedBalanceReqPacket;
 import com.ki11erwolf.shoppery.packets.Packet;
+import com.ki11erwolf.shoppery.util.CurrencyUtil;
 import com.ki11erwolf.shoppery.util.WaitTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -241,7 +242,8 @@ public abstract class ShopperyButton extends ImageButton {
             @Override
             protected String getShortenedBalance() {
                 ShopperyButton.requestBalance(player);
-                return FormattedBalanceRecPacket.getLastKnownBalance();
+                return CurrencyUtil.CURRENCY_SYMBOL + FormattedBalanceRecPacket
+                        .getLastKnownBalance();
             }
         };
     }

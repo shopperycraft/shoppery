@@ -2,6 +2,7 @@ package com.ki11erwolf.shoppery.command;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
+import com.ki11erwolf.shoppery.util.CurrencyUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -46,7 +47,9 @@ class BalanceCommand extends Command{
 
             //Balance message
             Wallet wallet = BankManager._getWallet(world, player);
-            localeMessage(player, "balance", wallet.getShortenedBalance());
+            localeMessage(player, "balance",
+                    CurrencyUtil.CURRENCY_SYMBOL + wallet.getShortenedBalance()
+            );
         }
 
         //Named player balance check.

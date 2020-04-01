@@ -80,7 +80,7 @@ public class FullBalanceReqPacket extends Packet<FullBalanceReqPacket> {
                 Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
                 send(
                         PacketDistributor.PLAYER.with(() -> ctx.get().getSender()),
-                        new FullBalanceRecPacket(senderWallet.getFullBalance(false))
+                        new FullBalanceRecPacket(senderWallet.getFullBalance())
                 );
             } catch (Exception e){
                 ShopperyMod.getNewLogger().error("Failed to send back player balance", e);

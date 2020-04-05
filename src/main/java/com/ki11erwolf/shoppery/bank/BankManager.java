@@ -50,6 +50,12 @@ public enum BankManager {
      */
     INSTANCE;
 
+    /**
+     * The file name of every bank, to be formatted
+     * with the banks name.
+     */
+    private static final String FILE_NAME = "world-%s-bank.json";
+
     /*
      * Registers the bank saver shutdown
      * hook & forge hooks when the class
@@ -81,7 +87,7 @@ public enum BankManager {
      * Initializes fields.
      */
     BankManager(){
-        this.bankDirectory = ShopperyMod.SHOPPERY_BANK_DIRECTORY;
+        this.bankDirectory = new File(System.getProperty("user.dir") + "/shoppery/banks/");
         this.worldToBank = new HashMap<>();
     }
 
@@ -375,8 +381,8 @@ public enum BankManager {
         if(name == null)
             return null;
 
-        return new File(ShopperyMod.SHOPPERY_BANK_DIRECTORY +"/" +
-                        "Bank - " + name + ".json");
+        return new File(INSTANCE.bankDirectory +"/" +
+                        String.format(FILE_NAME, name));
     }
 
     //*******

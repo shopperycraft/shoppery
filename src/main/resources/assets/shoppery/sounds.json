@@ -3,5 +3,15 @@
     "category": "block",
     "subtitle": "shoppery.subtitle.withdraw",
     "sounds": ["shoppery:withdraw"]
+  },
+  "deposit": {
+    "category": "block",
+    "subtitle": "shoppery.subtitle.deposit",
+    "sounds": ["shoppery:deposit"]
+  },
+  "transaction": {
+    "category": "block",
+    "subtitle": "shoppery.subtitle.transaction",
+    "sounds": ["shoppery:transaction"]
   }
 }

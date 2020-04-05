@@ -1,5 +1,6 @@
 package com.ki11erwolf.shoppery.gui;
 
+import com.ki11erwolf.shoppery.ShopperySoundEvents;
 import com.ki11erwolf.shoppery.item.CurrencyItem;
 import com.ki11erwolf.shoppery.packets.DepositCashPacket;
 import com.ki11erwolf.shoppery.packets.DepositInventoryPacket;
@@ -8,6 +9,7 @@ import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,6 +18,7 @@ import net.minecraft.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.apache.commons.lang3.RandomUtils;
 
 /**
  * A type of widget, which can be treated as a
@@ -76,11 +79,16 @@ public class InputSlot extends Widget {
             Packet.send(PacketDistributor.SERVER.noArg(),
                     new DepositInventoryPacket(player.getUniqueID().toString())
             );
+
+            playDepositSound();
+
         } else if(heldStack.getItem() instanceof CurrencyItem){
             //Cash Deposit
             Packet.send(PacketDistributor.SERVER.noArg(),
                     new DepositCashPacket(player.getUniqueID().toString(), button == 0)
             );
+
+            playDepositSound();
 
             if (button == 0) player.inventory.setItemStack(ItemStack.EMPTY);
             else player.inventory.getItemStack().shrink(1);
@@ -258,5 +266,15 @@ public class InputSlot extends Widget {
      */
     public boolean isOccupied(){
         return containedItem != null;
+    }
+
+    /**
+     * Plays the deposit sound effect and a
+     * set pitch and volume.
+     */
+    private static void playDepositSound(){
+        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(ShopperySoundEvents.DEPOSIT,
+                RandomUtils.nextFloat(0.8F, 1.0F), 0.10F
+        ));
     }
 }

@@ -72,5 +72,13 @@
   "shoppery.command.usage.shoppery":                      "§e/shoppery §3[command name]",
   "shoppery.command.description.shoppery":                "§rDisplays the shoppery help message, as well as all shoppery commands. If a command name is given after the shoppery command, the commands help information will be displayed instead.",
   "shoppery.command.message.shopperycraft.help_message":  "§6ShopperyCraft\n\n§rAdds single player & multiplayer shops where items can be bought or sold.\n\nYour balance can found in your inventory. Use your inventory to access your wallet as well by clicking on the balance button.\n\n§6Website:§r https://shopperycraft.github.io \n\nShopperyCraft also adds a bunch of commands listed below. Command parameters in §3[blue square brackets]§r are optional, while command parameters in §a<green angle brackets>§r are required.\n\n§6List of Commands:§r\n",
-  "shoppery.command.message.shopperycraft.command_not_found": "§4No Shoppery commands with that name exist!"
+  "shoppery.command.message.shopperycraft.command_not_found": "§4No Shoppery commands with that name exist!",
+
+  "shoppery.command.usage.setprice":                      "§e/setprice §a<buy price> §3[sell price]",
+  "shoppery.command.description.setprice":                "Sets the buying and/or selling price of the item in your main hand in Shoppery stores. Leave §3[sell price]§r blank to have it set to half the buying price.",
+  "shoppery.command.message.setprice.invalid_buy_price":  "§4The given buy price (%s) is not an acceptable buy price.",
+  "shoppery.command.message.setprice.invalid_sell_price": "§4The given sell price (%s) is not an acceptable sell price.",
+  "shoppery.command.message.setprice.hold_item":          "§4You must be holding an item to use this command!",
+  "shoppery.command.message.setprice.success":            "The price of §7%s§r has been set to §2%s§r | §c%s§r.",
+  "shoppery.command.message.setprice.failure":            "Could not set the price of %s."
 }

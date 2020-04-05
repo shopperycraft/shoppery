@@ -41,8 +41,8 @@ public class CurrencyUtil {
         } else {
             char[] bal = balance[1].toCharArray();
 
-            if(balance[1].length() == 1) balance[1] = balance[1] + "0";
-            else balance[1] = String.valueOf(bal[0] + bal[1]);
+            if(bal.length == 1) balance[1] = bal[0] + "0";
+            else balance[1] = String.valueOf(bal[0]) + bal[1];
         }
 
         return toFullString(

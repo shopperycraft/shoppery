@@ -50,13 +50,6 @@ public class ShopperyMod {
     public static final File SHOPPERY_DIRECTORY = new File(System.getProperty("user.dir") + "/shoppery/");
 
     /**
-     * The directory where shoppery will save all its
-     * {@link com.ki11erwolf.shoppery.bank.Bank} data.
-     */
-    public static final File SHOPPERY_BANK_DIRECTORY
-            = new File(System.getProperty("user.dir") + "/shoppery/banks/");
-
-    /**
      * The proxy class (server or client) for this instance.
      */
     private static Proxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
@@ -68,10 +61,12 @@ public class ShopperyMod {
      */
     public ShopperyMod() {
         ItemPrices.loadPriceRegistry();
+
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientOnlySetup);
+
         MinecraftForge.EVENT_BUS.register(this);
     }
 

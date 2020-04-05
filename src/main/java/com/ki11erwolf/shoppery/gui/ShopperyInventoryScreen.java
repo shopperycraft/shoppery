@@ -235,7 +235,6 @@ public class ShopperyInventoryScreen extends InventoryScreen {
             return;
         }
 
-        //TODO: currency formatting e.g. $1.1 -> $1.10
         drawCenteredString(font, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedBuyPrice()),
                 X(38), Y(23), 0xD11F1F
@@ -294,10 +293,10 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      */
     @Override
     protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
-        guiLeft = guiLeft - ( WIDTH_DIFF / 2 ) - ( getRecipeGui().isVisible() ? 77 : 0 );
-        guiTop = guiTop - HEIGHT - 1;
-
         if(super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)){
+            guiLeft = guiLeft - ( WIDTH_DIFF / 2 ) - ( getRecipeGui().isVisible() ? 77 : 0 );
+            guiTop = guiTop - HEIGHT - 1;
+
             return mouseX < (double)guiLeft
                     || mouseY < (double) guiTop
                     || mouseX >= (double) (guiLeft + WIDTH)

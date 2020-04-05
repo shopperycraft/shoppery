@@ -522,7 +522,7 @@
       "music_disc_wait": 260,
       "bone": 15,
       "ink_sac": 15,
-      "coca_beans": {"buy": 25, "sell": 1.50},
+      "cocoa_beans": {"buy": 25, "sell": 1.50},
       "lapis_lazuli": 100,
       "sugar": 5,
       "shears": 50,

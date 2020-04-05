@@ -236,7 +236,6 @@ public class ModPricesLoader extends Loader{
      * process.
      */
     private Prices getPricesFromMod(File modFile, Results results) throws Exception {
-        String modName = modFile.getName();
         ZipFile modJar = new ZipFile(modFile);
 
         //Get prices in root.
@@ -287,6 +286,7 @@ public class ModPricesLoader extends Loader{
     private Prices getPricesFromZipEntry(ZipFile file, ZipEntry entry) throws IOException {
         if(entry != null){
             String content = getFileFromZip(file, entry);
+            //TODO: Make global gson instance.
             JsonObject json = new Gson().fromJson(content, JsonObject.class);
             return new Prices(json);
         } else {

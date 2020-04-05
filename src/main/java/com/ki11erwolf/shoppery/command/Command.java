@@ -74,6 +74,11 @@ public abstract class Command {
      */
     public static final PriceCommand PRICE_COMMAND;
 
+    /**
+     * Instance of the set price command.
+     */
+    public static final SetPriceCommand SET_PRICE_COMMAND;
+
     //*******
     // Logic
     //*******
@@ -279,5 +284,6 @@ public abstract class Command {
         MONEY_COMMAND = new MoneyCommand();
         BALANCE_COMMAND = new BalanceCommand();
         PRICE_COMMAND = new PriceCommand();
+        SET_PRICE_COMMAND = new SetPriceCommand();
     }
 }

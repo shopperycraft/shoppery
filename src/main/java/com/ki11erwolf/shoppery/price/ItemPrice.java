@@ -64,8 +64,12 @@ public class ItemPrice {
     /**
      * Creates a new ItemPrice from the given values.
      */
-    private ItemPrice(ResourceLocation item, boolean prohibitBuy, double buy, boolean prohibitSell,
+    public ItemPrice(ResourceLocation item, boolean prohibitBuy, double buy, boolean prohibitSell,
                        double sell, double fluctuation){
+        //Ensure sell price never exceeds buy price.
+        double maxFluctuation = (buy * (fluctuation / 100));
+        if(sell >= buy - maxFluctuation) sell = buy - (maxFluctuation * 2);
+
         this.item = item;
         this.buy = (buy < 0) ? 0 : buy;
         this.sell = (sell < 0) ? 0 : sell;
@@ -77,21 +81,21 @@ public class ItemPrice {
     /**
      * Creates a new ItemPrice from the given values, with a fluctuation of 10%.
      */
-    private ItemPrice(ResourceLocation item, boolean prohibitBuy, double buy, boolean prohibitSell, double sell){
+    public ItemPrice(ResourceLocation item, boolean prohibitBuy, double buy, boolean prohibitSell, double sell){
         this(item, prohibitBuy, buy, prohibitSell, sell, 10.0);
     }
 
     /**
      * Creates a new ItemPrice from the given values.
      */
-    private ItemPrice(ResourceLocation item, double buy, double sell, double fluctuation){
+    public ItemPrice(ResourceLocation item, double buy, double sell, double fluctuation){
         this(item, false, buy, false, sell, fluctuation);
     }
 
     /**
      * Creates a new ItemPrice from the given values, with a fluctuation of 10%.
      */
-    private ItemPrice(ResourceLocation item, double buy, double sell){
+    public ItemPrice(ResourceLocation item, double buy, double sell){
         this(item, buy, sell, 10.0);
     }
 

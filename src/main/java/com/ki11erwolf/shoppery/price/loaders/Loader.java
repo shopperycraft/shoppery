@@ -81,12 +81,9 @@ public abstract class Loader {
     }
 
     /**
-     * Called by the price registry when it wants to execute
-     * this loader and obtain the entries from it.
-     *
-     * <p/>This method is only called once by the registry
-     * so the returned entries don't need to be cached for
-     * multiple calls.
+     * Called once by the price registry at load time
+     * when it wants to load this loader and obtain
+     * the entries from it.
      *
      * <p/>If an exception is thrown during the load process,
      * the loader will be flagged as an errored loader and its

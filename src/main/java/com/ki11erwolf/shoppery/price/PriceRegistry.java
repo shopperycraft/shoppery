@@ -1,10 +1,7 @@
 package com.ki11erwolf.shoppery.price;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.price.loaders.Loader;
-import com.ki11erwolf.shoppery.price.loaders.ModPricesLoader;
-import com.ki11erwolf.shoppery.price.loaders.Results;
-import com.ki11erwolf.shoppery.price.loaders.ShopperyPricesLoader;
+import com.ki11erwolf.shoppery.price.loaders.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -72,7 +69,8 @@ enum PriceRegistry {
      */
     INSTANCE(
         new ShopperyPricesLoader(),
-        new ModPricesLoader()
+        new ModPricesLoader(),
+        new ExternalPricesLoader()
     );
 
     // *************
@@ -121,11 +119,46 @@ enum PriceRegistry {
     }
 
     /**
+     * Asserts the fact that the price registry is both
+     * loaded and cleaned, e.i. is usable.
+     *
+     * @throws IllegalStateException if the price registry
+     * has not been loaded or cleaned.
+     */
+    void assertUsable(){
+        if(!isLoadedAndCleaned())
+            throw new IllegalStateException(String.format(
+                    "Registry load not started/completed. Load: %s, Clean: %s",
+                    isLoaded,
+                    hasCleanerThreadRun
+            ));
+    }
+
+    /**
      * @return the map object used to store the registers
      * ItemPrices.
      */
     Map<ResourceLocation, ItemPrice> getPriceMap(){
         return getMap();
+    }
+
+    /**
+     * Changes the price of a given item to the new price
+     * specified.
+     *
+     * Modifies the price of an item, both in the registry,
+     * and on file so the change persists across Minecraft
+     * Launches & Registry loads.
+     *
+     * @param price the ItemPrice, holding a reference to
+     *              the Item who's price is being changed,
+     *              as well the new specified price of the item.
+     * @return {@code true} if the item is a valid item, is
+     * allowed to have a price, and the price change was
+     * performed successfully.
+     */
+    boolean modifyPrice(ItemPrice price){
+        return registryModifier.setPrice(price);
     }
 
     // ********
@@ -141,7 +174,7 @@ enum PriceRegistry {
      * The synchronous lock object used to lock access
      * to the registers map.
      */
-    private static final Object PRICE_MAP_LOCK = new Object();
+     protected static final Object PRICE_MAP_LOCK = new Object();
 
     /**
      * The registries backing map that stores all its
@@ -153,6 +186,12 @@ enum PriceRegistry {
             = new LinkedHashMap<>(ItemPrices.minExpectedNumberOfEntries);
 
     /**
+     * The RegistryModifier for this registry, that is bound to the
+     * underlying map of this registry.
+     */
+    private final RegistryModifier registryModifier = new RegistryModifier(priceMap);
+
+    /**
      * Flag set to true once the registry has been completely
      * loaded (excluding clean).
      */
@@ -162,7 +201,7 @@ enum PriceRegistry {
      * Flag set to true when the {@link #load()} method
      * has been called.
      */
-    private boolean isLoading = false;
+    private volatile boolean isLoading = false;
 
     /**
      * The given list of loaders that will be executed
@@ -236,7 +275,9 @@ enum PriceRegistry {
         LoaderThread(){
             super("shoppery-price-registry-loader");
             this.setDaemon(true);
-            this.setUncaughtExceptionHandler(((t, e) -> LOG.error("Uncaught exception on loader thread", e)));
+            this.setUncaughtExceptionHandler((
+                    (t, e) -> LOG.error("Uncaught exception on price registry loader thread", e)
+            ));
         }
 
         /**
@@ -400,7 +441,7 @@ enum PriceRegistry {
      * has cleaned the registry. This may be
      * true while the thread is still running.
      */
-    private boolean hasCleanerThreadRun = false;
+    private volatile boolean hasCleanerThreadRun = false;
 
     /**
      * Called when Forge Mod Loader has finished
@@ -477,7 +518,7 @@ enum PriceRegistry {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    //Meh
+                    //Should never happen
                 }
             }
 

@@ -54,8 +54,8 @@ public class ShopperyItem<T extends ShopperyItem<T>> extends Item {
     }
 
     /**
-     * Adds this item instance to the
-     * Shoppery-item-registration-queue
+     * Adds this item instance to
+     * the items registration queue
      * where it will be queued for
      * registration into the game.
      *

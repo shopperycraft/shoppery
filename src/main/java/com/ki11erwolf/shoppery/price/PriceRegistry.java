@@ -62,6 +62,22 @@ import java.util.*;
  */
 enum PriceRegistry {
 
+    /*
+        TODO: Thoughts on the price registry.
+
+        It works and performs well, but the
+        implementation of it all feels lacking.
+
+        The loader system feel like it could
+        benefit a lot from common & shared
+        methods.
+
+        The registry itself seams like it could
+        benefit from being broken up into multiple
+        classes, each doing a task: e.g. RegistryLoader,
+        RegistryCleaner.
+     */
+
     /**
      * The singleton instance of this registry.
      * The various loaders used to build the registry

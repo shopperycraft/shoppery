@@ -199,7 +199,7 @@ enum PriceRegistry {
      */
     //LinkedHashMap - we want a predictable iteration order.
     private final Map<ResourceLocation, ItemPrice> priceMap
-            = new LinkedHashMap<>(ItemPrices.minExpectedNumberOfEntries);
+            = new LinkedHashMap<>(ItemPrices.ENTRIES_EXPECTED);
 
     /**
      * The RegistryModifier for this registry, that is bound to the
@@ -532,6 +532,7 @@ enum PriceRegistry {
             while(!isLoaded){
                 LOG.debug("Waiting for registry to finish loading...");
                 try {
+                    //noinspection BusyWait
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     //Should never happen

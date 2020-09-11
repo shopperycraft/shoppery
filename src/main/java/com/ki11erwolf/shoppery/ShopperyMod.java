@@ -24,7 +24,6 @@ import java.io.File;
  * The Shoppery "Main" mod class.
  */
 @Mod(ShopperyMod.MODID)
-@SuppressWarnings("unused")//Methods/Objects found by reflection
 public class ShopperyMod {
 
     /**
@@ -41,7 +40,6 @@ public class ShopperyMod {
      * The version number for this release of
      * shopperycraft.
      */
-    @SuppressWarnings("WeakerAccess")
     public static final String VERSION = "1.0.0";
 
     /**
@@ -52,6 +50,7 @@ public class ShopperyMod {
     /**
      * The proxy class (server or client) for this instance.
      */
+    @SuppressWarnings("FieldMayBeFinal")
     private static Proxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     /**
@@ -157,5 +156,17 @@ public class ShopperyMod {
      */
     public static BankManager getBankManager(){
         return BankManager.INSTANCE;
+    }
+
+    /**
+     * Provides an alternative to accessing the
+     * {@link com.ki11erwolf.shoppery.price.ItemPrices}
+     * statically, by proving an object instance with
+     * the same methods as instance methods.
+     *
+     * @return the singleton ItemPrices instance.
+     */
+    public static ItemPrices getItemPrices(){
+        return ItemPrices.INSTANCE;
     }
 }

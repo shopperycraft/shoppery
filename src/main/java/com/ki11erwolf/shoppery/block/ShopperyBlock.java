@@ -51,10 +51,8 @@ public class ShopperyBlock<T> extends Block {
     }
 
     /**
-     * Adds this block instance to
-     * the blocks registration queue
-     * where it will be queued for
-     * registration into the game.
+     * Adds this block instance to the blocks registration queue
+     * where it will be queued for registration into the game.
      *
      * @return {@code this}.
      */

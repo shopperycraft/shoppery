@@ -1,3 +1,7 @@
+// ##################
+// Forge Build Script
+// ##################
+
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
@@ -8,23 +12,46 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
+
+// ##############################
+// Versions & Other Configuration
+// ##############################
+/**
+ * Holds values needed to run/build Shoppery that are likely to change. Such as versioning.
+ */
+class BuildProperties {
+
+    static VERSION = '1.0.0'
+
+    static MINECRAFT_VERSION = '1.15.2'
+
+    static FORGE_VERSION = '31.1.19'
+
+    static SNAPSHOT_VERSION = '20200225-1.15.1'
+
+    static MODID = 'shoppery'
+
+    static AUTHOR = 'Ki11er_wolf'
+
+    static DOMAIN = 'com.ki11erwolf' + '.' + MODID
+
+    static MCFORGE_VERSION = "${MINECRAFT_VERSION}-${FORGE_VERSION}"
+}
+
+//Standard forge build script
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-// **************************************
-//                 Begin!
-// **************************************
-
-version = '1.0.0'
-group = 'com.ki11erwolf.shoppery'
-archivesBaseName = 'shoppery'
+version = BuildProperties.VERSION
+group = BuildProperties.DOMAIN
+archivesBaseName = BuildProperties.MODID
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
 
-    mappings channel: 'snapshot', version: '20200225-1.15.1'
+    mappings channel: 'snapshot', version: BuildProperties.SNAPSHOT_VERSION
 
     runs {
         client {
@@ -55,37 +82,19 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.15.2-31.1.19'
+    minecraft "net.minecraftforge:forge:" + BuildProperties.MCFORGE_VERSION
 }
 
 jar {
     manifest {
         attributes([
-            "Specification-Title": "shoppery",
-            "Specification-Vendor": "Ki11er_wolf",
-            "Specification-Version": "1",
+            "Specification-Title": BuildProperties.MODID,
+            "Specification-Vendor": BuildProperties.AUTHOR,
+            "Specification-Version": BuildProperties.VERSION + "-" + BuildProperties.MINECRAFT_VERSION,
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"Ki11er_wolf",
+            "Implementation-Vendor" : BuildProperties.AUTHOR,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
-    }
-}
-
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact reobfArtifact
-        }
-    }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
-        }
     }
 }

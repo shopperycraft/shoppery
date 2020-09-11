@@ -24,18 +24,18 @@ import java.util.UUID;
  * Used to retrieve {@link Bank} & {@link Wallet}
  * objects as well as handle the saving & loading of them.
  *
- * Handles storing and retrieving {@link Bank}s
+ * <p/>Handles storing and retrieving {@link Bank}s
  * from file as well as provides an API for
  * obtaining instances to the various Banks.
  *
- * A Bank is linked to a {@link net.minecraft.world.World}
+ * <p/>A Bank is linked to a {@link net.minecraft.world.World}
  * object and only stores data related to that world. This
  * means multiple worlds need multiple banks (such as in
  * a multiplayer server or simply different world saves in
  * singleplayer). Any bank must be obtained through
  * this class with a World object.
  *
- * This class is self managed. It will only load in banks
+ * <p/>This class is self managed. It will only load in banks
  * when called to do so with lazy loading ({@link #getBank(World)})
  * and it uses hooks to save the loaded banks in sync with
  * Minecraft world saving. This means no external
@@ -344,12 +344,10 @@ public enum BankManager {
     private boolean saveBank(Bank bank){
         //Print (logger is unreliable) out when we save the bank
         //and from where.
-        System.out.println(
-                String.format(
-                    "Attempting to save shoppery bank %s from %s",
-                    bank.getWorldName(),
-                    StackLocatorUtil.getCallerClass(6)
-                )
+        System.out.printf(
+                "Attempting to save shoppery bank %s from %s%n",
+            bank.getWorldName(),
+            StackLocatorUtil.getCallerClass(6)
         );
 
         JsonObject jBank = bank.getBankAsJsonObject();

@@ -24,7 +24,7 @@ public class CoinItem extends ShopperyItem<CoinItem> implements CurrencyItem{
     /**
      * The worth/worth (in cents) of this coin (0 < worth <= 100).
      */
-    private byte worth;
+    private final byte worth;
 
     /**
      * {@inheritDoc}

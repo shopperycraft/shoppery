@@ -49,7 +49,7 @@ public class ShopperyPricesLoader extends Loader {
             return null;
         }
 
-        List<ItemPrice> pricesList = new ArrayList<>(ItemPrices.minExpectedNumberOfEntries);
+        List<ItemPrice> pricesList = new ArrayList<>(ItemPrices.ENTRIES_EXPECTED);
 
         //For each mod
         prices.entrySet().forEach((price) -> {

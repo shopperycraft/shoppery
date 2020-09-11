@@ -407,6 +407,7 @@
       "coal": 15,
       "charcoal": {"buy": 15, "sell": 4},
       "diamond": {"buy": 200, "fluctuation": 4.0},
+      "netherite": {"buy": 300, "fluctuation": 3.5},
       "emerald": {"buy": 350, "fluctuation": 3.0},
       "iron_ingot": 25,
       "gold_ingot": 105,

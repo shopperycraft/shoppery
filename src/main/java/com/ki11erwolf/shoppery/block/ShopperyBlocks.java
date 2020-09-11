@@ -9,8 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * Holds all instances of shoppery blocks and handles
- * the registration of them.
+ * Holds all instances of shoppery blocks and handles the registration of them.
  */
 @Mod.EventBusSubscriber(modid = ShopperyMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ShopperyBlocks extends QueueRegisterer<Block> {

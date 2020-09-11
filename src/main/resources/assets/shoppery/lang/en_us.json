@@ -26,8 +26,8 @@
 
   "shoppery.title.screen.wallet":                         "%s's Wallet",
 
-  "shoppery.text.screen.buy":                             "Costs",
-  "shoppery.text.screen.sell":                            "Resales at",
+  "shoppery.text.screen.buy":                             "Buy for",
+  "shoppery.text.screen.sell":                            "Sell for",
   "shoppery.text.screen.no_price":                        "No Prices for Item",
 
   "shoppery.tooltip.widget.wiki_button":                  "Open the Wiki",

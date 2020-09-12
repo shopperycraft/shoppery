@@ -1,6 +1,5 @@
 package com.ki11erwolf.shoppery.price.loaders;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ki11erwolf.shoppery.ShopperyMod;
@@ -103,7 +102,7 @@ public class ShopperyPricesLoader extends Loader {
                 prices.append((char) chr);
             }
 
-            Prices pricesObj = new Prices(new Gson().fromJson(prices.toString(), JsonObject.class));
+            Prices pricesObj = new Prices(ItemPrices.GSON_INSTANCE.fromJson(prices.toString(), JsonObject.class));
             return pricesObj.getPrices();
         } catch (Exception ex){
             LOG.error("Failed to load prices.json for Shoppery...", ex);

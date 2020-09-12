@@ -1,5 +1,6 @@
 package com.ki11erwolf.shoppery.price;
 
+import com.google.gson.Gson;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -51,7 +52,14 @@ public enum ItemPrices {
      * static methods.
      */
     INSTANCE;
-    
+
+    /**
+     * A reusable {@link Gson} object instance for the Price
+     * system. It's preferable to reuse the same object rather
+     * than create a new one each time.
+     */
+    public static final Gson GSON_INSTANCE = new Gson();
+
     /**
      * The directory on disk where
      */

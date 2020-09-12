@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.crash.ReportedException;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -157,11 +158,18 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      * changing inventory gui screen.
      */
     private void calculateOriginPosition(){
+        boolean isRecipeBookOpen;
+
+        try { isRecipeBookOpen = getRecipeGui().isVisible(); }
+        catch (ReportedException | NullPointerException e){
+            isRecipeBookOpen = false;
+        }
+
         //Centers Money section atop the inventory sections, recipe book included.
-        this.relX = guiLeft - ( WIDTH_DIFF / 2 ) - ( getRecipeGui().isVisible() ? 77 : 0 );
+        this.relX = guiLeft - ( WIDTH_DIFF / 2 ) - ( isRecipeBookOpen ? 77 : 0 );
         this.relY = guiTop - HEIGHT - 1;//-1 for spacing.
 
-        this.trueX = (getRecipeGui().isVisible() ? -77 : 0) + (this.xSize / 2) - (WIDTH / 2);
+        this.trueX = (isRecipeBookOpen ? -77 : 0) + (this.xSize / 2) - (WIDTH / 2);
         this.trueY = -4 - HEIGHT;
     }
 

@@ -22,6 +22,20 @@ import net.minecraft.util.text.ITextComponent;
  */
 interface WidgetFix {
 
+    // #################
+    // MC Render Methods
+    // #################
+
+//    //Button Render Method
+//    default void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+//        this.render(matrix, mouseXPos, mouseYPos, frameTime);
+//    }
+
+//    //Widget Render Method
+//    default void func_230430_a_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+//        this.render(matrix, mouseXPos, mouseYPos, frameTime);
+//    }
+
     // ###########
     // Rename util
     // ###########
@@ -57,14 +71,6 @@ interface WidgetFix {
      *            the frame took render.
      */
     void render(MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime);
-
-    default void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
-        this.render(matrix, mouseXPos, mouseYPos, frameTime);
-    }
-
-    default void func_230430_a_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
-        this.render(matrix, mouseXPos, mouseYPos, frameTime);
-    }
 
     // ######################
     // Self Getters & Setters

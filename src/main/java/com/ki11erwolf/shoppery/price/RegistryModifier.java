@@ -162,7 +162,7 @@ class RegistryModifier {
         JsonObject persistentFileJson;
 
         try {
-            persistentFileJson = new Gson().fromJson(
+            persistentFileJson = ItemPrices.GSON_INSTANCE.fromJson(
                     new FileReader(PERSISTENT_FILE), JsonObject.class
             );
 

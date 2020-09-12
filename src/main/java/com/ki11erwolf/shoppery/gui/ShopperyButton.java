@@ -26,6 +26,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * The player inventory button added by shoppery to display
  * the players balance and allows them to deposit/withdraw
@@ -106,6 +108,13 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
     // Render
     // ******
 
+    /** Obfuscated {@link #render(MatrixStack, int, int, float)}. */
+    @Override @ParametersAreNonnullByDefault
+    public void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+        super.func_230431_b_(matrix, mouseXPos, mouseYPos, frameTime);
+        this.render(matrix, mouseXPos, mouseYPos, frameTime);
+    }
+
     /**
      * Handles drawing text atop the button as well
      * as tooltip text when the player hovers over
@@ -118,9 +127,7 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
     @Override
     public void render(MatrixStack stack, int mouseXPos, int mouseYPos, float frameTime) {
         FontRenderer renderer = Minecraft.getInstance().fontRenderer;
-
-        //Have to respond to gui size chnages here.
-        posUpdateCheck();
+        posUpdateCheck();//Have to respond to gui size changes here.
 
         //Button text
         renderTooltip1(stack, renderer,
@@ -141,7 +148,7 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
             boolean toEnlarged = inventoryGUI.getRecipeGui().isVisible();
 
             if(toEnlarged)          this.setXPos(this.getXPos() + 77);
-            else                    this.setYPos(this.getYPos() - 77);
+            else                    this.setXPos(this.getXPos() - 77);
 
             //reset size change flag.
             this.isEnlarged = !isEnlarged;
@@ -215,7 +222,7 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
 
             //and we have a player
             if(player == null){
-                LOGGER.warn("Player is null, skipping shoppery button injection...");
+                LOGGER.warn("Player is null. Skipping addition of shoppery button to inventory...");
                 return;
             }
 
@@ -242,7 +249,8 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
      */
     private static ShopperyButton makeButton(InventoryScreen screen, PlayerEntity player){
         return new ShopperyButton(
-                screen.getGuiLeft() + REL_X, screen.field_230708_k_ /* TODO: or field_230709_l_ */ / 2 - REL_INV_Y, screen) {
+                screen.getGuiLeft() + REL_X, screen.field_230709_l_
+                /*screen.field_230708_k_*/ / 2 - REL_INV_Y, screen) {
 
             @Override
             protected String getShortenedBalance() {

@@ -1,6 +1,5 @@
 package com.ki11erwolf.shoppery.price.loaders;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ki11erwolf.shoppery.ShopperyMod;
@@ -130,7 +129,7 @@ public class ExternalPricesLoader extends Loader{
      */
     private Prices getPricesFromFile(File priceFile) {
         try{
-            return new Prices(new Gson().fromJson(new FileReader(priceFile), JsonObject.class));
+            return new Prices(ItemPrices.GSON_INSTANCE.fromJson(new FileReader(priceFile), JsonObject.class));
         } catch (Exception e){
             results.logError(
                     "Failed to process external prices file: " + priceFile + ". Caused by: " + e.getMessage()

@@ -56,13 +56,14 @@ public final class MCUtil {
      *
      * @param world the world to try and get the name of.
      * @throws IllegalStateException if the world object cannot
-     * be used to get a name.
+     * be used to get a name, or if {@link World#isRemote()}
+     * returns true.
      * @throws IllegalArgumentException if the IWorld cannot be cast to World.
      * @return the name given to the world at creation time,
      * if it could be obtained.
      */
     public static String getWorldName(IWorld world){
-        Objects.requireNonNull(world);
+        Objects.requireNonNull(world);  // Null check
 
         if(!(world instanceof World))
             throw new IllegalArgumentException("Cannot get world name! IWorld object must be child of World class.");
@@ -92,7 +93,8 @@ public final class MCUtil {
      * if it could be obtained.
      */
     public static String getWorldName(World world){
-        Objects.requireNonNull(world);  // Null check
+        if(Objects.requireNonNull(world).isRemote())// Null & Remote check
+            throw new IllegalStateException("Cannot get world name! A remote world was used (.isRemote() == true).");
 
         if(world.getServer() == null)   // World Server get & check
             throw new IllegalStateException("Cannot get world name! World object has no server. Client side maybe?");

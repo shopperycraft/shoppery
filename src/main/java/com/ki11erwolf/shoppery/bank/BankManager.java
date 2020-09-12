@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.util.PlayerUtil;
+import com.ki11erwolf.shoppery.util.MCUtil;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
@@ -54,7 +54,7 @@ public enum BankManager {
      * The file name of every bank, to be formatted
      * with the banks name.
      */
-    private static final String FILE_NAME = "world-%s-bank.json";
+    private static final String FILE_NAME = "WorldBank-%s.json";
 
     /*
      * Registers the bank saver shutdown
@@ -114,7 +114,7 @@ public enum BankManager {
      * to the given world.
      */
     public Bank getBank(World world){
-        String worldName = world.getWorldInfo().getWorldName();
+        String worldName = MCUtil.getWorldName(world);
         Bank givenBank = worldToBank.get(worldName);
 
         if(givenBank == null){
@@ -207,7 +207,7 @@ public enum BankManager {
      * @return the players wallet for the world they are currently in.
      */
     public static Wallet _getWallet(UUID playerUUID){
-        PlayerEntity player = PlayerUtil.getPlayerFromUUID(playerUUID);
+        PlayerEntity player = MCUtil.getPlayerFromUUID(playerUUID);
         return _getBank(player.getEntityWorld()).getWallet(player);
     }
 
@@ -233,7 +233,7 @@ public enum BankManager {
      * @return the players wallet for the world they are currently in.
      */
     public static Wallet _getWallet(GameProfile playerProfile){
-        PlayerEntity player = PlayerUtil.getPlayerFromUUID(playerProfile.getId());
+        PlayerEntity player = MCUtil.getPlayerFromUUID(playerProfile.getId());
         return _getBank(player.getEntityWorld()).getWallet(player);
     }
 
@@ -290,8 +290,9 @@ public enum BankManager {
      * {@code null} if no save could be found.
      */
     private Bank readBank(World world){
-        LOGGER.info("Reading bank save file: " + world.getWorldInfo().getWorldName());
-        String worldName = world.getWorldInfo().getWorldName();
+        String worldName = MCUtil.getWorldName(world);
+        LOGGER.info("Reading bank save file: " + worldName);
+
         File saveFile = getFileFromName(worldName);
 
         //Ensure existence
@@ -379,8 +380,10 @@ public enum BankManager {
         if(name == null)
             return null;
 
-        return new File(INSTANCE.bankDirectory +"/" +
-                        String.format(FILE_NAME, name));
+        return new File(
+                INSTANCE.bankDirectory
+                +"/" + String.format(FILE_NAME, name)
+        );
     }
 
     //*******
@@ -407,9 +410,11 @@ public enum BankManager {
      */
     @SubscribeEvent
     void onWorldSave(WorldEvent.Save worldSaveEvent){
-        World world = worldSaveEvent.getWorld().getWorld();
+        if(!(worldSaveEvent.getWorld() instanceof World))
+            throw new IllegalStateException("Failed to convert IWorld to World.");
 
-        if(worldToBank.containsKey(world.getWorldInfo().getWorldName())){
+        World world = (World)worldSaveEvent.getWorld();
+        if(worldToBank.containsKey(MCUtil.getWorldName(world))){
             save(getBank(world));
         }
     }
@@ -431,11 +436,12 @@ public enum BankManager {
      */
     @SubscribeEvent
     void onWorldUnload(WorldEvent.Unload worldUnloadEvent){
-        LOGGER.info(
-                "World with bank: "+
-                worldUnloadEvent.getWorld().getWorldInfo().getWorldName() +
+        if(worldUnloadEvent.getWorld().isRemote())
+            return;
+
+        LOGGER.info("World with bank: " + MCUtil.getWorldName(worldUnloadEvent.getWorld()) +
                 " was unloaded! Removing bank from cache!"
         );
-        worldToBank.remove(worldUnloadEvent.getWorld().getWorldInfo().getWorldName());
+        worldToBank.remove(MCUtil.getWorldName(worldUnloadEvent.getWorld()));
     }
 }

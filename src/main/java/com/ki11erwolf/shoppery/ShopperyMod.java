@@ -50,7 +50,7 @@ public class ShopperyMod {
     /**
      * The proxy class (server or client) for this instance.
      */
-    @SuppressWarnings("FieldMayBeFinal")
+    @SuppressWarnings({"FieldMayBeFinal", "deprecation"})
     private static Proxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     /**

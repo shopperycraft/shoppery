@@ -17,5 +17,4 @@ public class ServerProxy implements Proxy {
         Packet.init();
         Command.init();
     }
-
 }

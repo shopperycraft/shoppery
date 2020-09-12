@@ -8,6 +8,7 @@ import com.ki11erwolf.shoppery.packets.FormattedBalanceReqPacket;
 import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.util.CurrencyUtil;
 import com.ki11erwolf.shoppery.util.WaitTimer;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -16,6 +17,7 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -32,7 +34,7 @@ import org.apache.logging.log4j.Logger;
  * <p/>Once initialized, the button will handle itself.
  */
 @OnlyIn(Dist.CLIENT)
-public abstract class ShopperyButton extends ImageButton {
+public abstract class ShopperyButton extends ImageButton implements WidgetFix {
 
     /**
      * The textures map for Shoppery buttons.
@@ -109,21 +111,23 @@ public abstract class ShopperyButton extends ImageButton {
      * as tooltip text when the player hovers over
      * the button.
      *
-     * @param x mouse x position.
-     * @param y mouse y position.
-     * @param z i have no clue.
+     * @param mouseXPos mouse x position.
+     * @param mouseYPos mouse y position.
+     * @param frameTime i have no clue.
      */
-    public void renderButton(int x, int y, float z) {
+    @Override
+    public void render(MatrixStack stack, int mouseXPos, int mouseYPos, float frameTime) {
         FontRenderer renderer = Minecraft.getInstance().fontRenderer;
-        super.renderButton(x, y, z);
 
         //Have to respond to gui size chnages here.
         posUpdateCheck();
 
         //Button text
-        drawCenteredString(
-                renderer, getShortenedBalance(), this.x + (this.width / 2),
-                this.y + (this.height / 3) - 1, 0xffffff
+        renderTooltip1(stack, renderer,
+                new StringTextComponent(getShortenedBalance()),
+                this.getXPos() + (this.getWidth() / 2),
+                this.getYPos() + (this.getHeight() / 3) - 1,
+                0xffffff
         );
     }
 
@@ -135,8 +139,9 @@ public abstract class ShopperyButton extends ImageButton {
     private void posUpdateCheck(){
         if(inventoryGUI.getRecipeGui().isVisible() != isEnlarged){
             boolean toEnlarged = inventoryGUI.getRecipeGui().isVisible();
-            if(toEnlarged)          this.x += 77;
-            else                    this.x -= 77;
+
+            if(toEnlarged)          this.setXPos(this.getXPos() + 77);
+            else                    this.setYPos(this.getYPos() - 77);
 
             //reset size change flag.
             this.isEnlarged = !isEnlarged;
@@ -237,7 +242,7 @@ public abstract class ShopperyButton extends ImageButton {
      */
     private static ShopperyButton makeButton(InventoryScreen screen, PlayerEntity player){
         return new ShopperyButton(
-                screen.getGuiLeft() + REL_X, screen.height / 2 - REL_INV_Y, screen) {
+                screen.getGuiLeft() + REL_X, screen.field_230708_k_ /* TODO: or field_230709_l_ */ / 2 - REL_INV_Y, screen) {
 
             @Override
             protected String getShortenedBalance() {

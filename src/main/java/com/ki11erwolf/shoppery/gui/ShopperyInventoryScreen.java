@@ -9,14 +9,18 @@ import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.util.CurrencyUtil;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import com.ki11erwolf.shoppery.util.WaitTimer;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.ki11erwolf.shoppery.item.ShopperyItems.*;
 
@@ -32,7 +36,7 @@ import static com.ki11erwolf.shoppery.item.ShopperyItems.*;
  * interfering with the Vanilla survival inventory GUI.
  */
 @OnlyIn(Dist.CLIENT)
-public class ShopperyInventoryScreen extends InventoryScreen {
+public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFix{
 
     /**
      * The texture map for the various GUI backgrounds
@@ -103,19 +107,25 @@ public class ShopperyInventoryScreen extends InventoryScreen {
         this.player = player;
     }
 
+    /** Obfuscated {@link #init()}. */
+    @Override protected void func_231160_c_() { init(); }
+
     /**
      * {@inheritDoc}
      * Constructs and initializes the gui screen
      * and all sub components.
      */
-    @Override
     protected void init() {
-        super.init();
-
         calculateOriginPosition();
         initCashSection();
         this.addButton(new WikiButton(relX, relY));
         this.addButton((this.inputSlot = new InputSlot(player, relX + 122, relY + 36)));
+    }
+
+    /** Obfuscated {@link #render(MatrixStack, int, int, float)}. */
+    @Override @ParametersAreNonnullByDefault
+    public void func_230430_a_(MatrixStack matrix, int mouseX, int mouseY, float ticks) {
+        render(matrix, mouseX, mouseY, ticks);
     }
 
     /**
@@ -128,14 +138,13 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      * <p/>Handles position and dimension
      * calculating for the scene as well.
      *
-     * @param x mouseX
-     * @param y mouseY
-     * @param time frame render time
+     * @param mouseXPos mouseX
+     * @param mouseYPos mouseY
+     * @param frameTime frame render time
      */
     @Override
-    public void render(int x, int y, float time) {
+    public void render(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
         calculateOriginPosition();
-        super.render(x, y, time);
     }
 
     /**
@@ -160,25 +169,30 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     // Background
     // **********
 
+    /** Obfuscated {@link #drawGuiContainerBackgroundLayer(MatrixStack, float, int, int)} */
+    @Override @ParametersAreNonnullByDefault
+    protected void func_230450_a_(MatrixStack matrix, float ticks, int mouseXPos, int mouseYPos) {
+        super.func_230450_a_(matrix, ticks, mouseXPos, mouseXPos);
+        drawGuiContainerBackgroundLayer(matrix, ticks, mouseXPos, mouseYPos);
+    }
+
     /**
-     * {@inheritDoc}.
+     * {@inheritDoc}
      *
-     * <p/>Also delegates the drawing of the money section of the
-     * gui background to {@link #drawMoneyBackgroundLayer(float, int, int)}.
+     * <p/>Delegates the drawing of the money section of the
+     * gui background to {@link #drawMoneyBackgroundLayer(MatrixStack, float, int, int)}}.
      */
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-        drawMoneyBackgroundLayer(partialTicks, mouseX, mouseY);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
+        drawMoneyBackgroundLayer(matrix, partialTicks, mouseX, mouseY);
     }
 
     /**
      * Draws the money section background image to
      * the gui background, centered atop the normal gui.
      */
-    private void drawMoneyBackgroundLayer(float partialTicks, int mouseX, int mouseY){
+    private void drawMoneyBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY){
         Minecraft.getInstance().getTextureManager().bindTexture(SHOPPERY_GUIS);
-        this.blit(relX, relY, 0, 0, WIDTH, HEIGHT);
+        this.blitA(matrix, relX, relY, 0, 0, WIDTH, HEIGHT);
     }
 
     // **********
@@ -188,32 +202,40 @@ public class ShopperyInventoryScreen extends InventoryScreen {
     /**
      * {@inheritDoc}
      */
-    @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrix, int mouseX, int mouseY) {
+        //super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
-        drawTitles();
+        drawTitles(matrix);
 
         //Info screen: balance/prices
-        if(inputSlot.isOccupied()) drawItemPrices();
-        else drawPlayerBalance();
+        if(inputSlot.isOccupied()) drawItemPrices(matrix);
+        else drawPlayerBalance(matrix);
     }
 
     /**
      * Handles rendering the GUIs title(s)
      * and other static text.
      */
-    protected void drawTitles(){
+    protected void drawTitles(MatrixStack matrix){
         if(inputSlot.isOccupied()){
-            font.drawString(LocaleDomains.TEXT.sub(LocaleDomains.SCREEN)
-                    .get("buy"), X(24), Y(7), 0x3F3F3F
+            this.field_230712_o_.func_238405_a_(
+                    matrix, LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("buy"),
+                    X(24), Y(7), 0x3F3F3F
             );
 
-            font.drawString(LocaleDomains.TEXT.sub(LocaleDomains.SCREEN)
+
+            this.field_230712_o_.func_238405_a_(
+                    matrix, LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("buy"),
+                    X(24), Y(7), 0x3F3F3F
+            );
+
+            this.field_230712_o_.func_238405_a_(
+                    matrix, LocaleDomains.TEXT.sub(LocaleDomains.SCREEN)
                     .get("sell"), X(81), Y(7), 0x3F3F3F
             );
         } else {
-            font.drawString(LocaleDomains.TITLE.sub(LocaleDomains.SCREEN)
+            this.field_230712_o_.func_238405_a_(
+                    matrix, LocaleDomains.TITLE.sub(LocaleDomains.SCREEN)
                     .format("wallet", player.getDisplayName().getString()),
                     X(5), Y(7), 0x3F3F3F
             );
@@ -226,21 +248,24 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      * draws the buy and sell headers atop the
      * information screen.
      */
-    protected void drawItemPrices(){
+    protected void drawItemPrices(MatrixStack matrix){
         if(!ItemPriceRecPacket.doesLastReceivedHavePrice()){
-            drawCenteredString(font, LocaleDomains.TEXT.sub(LocaleDomains.SCREEN)
-                            .get("no_price"),
+            func_238471_a_(
+                    matrix, field_230712_o_,
+                    LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("no_price"),
                     X(73), Y(23), 0x9C1313
             );
             return;
         }
 
-        drawCenteredString(font, CurrencyUtil.CURRENCY_SYMBOL
+        func_238471_a_(
+                matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedBuyPrice()),
                 X(38), Y(23), 0xD11F1F
         );
 
-        drawCenteredString(font, CurrencyUtil.CURRENCY_SYMBOL
+        func_238471_a_(
+                matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedSellPrice()),
                 X(108), Y(23), 0x00E500
         );
@@ -250,8 +275,10 @@ public class ShopperyInventoryScreen extends InventoryScreen {
      * Draws the players balance onto the gui within the
      * information screen section.
      */
-    protected void drawPlayerBalance(){
-        drawCenteredString(font, CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
+    protected void drawPlayerBalance(MatrixStack matrix){
+        func_238471_a_(
+                matrix, field_230712_o_,
+                CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
                 X(73), Y(23), 0x00E500
         );
     }
@@ -408,4 +435,12 @@ public class ShopperyInventoryScreen extends InventoryScreen {
 
         return false;
     }
+
+    /**
+     * Adds a button, as a widget, to this screens list of components,
+     * so that it may be displayed on screen.
+     *
+     * @param button the button widget to add to the screen.
+     */
+    protected void addButton(Widget button){ this.func_230480_a_(button); }
 }

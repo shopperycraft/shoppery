@@ -8,14 +8,16 @@ import com.ki11erwolf.shoppery.item.NoteItem;
 import com.ki11erwolf.shoppery.item.ShopperyItem;
 import com.ki11erwolf.shoppery.packets.*;
 import com.ki11erwolf.shoppery.util.WaitTimer;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -32,7 +34,7 @@ import java.util.UUID;
  * from the players wallet when clicked.
  */
 @OnlyIn(Dist.CLIENT)
-public class MoneyButton extends Button {
+public class MoneyButton extends Button implements WidgetFix {
 
     /**
      * Timer to prevent spamming the server with
@@ -105,7 +107,7 @@ public class MoneyButton extends Button {
      * @param currencyItem the currency item to represent.
      */
     public MoneyButton(int x, int y, ShopperyItem<?> currencyItem, PlayerEntity player) {
-        super(x, y, SIZE, SIZE, "", (bool) -> {/*Done by override*/});
+        super(x, y, SIZE, SIZE, new StringTextComponent(""), (bool) -> {/*Done by override - onPress()}*/});
         this.playerUUID = player.getUniqueID();
         this.updateBalance();
 
@@ -163,12 +165,14 @@ public class MoneyButton extends Button {
         }
     }
 
+    /** Obfuscated {@link #onPress()}. */
+    @Override public void func_230930_b_() { onPress(); }
+
     /**
      * Called when the button is clicked by the player.
      * Sends a {@link com.ki11erwolf.shoppery.packets.MoneyWithdrawPacket}
      * in an attempt to withdraw the requested amount.
      */
-    @Override
     public void onPress(){
         Packet.send(PacketDistributor.SERVER.noArg(),
                 ((currencyItem instanceof NoteItem)
@@ -185,13 +189,13 @@ public class MoneyButton extends Button {
      * <p/>Renders the Currency Items icon as an image
      * for the button.
      *
-     * @param mouseX mouse X coordinate
-     * @param mouseY mouse Y coordinate.
-     * @param fps the amount of time (in milliseconds)
+     * @param mouseXPos mouse X coordinate
+     * @param mouseYPos mouse Y coordinate.
+     * @param frameTime the amount of time (in milliseconds)
      *            the frame took render.
      */
     @Override
-    public void renderButton(int mouseX, int mouseY, float fps) {
+    public void render(MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime) {
         //Balance
         updateBalance();
         boolean affordable = this.affordable();
@@ -201,24 +205,26 @@ public class MoneyButton extends Button {
         RenderSystem.disableDepthTest();
 
         //Hover animation
-        Vector3f animation;
-        if(isHovered && affordable){
-            stepAnimationRenderer(fps);
+
+        Vector3d animation;
+        if(this.isHovered() && affordable){
+            stepAnimationRenderer(frameTime);
             animation = getHoverAnimationPath(frame);
         } else {
             resetAnimationRenderer();
-            animation = new Vector3f(0, 0, 0);
+            animation = new Vector3d(0, 0, 0);
         }
 
-        int x = this.x + (int) animation.getX();
-        int y = this.y + (int) animation.getY();
+        int x = this.getXPos() + (int) animation.getX();
+        int y = this.getYPos() + (int) animation.getY();
 
         //Draw
-        blit(x, y, (float)0, (float)0, 16, 16, 16, 16);
+        func_238463_a_(matrixStack, x, y, (float) 0, (float) 0, 16, 16, 16, 16);
+        this.blit(matrixStack, x, y, (float)0, (float)0, 16, 16, 16, 16);
         RenderSystem.enableDepthTest();
 
         //Overlay
-        renderOverlays(x, y);
+        renderOverlays(matrixStack, x, y);
     }
 
     /**
@@ -229,12 +235,12 @@ public class MoneyButton extends Button {
      * @param x the x position at which to start rendering.
      * @param y the y position at which to start rendering.
      */
-    protected void renderOverlays(int x, int y){
+    protected void renderOverlays(MatrixStack matrix, int x, int y){
         if(!affordable()){
             Minecraft.getInstance().getTextureManager().bindTexture(ShopperyInventoryScreen.SHOPPERY_GUIS);
             RenderSystem.disableDepthTest();
 
-            blit(x, y, 0, 65, 16, 16);
+            this.blitA(matrix, x, y, 0, 65, 16, 16);
             RenderSystem.enableDepthTest();
         }
     }
@@ -285,26 +291,28 @@ public class MoneyButton extends Button {
      * to the renders coordinates.
      */
     @SuppressWarnings("DuplicateBranchesInSwitch")
-    protected Vector3f getHoverAnimationPath(int frame){
+    protected Vector3d getHoverAnimationPath(int frame){
         switch (frame + 1){
-            case 1: return new Vector3f(0, -1 ,0);
-            case 2: return new Vector3f(0, 0, 0);
-            case 3: return new Vector3f(0, 1 ,0);
-            case 4: return new Vector3f(0, 0, 0);
-            default: return new Vector3f(0, -1, 0);
+            case 1: return new Vector3d(0, -1 ,0);
+            case 2: return new Vector3d(0, 0, 0);
+            case 3: return new Vector3d(0, 1 ,0);
+            case 4: return new Vector3d(0, 0, 0);
+            default: return new Vector3d(0, -1, 0);
         }
     }
+
+    /** Obfuscated {@link #playDownSound(SoundHandler)}. */
+    @Override @ParametersAreNonnullByDefault public void func_230988_a_(SoundHandler soundHandler) { playDownSound(soundHandler); }
 
     /**
      * Replaces the default button press sounds
      * with {@link ShopperySoundEvents#WITHDRAW}.
      */
-    @Override
-    @ParametersAreNonnullByDefault
-    public void playDownSound( SoundHandler soundHandler) {
+    public void playDownSound(SoundHandler soundHandler) {
         if(affordable())
             soundHandler.play(SimpleSound.master(ShopperySoundEvents.WITHDRAW,
                     RandomUtils.nextFloat(1.2F, 1.4F), 0.50F
             ));
     }
+
 }

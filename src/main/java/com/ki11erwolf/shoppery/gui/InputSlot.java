@@ -7,6 +7,7 @@ import com.ki11erwolf.shoppery.packets.DepositInventoryPacket;
 import com.ki11erwolf.shoppery.packets.ItemPriceReqPacket;
 import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -31,7 +33,7 @@ import org.apache.commons.lang3.RandomUtils;
  * depositing ItemStacks, is done through packets.
  */
 @OnlyIn(Dist.CLIENT)
-public class InputSlot extends Widget {
+public class InputSlot extends Widget implements WidgetFix {
 
     /**
      * The client side player interacting
@@ -54,7 +56,7 @@ public class InputSlot extends Widget {
      *               on screen.
      */
     public InputSlot(PlayerEntity player, int xBegin, int yBegin) {
-        super(xBegin, yBegin, 18, 18, "");
+        super(xBegin, yBegin, 18, 18, new StringTextComponent(""));
         this.player = player;
     }
 
@@ -126,6 +128,9 @@ public class InputSlot extends Widget {
         this.containedItem = item;
     }
 
+    /** Obfuscated {@link #mouseClicked(double, double, int)} */
+    @Override public boolean func_231044_a_(double x, double y, int button) { return mouseClicked(x, y, button); }
+
     /**
      * Called when a mouse action is performed
      * over the widget. Handles invoking a
@@ -137,11 +142,13 @@ public class InputSlot extends Widget {
      * @return {@code true} if a clicked event
      * was raised (effectively clicked).
      */
-    @Override
     public boolean mouseClicked(double x, double y, int button) {
-        if (this.active && this.visible) {
+        super.func_231044_a_(x, y, button);
+
+        //if (this.active && this.visible) {
+        if (this.field_230693_o_ && this.field_230694_p_) {
             if (button >= 0 && button < 3) {
-                boolean flag = this.clicked(x, y);
+                boolean flag = func_230992_c_(x, y); //this.clicked(x, y);
                 if (flag) {
                     this.onClick(x, y, button);
                     return true;
@@ -164,7 +171,7 @@ public class InputSlot extends Widget {
      */
     public boolean mouseReleased(double x, double y, int button) {
         if (button >= 0 && button < 3) {
-            this.onRelease(x, y);
+            this.func_231047_b_(x, y); //this.onRelease(x, y);
             return true;
         } else {
             return false;
@@ -181,10 +188,10 @@ public class InputSlot extends Widget {
      *                   frame took to render.
      */
     @Override
-    public void renderButton(int mouseX, int mouseY, float renderTime) {
-        renderBackground();
+    public void render(MatrixStack matrix, int mouseX, int mouseY, float renderTime) {
+        renderBackground(matrix);
         renderContainedItem();
-        renderTooltip(mouseX, mouseY);
+        renderTooltip(matrix, mouseX, mouseY);
     }
 
     /**
@@ -193,7 +200,7 @@ public class InputSlot extends Widget {
      */
     private void renderContainedItem(){
         if(containedItem != null){
-            drawItemStack(containedItem, x + 1, y + 1);
+            drawItemStack(containedItem, getXPos() + 1, getYPos() + 1);
         }
     }
 
@@ -208,12 +215,13 @@ public class InputSlot extends Widget {
      */
     private void drawItemStack(ItemStack stack, int x, int y) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+        //noinspection deprecation
         RenderSystem.translatef(0.0F, 0.0F, 32.0F);
-        this.setBlitOffset(200);
+        this.func_230926_e_(200); //this.setBlitOffset(200);
         itemRenderer.zLevel = 200.0F;
         net.minecraft.client.gui.FontRenderer font = stack.getItem().getFontRenderer(stack);
         itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
-        this.setBlitOffset(0);
+        this.func_230926_e_(0); //this.setBlitOffset(0);
         itemRenderer.zLevel = 0.0F;
     }
 
@@ -221,12 +229,14 @@ public class InputSlot extends Widget {
      * Handles rendering the correct background image
      * of this slot of screen.
      */
-    private void renderBackground(){
+    private void renderBackground(MatrixStack matrix){
         Minecraft.getInstance().getTextureManager().bindTexture(ShopperyInventoryScreen.SHOPPERY_GUIS);
         RenderSystem.disableDepthTest();
-        blit(x, y, (
-                (isHovered || containedItem != null) ? 35 : 16
-        ), 65, 18, 18);
+        WidgetFix.blitA_(
+                matrix, WidgetFix.getXPos(this), WidgetFix.getYPos(this),
+                ((WidgetFix.isHovered(this) || containedItem != null) ? 35 : 16),
+                65, 18, 18
+        );
         RenderSystem.enableDepthTest();
     }
 
@@ -237,20 +247,23 @@ public class InputSlot extends Widget {
      * @param x mouse X position at time of render.
      * @param y mouse Y position at time of render.
      */
-    private void renderTooltip(int x, int y) {
-        if(isHovered || isOccupied()) {
-            drawCenteredString(Minecraft.getInstance().fontRenderer,
-                    LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_1"),
-                    this.x + (width - 67),
-                    this.y + ((height / 2) - 4) - 5,
+    private void renderTooltip(MatrixStack matrix, int x, int y) {
+        if(this.isHovered() || isOccupied()) {
+            this.renderTooltip1(
+                    matrix, Minecraft.getInstance().fontRenderer,
+                    new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_1")),
+                    this.getXPos() + (getWidth() - 67),
+                    this.getYPos() + ((getHeight() / 2) - 4) - 5,
                     0XF8F8F8
             );
         }
-        if(isHovered && !isOccupied()){
-            drawCenteredString(Minecraft.getInstance().fontRenderer,
-                    LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_2"),
-                    this.x + (width - 67),
-                    this.y + ((height / 2) - 4) + 5,
+
+        if(this.isHovered() && !isOccupied()){
+            this.renderTooltip1(
+                    matrix, Minecraft.getInstance().fontRenderer,
+                    new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_2")),
+                    this.getXPos() + (getWidth() - 67),
+                    this.getYPos() + ((getHeight() / 2) - 4) + 5,
                     0XF8F8F8
             );
         }

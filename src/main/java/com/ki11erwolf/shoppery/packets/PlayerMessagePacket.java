@@ -3,7 +3,7 @@ package com.ki11erwolf.shoppery.packets;
 import com.ki11erwolf.shoppery.util.ClientPlayerFetcher;
 import com.ki11erwolf.shoppery.util.LocaleDomain;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
-import com.ki11erwolf.shoppery.util.PlayerUtil;
+import com.ki11erwolf.shoppery.util.MCUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -132,7 +132,7 @@ public class PlayerMessagePacket extends Packet<PlayerMessagePacket> {
         return (packet, ctx) -> handle(ctx, () -> {
             PlayerEntity player = ((FMLEnvironment.dist.isClient())
                     ? ClientPlayerFetcher.getClientPlayer()
-                    : PlayerUtil.getPlayerFromUUID(UUID.fromString(packet.playerUUID))
+                    : MCUtil.getPlayerFromUUID(UUID.fromString(packet.playerUUID))
             );
 
             if(player != null)
@@ -140,7 +140,7 @@ public class PlayerMessagePacket extends Packet<PlayerMessagePacket> {
                         ((LocaleDomain) () -> removeLastChar(packet.messageDomain
                                 .replace(LocaleDomains.DEFAULT.getName() + ".", ""))
                         ).format(packet.messageIdentifier, packet.parameters)
-                ));
+                ), player.getUniqueID());
         });
     }
 

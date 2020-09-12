@@ -2,10 +2,12 @@ package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmOpenLinkScreen;
 import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.util.Util;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -17,7 +19,7 @@ import java.net.URISyntaxException;
  * that links the player to the Wiki website.
  */
 @OnlyIn(Dist.CLIENT)
-class WikiButton extends ImageButton {
+class WikiButton extends ImageButton implements WidgetFix {
 
     /**
      * The Wiki's URL to link to.
@@ -48,9 +50,14 @@ class WikiButton extends ImageButton {
      * @param inventoryY Y starting position.
      */
     public WikiButton(int inventoryX, int inventoryY) {
-        super(inventoryX + POSITION_X, inventoryY + POSITION_Y,
-                WIDTH, HEIGHT, TEXTURE_POSITION_X, TEXTURE_POSITION_Y,
-                HEIGHT + 1, ShopperyButton.BUTTON_TEXTURES,
+        super(
+                inventoryX + POSITION_X,
+                inventoryY + POSITION_Y,
+                WIDTH, HEIGHT,
+                TEXTURE_POSITION_X,
+                TEXTURE_POSITION_Y,
+                HEIGHT + 1,
+                ShopperyButton.BUTTON_TEXTURES,
                 (button) -> confirm()
         );
     }
@@ -60,15 +67,16 @@ class WikiButton extends ImageButton {
      * as confirmation before opening the Wiki URL.
      */
     private static void confirm(){
-        Minecraft.getInstance().displayGuiScreen(new ConfirmOpenLinkScreen(
-                (bool) -> {
-                    if(bool)
-                        openLink();
+        Minecraft.getInstance().displayGuiScreen(
+                new ConfirmOpenLinkScreen(
+                        (bool) -> {
+                            if(bool)
+                                openLink();
 
-                    Minecraft.getInstance().displayGuiScreen(null);
-                },
-                WIKI_URL,
-                true
+                            Minecraft.getInstance().displayGuiScreen(null);
+                        },
+                        WIKI_URL,
+                        true
                 )
         );
     }
@@ -86,30 +94,53 @@ class WikiButton extends ImageButton {
     }
 
     /**
-     * {@inheritDoc}
-     * Extended to provide tooltip rendering.
-     */
-    @Override
-    public void renderButton(int x, int y, float z) {
-        super.renderButton(x, y, z);
-
-        if(this.isHovered)
-            drawTooltip(x, y);
-    }
-
-    /**
      * Draws the buttons tooltip on screen.
      *
      * @param x mouse x position.
      * @param y mouse y position.
      */
-    private void drawTooltip(int x, int y){
-        drawCenteredString(
+    private void drawTooltip(MatrixStack matrixStack, int x, int y){
+        renderTooltip1(
+                matrixStack,
                 Minecraft.getInstance().fontRenderer,
-                LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("wiki_button"),
-                this.x + (width / 2) + 56,
-                this.y + (height / 2) + 1,
+                new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("wiki_button")),
+                //this.x + (width / 2) + 56,
+                //this.y + (height / 2) + 1,
+                this.getXPos() + (this.getWidth() / 2) + 56,
+                this.getYPos() + (this.getHeight() / 2) + 1,
+                0XF8F8F8
+        );
+        renderTooltip1(
+                matrixStack,
+                Minecraft.getInstance().fontRenderer,
+                new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("wiki_button")),
+                //this.x + (width / 2) + 56,
+                //this.y + (height / 2) + 1,
+                this.getXPos() + (this.getWidth() / 2) + 56,
+                this.getYPos() + (this.getHeight() / 2) + 1,
                 0XF8F8F8
         );
     }
+
+    /**
+     * {@inheritDoc}
+     * Extended to provide tooltip rendering.
+     */
+    @Override
+    public void render(MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime) {
+        if(this.isHovered())
+            drawTooltip(matrixStack, mouseXPos, mouseYPos);
+    }
+
+    // ####################
+    // Obfuscated Overrides
+    // ####################
+
+//    protected boolean isHovered() { return this.func_230449_g_(); }
+
+//    @Override
+//    public void func_230431_b_(@SuppressWarnings("NullableProblems") MatrixStack matrixStack, int x, int y, float z) {
+//        renderButton(matrixStack, x, y, z);
+//        super.func_230431_b_(matrixStack, x, y, z);
+//    }
 }

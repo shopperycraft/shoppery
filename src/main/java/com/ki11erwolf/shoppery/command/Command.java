@@ -172,7 +172,7 @@ public abstract class Command {
      * @param message the translated message or the identifier if no.
      */
     static void message(PlayerEntity player, String message){
-        player.sendMessage(new StringTextComponent(message));
+        player.sendMessage(new StringTextComponent(message), player.getUniqueID());
     }
 
     /**

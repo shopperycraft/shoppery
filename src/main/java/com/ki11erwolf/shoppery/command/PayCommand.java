@@ -5,6 +5,7 @@ import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
 import com.ki11erwolf.shoppery.config.ShopperyConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
+import com.ki11erwolf.shoppery.util.MCUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -51,8 +52,8 @@ class PayCommand extends Command{
         }
 
         if(toPlayer != null){
-            if(!player.getEntityWorld().getWorldInfo().getWorldName()
-                    .equals(toPlayer.getEntityWorld().getWorld().getWorldInfo().getWorldName())){
+            if(!MCUtil.getWorldName(player.getEntityWorld())
+                    .equals(MCUtil.getWorldName(toPlayer.getEntityWorld()))){
                 localeMessage(player, "world_mismatch");
                 return;
             }

@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.util.CurrencyUtil;
-import com.ki11erwolf.shoppery.util.PlayerUtil;
+import com.ki11erwolf.shoppery.util.MCUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import org.apache.logging.log4j.Logger;
 
@@ -589,6 +589,6 @@ public class Wallet {
      * if the json wallet object couldn't be parsed.
      */
     static Wallet createWalletFromJsonObject(JsonObject jWallet, UUID playerUUID){
-        return createWalletFromJsonObject(jWallet, PlayerUtil.getPlayerFromUUID(playerUUID));
+        return createWalletFromJsonObject(jWallet, MCUtil.getPlayerFromUUID(playerUUID));
     }
 }

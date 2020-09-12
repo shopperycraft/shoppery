@@ -63,7 +63,7 @@ import java.util.*;
 enum PriceRegistry {
 
     /*
-        TODO: Thoughts on the price registry.
+        Thoughts on the price registry.
 
         It works and performs well, but the
         implementation of it all feels lacking.

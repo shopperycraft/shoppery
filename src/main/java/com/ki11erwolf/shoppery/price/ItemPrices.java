@@ -67,7 +67,7 @@ public enum ItemPrices {
      * Shoppery loads for Minecraft from prices.json. Be sure to
      * keep space for additional entries that may be added as well.
      */
-    public static final int ENTRIES_EXPECTED = 650;
+    public static final int ENTRIES_EXPECTED = 50 + 595;
 
     // ****
     // Load

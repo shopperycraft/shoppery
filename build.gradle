@@ -20,14 +20,16 @@ buildscript {
  * Holds values needed to run/build Shoppery that are likely to change. Such as versioning.
  */
 class BuildProperties {
+    //Don't forget to change version numbers in
+    //META-INF/mods.toml  &  ShopperyMod.java
 
     static VERSION = '1.0.0'
 
-    static MINECRAFT_VERSION = '1.15.2'
+    static MINECRAFT_VERSION = '1.16.3'
 
-    static FORGE_VERSION = '31.1.19'
+    static FORGE_VERSION = '34.0.0'
 
-    static SNAPSHOT_VERSION = '20200225-1.15.1'
+    static MAPPINGS_VERSION = '20200514-1.16'
 
     static MODID = 'shoppery'
 
@@ -51,7 +53,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 minecraft {
 
-    mappings channel: 'snapshot', version: BuildProperties.SNAPSHOT_VERSION
+    mappings channel: 'snapshot', version: BuildProperties.MAPPINGS_VERSION
 
     runs {
         client {

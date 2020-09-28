@@ -11,12 +11,14 @@ import com.ki11erwolf.shoppery.util.LocaleDomains;
 import com.ki11erwolf.shoppery.util.WaitTimer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.crash.ReportedException;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -45,6 +47,12 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      */
     public static final ResourceLocation SHOPPERY_GUIS
             = new ResourceLocation("shoppery", "textures/gui/shoppery_guis.png");
+
+    /**
+     * The amount of pixes to shift each tooltip on the x-axis.
+     * Helps to line up tooltips with the rest of the widgets.
+     */
+    public static final int COMPONENT_TOOLTIP_X_OFFSET = - 29;
 
     /**
      * The error message displayed as the players balance, if any error
@@ -109,7 +117,10 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
     }
 
     /** Obfuscated {@link #init()}. */
-    @Override protected void func_231160_c_() { init(); }
+    @Override protected void func_231160_c_() {
+        super.func_231160_c_();
+        init();
+    }
 
     /**
      * {@inheritDoc}
@@ -127,6 +138,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
     @Override @ParametersAreNonnullByDefault
     public void func_230430_a_(MatrixStack matrix, int mouseX, int mouseY, float ticks) {
         render(matrix, mouseX, mouseY, ticks);
+        super.func_230430_a_(matrix, mouseX, mouseY, ticks);
     }
 
     /**
@@ -177,42 +189,39 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
     // Background
     // **********
 
-    /** Obfuscated {@link #drawGuiContainerBackgroundLayer(MatrixStack, float, int, int)} */
+    /** Obfuscated {@link #renderBackgroundLayer(MatrixStack, float, int, int)} */
     @Override @ParametersAreNonnullByDefault
     protected void func_230450_a_(MatrixStack matrix, float ticks, int mouseXPos, int mouseYPos) {
         super.func_230450_a_(matrix, ticks, mouseXPos, mouseXPos);
-        drawGuiContainerBackgroundLayer(matrix, ticks, mouseXPos, mouseYPos);
+        renderBackgroundLayer(matrix, ticks, mouseXPos, mouseYPos);
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * <p/>Delegates the drawing of the money section of the
-     * gui background to {@link #drawMoneyBackgroundLayer(MatrixStack, float, int, int)}}.
+     * Draws the background image of the money section of
+     * the gui. The image is always centered atop the normal gui.
      */
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
-        drawMoneyBackgroundLayer(matrix, partialTicks, mouseX, mouseY);
-    }
-
-    /**
-     * Draws the money section background image to
-     * the gui background, centered atop the normal gui.
-     */
-    private void drawMoneyBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY){
-        Minecraft.getInstance().getTextureManager().bindTexture(SHOPPERY_GUIS);
-        this.blitA(matrix, relX, relY, 0, 0, WIDTH, HEIGHT);
+    protected void renderBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
+        renderImage(
+                matrix, SHOPPERY_GUIS, relX, relY, 0, 0,
+                WIDTH, HEIGHT, 256, 256
+        );
     }
 
     // **********
     // Foreground
     // **********
 
+    /** Obfuscated {@link #drawGuiContainerForegroundLayer(MatrixStack, int, int)} */
+    @Override @ParametersAreNonnullByDefault
+    protected void func_230451_b_(MatrixStack stack, int mouseX, int mouseY) {
+        super.func_230451_b_(stack, mouseX, mouseY);
+        drawGuiContainerForegroundLayer(stack, mouseX, mouseY);
+    }
+
     /**
      * {@inheritDoc}
      */
     protected void drawGuiContainerForegroundLayer(MatrixStack matrix, int mouseX, int mouseY) {
-        //super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-
         drawTitles(matrix);
 
         //Info screen: balance/prices
@@ -225,28 +234,20 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      * and other static text.
      */
     protected void drawTitles(MatrixStack matrix){
+        FontRenderer fr = this.field_230712_o_;
+
         if(inputSlot.isOccupied()){
-            this.field_230712_o_.func_238405_a_(
-                    matrix, LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("buy"),
-                    X(24), Y(7), 0x3F3F3F
-            );
+            renderTooltip2(matrix, fr, new StringTextComponent(
+                    LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("buy")
+            ), X(24), Y(7), 0xff2424);
 
-
-            this.field_230712_o_.func_238405_a_(
-                    matrix, LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("buy"),
-                    X(24), Y(7), 0x3F3F3F
-            );
-
-            this.field_230712_o_.func_238405_a_(
-                    matrix, LocaleDomains.TEXT.sub(LocaleDomains.SCREEN)
-                    .get("sell"), X(81), Y(7), 0x3F3F3F
-            );
+            renderTooltip2(matrix, fr, new StringTextComponent(
+                    LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("sell")
+            ), X(81), Y(7), 0x23ff17);
         } else {
-            this.field_230712_o_.func_238405_a_(
-                    matrix, LocaleDomains.TITLE.sub(LocaleDomains.SCREEN)
-                    .format("wallet", player.getDisplayName().getString()),
-                    X(5), Y(7), 0x3F3F3F
-            );
+            renderTooltip2(matrix, fr, new StringTextComponent(
+                    LocaleDomains.TITLE.sub(LocaleDomains.SCREEN).format("wallet", player.getDisplayName().getString())
+            ), X(5), Y(7), 0x42ecf5);
         }
     }
 
@@ -258,25 +259,19 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      */
     protected void drawItemPrices(MatrixStack matrix){
         if(!ItemPriceRecPacket.doesLastReceivedHavePrice()){
-            func_238471_a_(
-                    matrix, field_230712_o_,
-                    LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("no_price"),
-                    X(73), Y(23), 0x9C1313
+            func_238471_a_(matrix, field_230712_o_,
+                    LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("no_price"), X(73), Y(23), 0x9C1313
             );
             return;
         }
 
-        func_238471_a_(
-                matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL
+        func_238471_a_( matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedBuyPrice()),
-                X(38), Y(23), 0xD11F1F
-        );
+                X(38), Y(23), 0xD11F1F);
 
-        func_238471_a_(
-                matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL
+        func_238471_a_(matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedSellPrice()),
-                X(108), Y(23), 0x00E500
-        );
+                X(108), Y(23), 0x00E500);
     }
 
     /**
@@ -328,6 +323,8 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      */
     @Override
     protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
+        if(!super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)) return false;
+
         if(super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)){
             guiLeft = guiLeft - ( WIDTH_DIFF / 2 ) - ( getRecipeGui().isVisible() ? 77 : 0 );
             guiTop = guiTop - HEIGHT - 1;
@@ -343,6 +340,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      * Initializes and places the cash withdraw
      * buttons on the gui.
      */
+    @SuppressWarnings("DuplicatedCode")
     protected void initCashSection(){
         int beginX = relX + 144;
         int beginY = relY + 6;

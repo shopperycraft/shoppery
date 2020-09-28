@@ -9,14 +9,13 @@ import com.ki11erwolf.shoppery.item.ShopperyItem;
 import com.ki11erwolf.shoppery.packets.*;
 import com.ki11erwolf.shoppery.util.WaitTimer;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -34,7 +33,7 @@ import java.util.UUID;
  * from the players wallet when clicked.
  */
 @OnlyIn(Dist.CLIENT)
-public class MoneyButton extends Button implements WidgetFix {
+public class MoneyButton extends Widget implements WidgetFix {
 
     /**
      * Timer to prevent spamming the server with
@@ -66,15 +65,16 @@ public class MoneyButton extends Button implements WidgetFix {
     private final ShopperyItem<?> currencyItem;
 
     /**
+     * The resource location that locates and identifies
+     * this currency items texture.
+     */
+    private final ResourceLocation itemImageResource;
+
+    /**
      * The unique ID of the player that's
      * interacting with this button.
      */
     private final UUID playerUUID;
-
-    /**
-     * The texture of the currency item.
-     */
-    private final ResourceLocation itemTextureResource;
 
     /**
      * Cached player balance.
@@ -107,79 +107,31 @@ public class MoneyButton extends Button implements WidgetFix {
      * @param currencyItem the currency item to represent.
      */
     public MoneyButton(int x, int y, ShopperyItem<?> currencyItem, PlayerEntity player) {
-        super(x, y, SIZE, SIZE, new StringTextComponent(""), (bool) -> {/*Done by override - onPress()}*/});
+        super(x, y, SIZE, SIZE, new StringTextComponent(""));
         this.playerUUID = player.getUniqueID();
         this.updateBalance();
 
-        if(!(currencyItem instanceof NoteItem) && !(currencyItem instanceof CoinItem))
-            throw new IllegalArgumentException("Provided item is not a type of coin or note currency");
-        else this.currencyItem = currencyItem;
+        if(currencyItem.getRegistryName() == null)
+            throw new NullPointerException("Item registry name cannot be null.");
 
-        //noinspection ConstantConditions
-        this.itemTextureResource = new ResourceLocation("shoppery",
+        if(!(currencyItem instanceof NoteItem) && !(currencyItem instanceof CoinItem)) {
+            throw new IllegalArgumentException("Provided item is not a type of coin or note currency");
+        }
+
+        this.currencyItem = currencyItem;
+        this.itemImageResource = new ResourceLocation("shoppery",
                 "textures/item/" + currencyItem.getRegistryName().getPath() + ".png"
         );
     }
 
-    /**
-     * Requests the server send the players updated balance,
-     * provided enough time has passed since the last request.
-     *
-     * <p/>Also sets {@link #balance} & {@link #cents} to the
-     * updated balance.
-     */
-    private void updateBalance(){
-        BALANCE_REQ_TIMER.time((x) -> {
-            Packet.send(PacketDistributor.SERVER.noArg(),
-                    new PlayerBalanceReqPacket(playerUUID.toString())
-            );
+    // ######
+    // Render
+    // ######
 
-            Packet.send(PacketDistributor.SERVER.noArg(),
-                    new PlayerCentsReqPacket(playerUUID.toString())
-            );
-
-            return null;
-        });
-
-        this.balance = PlayerBalanceRecPacket.getLastReceivedBalance();
-        this.cents = PlayerCentsRecPacket.getLastReceivedBalance();
-    }
-
-    /**
-     * Determines if the players balance is sufficient
-     * to purchase this currency.
-     *
-     * @return {@code true} if and only if the players
-     * wallet contains enough funds to purchase this
-     * coin/note.
-     */
-    private boolean affordable(){
-        if(balance >= 1){
-            if(currencyItem instanceof CoinItem)
-                return true;
-            else return balance >= ((NoteItem)currencyItem).getWorth();
-        } else {
-            if(currencyItem instanceof NoteItem)
-                return false;
-            else return cents >= ((CoinItem)currencyItem).getWorth();
-        }
-    }
-
-    /** Obfuscated {@link #onPress()}. */
-    @Override public void func_230930_b_() { onPress(); }
-
-    /**
-     * Called when the button is clicked by the player.
-     * Sends a {@link com.ki11erwolf.shoppery.packets.MoneyWithdrawPacket}
-     * in an attempt to withdraw the requested amount.
-     */
-    public void onPress(){
-        Packet.send(PacketDistributor.SERVER.noArg(),
-                ((currencyItem instanceof NoteItem)
-                    ? new MoneyWithdrawPacket(playerUUID.toString(), true, ((NoteItem)currencyItem).getWorth())
-                    : new MoneyWithdrawPacket(playerUUID.toString(), false, ((CoinItem)currencyItem).getWorth())
-                )
-        );
+    /** Obfuscated {@link #render(MatrixStack, int, int, float)}. */
+    @Override @ParametersAreNonnullByDefault
+    public void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+        this.render(matrix, mouseXPos, mouseYPos, frameTime);
     }
 
     /**
@@ -196,35 +148,38 @@ public class MoneyButton extends Button implements WidgetFix {
      */
     @Override
     public void render(MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime) {
-        //Balance
-        updateBalance();
-        boolean affordable = this.affordable();
+        updateBalance(); //Update and calculate position.
+        Vector2f animationOffset = this.getHoverAnimationOffset(this.affordable(), frameTime);
+        int x = this.getXPos() + (int) animationOffset.x;
+        int y = this.getYPos() + (int) animationOffset.y;
 
-        //Texture
-        Minecraft.getInstance().getTextureManager().bindTexture(itemTextureResource);
-        RenderSystem.disableDepthTest();
+        //Render currency item
+        renderImage(matrixStack, itemImageResource, x, y, 0, 0,
+                16, 16, 16, 16
+        );
 
-        //Hover animation
+        //Render Locked Overlay
+        renderLockOverlayIfAppropriate(matrixStack, x, y);
+    }
 
-        Vector3d animation;
+    /**
+     * @return  a vector that describes how much to move the image
+     * in the x & y positions at this point in the animation.
+     *
+     * @param affordable if the player can afford the currency.
+     * @param frameTime time to render the frame.
+     */
+    private Vector2f getHoverAnimationOffset(boolean affordable, float frameTime){
+        Vector2f animation;
         if(this.isHovered() && affordable){
             stepAnimationRenderer(frameTime);
             animation = getHoverAnimationPath(frame);
         } else {
             resetAnimationRenderer();
-            animation = new Vector3d(0, 0, 0);
+            animation = new Vector2f(0, 0);
         }
 
-        int x = this.getXPos() + (int) animation.getX();
-        int y = this.getYPos() + (int) animation.getY();
-
-        //Draw
-        func_238463_a_(matrixStack, x, y, (float) 0, (float) 0, 16, 16, 16, 16);
-        this.blit(matrixStack, x, y, (float)0, (float)0, 16, 16, 16, 16);
-        RenderSystem.enableDepthTest();
-
-        //Overlay
-        renderOverlays(matrixStack, x, y);
+        return animation;
     }
 
     /**
@@ -235,15 +190,15 @@ public class MoneyButton extends Button implements WidgetFix {
      * @param x the x position at which to start rendering.
      * @param y the y position at which to start rendering.
      */
-    protected void renderOverlays(MatrixStack matrix, int x, int y){
+    protected void renderLockOverlayIfAppropriate(MatrixStack matrix, int x, int y){
         if(!affordable()){
-            Minecraft.getInstance().getTextureManager().bindTexture(ShopperyInventoryScreen.SHOPPERY_GUIS);
-            RenderSystem.disableDepthTest();
-
-            this.blitA(matrix, x, y, 0, 65, 16, 16);
-            RenderSystem.enableDepthTest();
+            renderImage(
+                    matrix, ShopperyInventoryScreen.SHOPPERY_GUIS, x, y, 0,
+                    65, SIZE, SIZE, 256, 256
+            );
         }
     }
+
 
     /**
      * Resets the animation render cycle
@@ -291,28 +246,123 @@ public class MoneyButton extends Button implements WidgetFix {
      * to the renders coordinates.
      */
     @SuppressWarnings("DuplicateBranchesInSwitch")
-    protected Vector3d getHoverAnimationPath(int frame){
+    protected Vector2f getHoverAnimationPath(int frame){
         switch (frame + 1){
-            case 1: return new Vector3d(0, -1 ,0);
-            case 2: return new Vector3d(0, 0, 0);
-            case 3: return new Vector3d(0, 1 ,0);
-            case 4: return new Vector3d(0, 0, 0);
-            default: return new Vector3d(0, -1, 0);
+            case 1: return new Vector2f(0, -1);
+            case 2: return new Vector2f(0, 0);
+            case 3: return new Vector2f(0, 1);
+            case 4: return new Vector2f(0, 0);
+            default: return new Vector2f(0, -1);
         }
     }
 
-    /** Obfuscated {@link #playDownSound(SoundHandler)}. */
-    @Override @ParametersAreNonnullByDefault public void func_230988_a_(SoundHandler soundHandler) { playDownSound(soundHandler); }
+
+    // ############
+    // Action Event
+    // ############
+
+    /** Obfuscated {@link #onMouseAction(double, double, int)} */
+    @Override public boolean func_231044_a_(double x, double y, int button) { return onMouseAction(x, y, button); }
 
     /**
-     * Replaces the default button press sounds
-     * with {@link ShopperySoundEvents#WITHDRAW}.
+     * Called when a mouse action is performed. Will handle invoking
+     * a click if the mouse if hovering this widget.
+     *
+     * @param x mouse X position when clicked.
+     * @param y mouse Y position when clicked.
+     * @param button the mouse button id.
+     * @return {@code true} if a clicked event
+     * was raised (effectively clicked).
+     */
+    public boolean onMouseAction(double x, double y, int button) {
+        if(isSelfClicked(x, y, button)) {
+            if (func_230992_c_(x, y)) { //If hovered
+                this.onPress();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Called when the button is clicked by the player.
+     * Sends a {@link com.ki11erwolf.shoppery.packets.MoneyWithdrawPacket}
+     * in an attempt to withdraw the requested amount.
+     */
+    public void onPress(){
+        playDownSound(Minecraft.getInstance().getSoundHandler());
+        Packet.send(PacketDistributor.SERVER.noArg(),
+                ((currencyItem instanceof NoteItem)
+                        ? new MoneyWithdrawPacket(playerUUID.toString(), true, ((NoteItem)currencyItem).getWorth())
+                        : new MoneyWithdrawPacket(playerUUID.toString(), false, ((CoinItem)currencyItem).getWorth())
+                )
+        );
+    }
+
+    /**
+     * Requests the server send the players updated balance,
+     * provided enough time has passed since the last request.
+     *
+     * <p/>Also sets {@link #balance} & {@link #cents} to the
+     * updated balance.
+     */
+    private void updateBalance(){
+        BALANCE_REQ_TIMER.time((x) -> {
+            Packet.send(PacketDistributor.SERVER.noArg(),
+                    new PlayerBalanceReqPacket(playerUUID.toString())
+            );
+
+            Packet.send(PacketDistributor.SERVER.noArg(),
+                    new PlayerCentsReqPacket(playerUUID.toString())
+            );
+
+            return null;
+        });
+
+        this.balance = PlayerBalanceRecPacket.getLastReceivedBalance();
+        this.cents = PlayerCentsRecPacket.getLastReceivedBalance();
+    }
+
+    /**
+     * Determines if the players balance is sufficient
+     * to purchase this currency.
+     *
+     * @return {@code true} if and only if the players
+     * wallet contains enough funds to purchase this
+     * coin/note.
+     */
+    private boolean affordable(){
+        if(balance >= 1){
+            if(currencyItem instanceof CoinItem)
+                return true;
+            else return balance >= ((NoteItem)currencyItem).getWorth();
+        } else {
+            if(currencyItem instanceof NoteItem)
+                return false;
+            else return cents >= ((CoinItem)currencyItem).getWorth();
+        }
+    }
+
+    // #####
+    // Sound
+    // #####
+
+    /** Obfuscated {@link #playDownSound(SoundHandler)}. */
+    @Override @ParametersAreNonnullByDefault
+    public void func_230988_a_(SoundHandler soundHandler) {
+        playDownSound(soundHandler);
+    }
+
+    /**
+     * Plays the shoppery money withdraw sound effect,
+     * replacing the default button press sounds with
+     * {@link ShopperySoundEvents#WITHDRAW}.
      */
     public void playDownSound(SoundHandler soundHandler) {
-        if(affordable())
+        if(affordable()) {
             soundHandler.play(SimpleSound.master(ShopperySoundEvents.WITHDRAW,
                     RandomUtils.nextFloat(1.2F, 1.4F), 0.50F
             ));
+        }
     }
-
 }

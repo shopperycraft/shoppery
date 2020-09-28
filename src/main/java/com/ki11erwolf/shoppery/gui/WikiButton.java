@@ -11,6 +11,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -50,76 +51,24 @@ class WikiButton extends ImageButton implements WidgetFix {
      * @param inventoryY Y starting position.
      */
     public WikiButton(int inventoryX, int inventoryY) {
-        super(
-                inventoryX + POSITION_X,
-                inventoryY + POSITION_Y,
-                WIDTH, HEIGHT,
-                TEXTURE_POSITION_X,
-                TEXTURE_POSITION_Y,
-                HEIGHT + 1,
-                ShopperyButton.BUTTON_TEXTURES,
-                (button) -> confirm()
+        super(inventoryX + POSITION_X, inventoryY + POSITION_Y,
+                WIDTH, HEIGHT, TEXTURE_POSITION_X, TEXTURE_POSITION_Y,
+                HEIGHT + 1, ShopperyButton.BUTTON_TEXTURES,
+                (button) -> confirmOpenWikiLink()
         );
     }
 
-    /**
-     * Displays Minecraft's link warning to the player
-     * as confirmation before opening the Wiki URL.
-     */
-    private static void confirm(){
-        Minecraft.getInstance().displayGuiScreen(
-                new ConfirmOpenLinkScreen(
-                        (bool) -> {
-                            if(bool)
-                                openLink();
-
-                            Minecraft.getInstance().displayGuiScreen(null);
-                        },
-                        WIKI_URL,
-                        true
-                )
-        );
-    }
+    // #########
+    // Rendering
+    // #########
 
     /**
-     * Opens a new web browser tab to the
-     * Wiki.
+     * Obfuscated {@link #render(MatrixStack, int, int, float)}.
      */
-    private static void openLink(){
-        try {
-            Util.getOSType().openURI(new URI(WIKI_URL));
-        } catch (URISyntaxException e) {
-            ShopperyMod.getNewLogger().error("Failed to open wiki url", e);
-        }
-    }
-
-    /**
-     * Draws the buttons tooltip on screen.
-     *
-     * @param x mouse x position.
-     * @param y mouse y position.
-     */
-    private void drawTooltip(MatrixStack matrixStack, int x, int y){
-        renderTooltip1(
-                matrixStack,
-                Minecraft.getInstance().fontRenderer,
-                new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("wiki_button")),
-                //this.x + (width / 2) + 56,
-                //this.y + (height / 2) + 1,
-                this.getXPos() + (this.getWidth() / 2) + 56,
-                this.getYPos() + (this.getHeight() / 2) + 1,
-                0XF8F8F8
-        );
-        renderTooltip1(
-                matrixStack,
-                Minecraft.getInstance().fontRenderer,
-                new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("wiki_button")),
-                //this.x + (width / 2) + 56,
-                //this.y + (height / 2) + 1,
-                this.getXPos() + (this.getWidth() / 2) + 56,
-                this.getYPos() + (this.getHeight() / 2) + 1,
-                0XF8F8F8
-        );
+    @Override @ParametersAreNonnullByDefault
+    public void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+        super.func_230431_b_(matrix, mouseXPos, mouseYPos, frameTime);
+        this.render(matrix, mouseXPos, mouseYPos, frameTime);
     }
 
     /**
@@ -128,19 +77,53 @@ class WikiButton extends ImageButton implements WidgetFix {
      */
     @Override
     public void render(MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime) {
-        if(this.isHovered())
+        if (this.isHovered())
             drawTooltip(matrixStack, mouseXPos, mouseYPos);
     }
 
-    // ####################
-    // Obfuscated Overrides
-    // ####################
+    /**
+     * Draws the buttons tooltip on screen.
+     *
+     * @param x mouse x position.
+     * @param y mouse y position.
+     */
+    private void drawTooltip(MatrixStack matrixStack, int x, int y) {
+        renderTooltip2(
+                matrixStack,
+                Minecraft.getInstance().fontRenderer,
+                new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("wiki_button")),
+                (this.getXPos() + (this.getWidth() / 2) + 56) + ShopperyInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET,
+                this.getYPos() + (this.getHeight() / 2) + 1, 0XF8F8F8
+        );
+    }
 
-//    protected boolean isHovered() { return this.func_230449_g_(); }
+    // ############
+    // Action Event
+    // ############
 
-//    @Override
-//    public void func_230431_b_(@SuppressWarnings("NullableProblems") MatrixStack matrixStack, int x, int y, float z) {
-//        renderButton(matrixStack, x, y, z);
-//        super.func_230431_b_(matrixStack, x, y, z);
-//    }
+    /**
+     * Displays Minecraft's link warning to the player
+     * as confirmation before opening the Wiki URL.
+     */
+    private static void confirmOpenWikiLink() {
+        Minecraft.getInstance().displayGuiScreen(
+                new ConfirmOpenLinkScreen((bool) -> {
+                    if (bool)
+                        openLinkToWiki();
+
+                    Minecraft.getInstance().displayGuiScreen(null);
+                }, WIKI_URL, true)
+        );
+    }
+
+    /**
+     * Opens a new web browser tab to the Wiki link: {@link #WIKI_URL}.
+     */
+    private static void openLinkToWiki() {
+        try {
+            Util.getOSType().openURI(new URI(WIKI_URL));
+        } catch (URISyntaxException e) {
+            ShopperyMod.getNewLogger().error("Failed to open wiki url", e);
+        }
+    }
 }

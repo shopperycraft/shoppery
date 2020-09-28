@@ -8,11 +8,9 @@ import com.ki11erwolf.shoppery.packets.ItemPriceReqPacket;
 import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.util.LocaleDomains;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -21,6 +19,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.commons.lang3.RandomUtils;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * A type of widget, which can be treated as a
@@ -34,6 +34,12 @@ import org.apache.commons.lang3.RandomUtils;
  */
 @OnlyIn(Dist.CLIENT)
 public class InputSlot extends Widget implements WidgetFix {
+
+    /**
+     * The number of pixels to render of the image
+     * in both X & Y directions.
+     */
+    private static final int SIZE = 18;//px
 
     /**
      * The client side player interacting
@@ -60,6 +66,114 @@ public class InputSlot extends Widget implements WidgetFix {
         this.player = player;
     }
 
+    // #########
+    // Rendering
+    // #########
+
+    /**
+     * Obfuscated {@link #render(MatrixStack, int, int, float)}.
+     */
+    @Override @ParametersAreNonnullByDefault
+    public void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+        this.render(matrix, mouseXPos, mouseYPos, frameTime);
+    }
+
+    /**
+     * Draws the widget on screen within the
+     * current frame.
+     *
+     * @param mouseX mouse X position.
+     * @param mouseY mouse Y position
+     * @param renderTime the amount of time the
+     *                   frame took to render.
+     */
+    @Override
+    public void render(MatrixStack matrix, int mouseX, int mouseY, float renderTime) {
+        renderBackgroundLayer(matrix, renderTime, mouseX, mouseY);
+        renderContainedItem();
+        renderTooltip(matrix, mouseX, mouseY);
+    }
+
+    /**
+     * Handles rendering the {@link #containedItem}
+     * on top of the widget.
+     */
+    private void renderContainedItem(){
+        if(containedItem != null){
+            renderItemStackAt(containedItem, getXPos() + 1, getYPos() + 1);
+        }
+    }
+
+    /**
+     * Handles rendering the correct background image
+     * of this slot of screen.
+     */
+    private void renderBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
+        renderImage(
+                matrix, ShopperyInventoryScreen.SHOPPERY_GUIS, getXPos(), getYPos(),
+                /* X */((WidgetFix.isHovered(this) || containedItem != null) ? 35 : 16),
+                /* Y */65, SIZE, SIZE, 256, 256
+        );
+    }
+
+    /**
+     * Handles drawing the tooltip on the screen
+     * if the widget is moused over.
+     *
+     * @param x mouse X position at time of render.
+     * @param y mouse Y position at time of render.
+     */
+    private void renderTooltip(MatrixStack matrix, int x, int y) {
+        if(this.isHovered() || isOccupied()) {
+            this.renderTooltip2(
+                    matrix, Minecraft.getInstance().fontRenderer,
+                    new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_1")),
+                    this.getXPos() + (getWidth() - 66) + ShopperyInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET,
+                    this.getYPos() + ((getHeight() / 2) - 4) - 5,
+                    0XF8F8F8
+            );
+        }
+
+        if(this.isHovered() && !isOccupied()){
+            this.renderTooltip2(
+                    matrix, Minecraft.getInstance().fontRenderer,
+                    new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_2")),
+                    (this.getXPos() + getWidth() - 67) + (ShopperyInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET - 8),
+                    this.getYPos() + (getHeight() / 2) - 4 + 5,
+                    0XF8F8F8
+            );
+        }
+    }
+
+    // ############
+    // Action Event
+    // ############
+
+    /** Obfuscated {@link #onMouseAction(double, double, int)} */
+    @Override public boolean func_231044_a_(double x, double y, int button) { return onMouseAction(x, y, button); }
+
+    /**
+     * Called when a mouse action is performed, to check
+     * if this widget object is clicked. Will handle invoking
+     * a click if the mouse if hovering this widget is clicked.
+     *
+     * @param x mouse X position when clicked.
+     * @param y mouse Y position when clicked.
+     * @param button the mouse button id.
+     * @return {@code true} if a clicked event
+     * was raised (effectively clicked).
+     */
+    public boolean onMouseAction(double x, double y, int button) {
+        if(isSelfClicked(x, y, button)){
+            if (func_230992_c_(x, y)) { //If Hovered
+                this.onClick(x, y, button);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Called when the slot is clicked.
      *
@@ -76,37 +190,28 @@ public class InputSlot extends Widget implements WidgetFix {
     protected void onClick(double xClickPos, double yClickPos, int button) {
         ItemStack heldStack = player.inventory.getItemStack().copy();
 
-        if(button == 2) {
-            //Inventory Deposit
+        if(button == 2) { //Inventory Deposit
             Packet.send(PacketDistributor.SERVER.noArg(),
                     new DepositInventoryPacket(player.getUniqueID().toString())
             );
-
             playDepositSound();
-
-        } else if(heldStack.getItem() instanceof CurrencyItem){
-            //Cash Deposit
+        } else if(heldStack.getItem() instanceof CurrencyItem){ //Cash Deposit
             Packet.send(PacketDistributor.SERVER.noArg(),
                     new DepositCashPacket(player.getUniqueID().toString(), button == 0)
             );
-
             playDepositSound();
 
-            if (button == 0) player.inventory.setItemStack(ItemStack.EMPTY);
-            else player.inventory.getItemStack().shrink(1);
+            if (button == 0)
+                player.inventory.setItemStack(ItemStack.EMPTY);
+            else
+                player.inventory.getItemStack().shrink(1);
 
             if(containedItem != null)
                 setContainedItem(null);
-        } else if (button == 1){
-            //Clear Price Check
+        } else if (button == 1){ //Clear Price Check
             setContainedItem(null);
-        } else {
-            //Price Check
-            setContainedItem(
-                    (heldStack == ItemStack.EMPTY || heldStack.getItem() == Items.AIR)
-                            ? null : heldStack
-            );
-
+        } else { //Price Check
+            setContainedItem((heldStack == ItemStack.EMPTY || heldStack.getItem() == Items.AIR) ? null : heldStack);
             if(containedItem != null)
                 ItemPriceReqPacket.send(containedItem.getItem().getRegistryName());
         }
@@ -128,37 +233,6 @@ public class InputSlot extends Widget implements WidgetFix {
         this.containedItem = item;
     }
 
-    /** Obfuscated {@link #mouseClicked(double, double, int)} */
-    @Override public boolean func_231044_a_(double x, double y, int button) { return mouseClicked(x, y, button); }
-
-    /**
-     * Called when a mouse action is performed
-     * over the widget. Handles invoking a
-     * click if conditions are met.
-     *
-     * @param x mouse X position when clicked.
-     * @param y mouse Y position when clicked.
-     * @param button the mouse button id.
-     * @return {@code true} if a clicked event
-     * was raised (effectively clicked).
-     */
-    public boolean mouseClicked(double x, double y, int button) {
-        super.func_231044_a_(x, y, button);
-
-        //if (this.active && this.visible) {
-        if (this.field_230693_o_ && this.field_230694_p_) {
-            if (button >= 0 && button < 3) {
-                boolean flag = func_230992_c_(x, y); //this.clicked(x, y);
-                if (flag) {
-                    this.onClick(x, y, button);
-                    return true;
-                }
-            }
-
-        }
-        return false;
-    }
-
     /**
      * Called when a mouse button is released
      * over the widget.
@@ -178,96 +252,9 @@ public class InputSlot extends Widget implements WidgetFix {
         }
     }
 
-    /**
-     * Draws the widget on screen within the
-     * current frame.
-     *
-     * @param mouseX mouse X position.
-     * @param mouseY mouse Y position
-     * @param renderTime the amount of time the
-     *                   frame took to render.
-     */
-    @Override
-    public void render(MatrixStack matrix, int mouseX, int mouseY, float renderTime) {
-        renderBackground(matrix);
-        renderContainedItem();
-        renderTooltip(matrix, mouseX, mouseY);
-    }
-
-    /**
-     * Handles rendering the {@link #containedItem}
-     * on top of the widget.
-     */
-    private void renderContainedItem(){
-        if(containedItem != null){
-            drawItemStack(containedItem, getXPos() + 1, getYPos() + 1);
-        }
-    }
-
-    /**
-     * Copied from {@link net.minecraft.client.gui.screen.inventory.ContainerScreen}.
-     *
-     * <p/>Used to draw any item or block, in a stack, on the screen.
-     *
-     * @param stack the item or block to draw.
-     * @param x the X position at which to start drawing.
-     * @param y the Y position at which to start drawing.
-     */
-    private void drawItemStack(ItemStack stack, int x, int y) {
-        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        //noinspection deprecation
-        RenderSystem.translatef(0.0F, 0.0F, 32.0F);
-        this.func_230926_e_(200); //this.setBlitOffset(200);
-        itemRenderer.zLevel = 200.0F;
-        net.minecraft.client.gui.FontRenderer font = stack.getItem().getFontRenderer(stack);
-        itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
-        this.func_230926_e_(0); //this.setBlitOffset(0);
-        itemRenderer.zLevel = 0.0F;
-    }
-
-    /**
-     * Handles rendering the correct background image
-     * of this slot of screen.
-     */
-    private void renderBackground(MatrixStack matrix){
-        Minecraft.getInstance().getTextureManager().bindTexture(ShopperyInventoryScreen.SHOPPERY_GUIS);
-        RenderSystem.disableDepthTest();
-        WidgetFix.blitA_(
-                matrix, WidgetFix.getXPos(this), WidgetFix.getYPos(this),
-                ((WidgetFix.isHovered(this) || containedItem != null) ? 35 : 16),
-                65, 18, 18
-        );
-        RenderSystem.enableDepthTest();
-    }
-
-    /**
-     * Handles drawing the tooltip on the screen
-     * if the widget is moused over.
-     *
-     * @param x mouse X position at time of render.
-     * @param y mouse Y position at time of render.
-     */
-    private void renderTooltip(MatrixStack matrix, int x, int y) {
-        if(this.isHovered() || isOccupied()) {
-            this.renderTooltip1(
-                    matrix, Minecraft.getInstance().fontRenderer,
-                    new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_1")),
-                    this.getXPos() + (getWidth() - 67),
-                    this.getYPos() + ((getHeight() / 2) - 4) - 5,
-                    0XF8F8F8
-            );
-        }
-
-        if(this.isHovered() && !isOccupied()){
-            this.renderTooltip1(
-                    matrix, Minecraft.getInstance().fontRenderer,
-                    new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_2")),
-                    this.getXPos() + (getWidth() - 67),
-                    this.getYPos() + ((getHeight() / 2) - 4) + 5,
-                    0XF8F8F8
-            );
-        }
-    }
+    // #####
+    // Other
+    // #####
 
     /**
      * Allows us to check if this slot is currently

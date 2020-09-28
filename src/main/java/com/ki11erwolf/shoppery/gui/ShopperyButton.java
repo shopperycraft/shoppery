@@ -10,7 +10,6 @@ import com.ki11erwolf.shoppery.util.CurrencyUtil;
 import com.ki11erwolf.shoppery.util.WaitTimer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.button.Button;
@@ -116,25 +115,20 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
     }
 
     /**
-     * Handles drawing text atop the button as well
-     * as tooltip text when the player hovers over
-     * the button.
+     * Handles position updates and drawing the text atop
+     * the button that displays the players balance.
      *
      * @param mouseXPos mouse x position.
      * @param mouseYPos mouse y position.
-     * @param frameTime i have no clue.
+     * @param frameTime the time taken to render the frame.
      */
     @Override
     public void render(MatrixStack stack, int mouseXPos, int mouseYPos, float frameTime) {
-        FontRenderer renderer = Minecraft.getInstance().fontRenderer;
-        posUpdateCheck();//Have to respond to gui size changes here.
+        posUpdateCheck();//Have to respond to gui size changes first.
 
         //Button text
-        renderTooltip1(stack, renderer,
-                new StringTextComponent(getShortenedBalance()),
-                this.getXPos() + (this.getWidth() / 2),
-                this.getYPos() + (this.getHeight() / 3) - 1,
-                0xffffff
+        renderTooltip1(stack, Minecraft.getInstance().fontRenderer, new StringTextComponent(getShortenedBalance()),
+                this.getXPos() + (this.getWidth() / 2), this.getYPos() + (this.getHeight() / 3) - 1, 0xffffff
         );
     }
 

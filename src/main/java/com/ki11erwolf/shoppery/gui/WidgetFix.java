@@ -1,10 +1,15 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 /**
@@ -22,6 +27,24 @@ import net.minecraft.util.text.ITextComponent;
  */
 interface WidgetFix {
 
+    /**
+     * @return {@code true} if this widget is being clicked during
+     * a mouse action event.
+     *
+     * @param x mouse x pos.
+     * @param y mouse y pos.
+     * @param button mouse button id.
+     */
+    default boolean isSelfClicked(double x, double y, int button) {
+        Widget self = asWidget();
+        if (self.field_230693_o_ && self.field_230694_p_) {
+            // this.active && this.visible
+            return button >= 0 && button < 3;
+        }
+
+        return false;
+    }
+
     // #################
     // MC Render Methods
     // #################
@@ -35,6 +58,159 @@ interface WidgetFix {
 //    default void func_230430_a_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
 //        this.render(matrix, mouseXPos, mouseYPos, frameTime);
 //    }
+
+    // ###################
+    // Image & Item Render
+    // ###################
+
+    /**
+     * Draws an image of an ItemStack on the screen at
+     * the given screen X & Y starting positions. Makes
+     * specific items visible for display.
+     *
+     * <p><br>
+     *     Copied from {@link net.minecraft.client.gui.screen.inventory.ContainerScreen}.
+     * </br></p>
+     *
+     * @param stack the item or block to draw.
+     * @param posX the X position on screen at which to start drawing
+     *             an item of the ItemStack.
+     * @param posY the Y position on screen at which to start drawing
+     *             an item of the ItemStack.
+     */
+    default void renderItemStackAt(ItemStack stack, int posX, int posY) {
+        renderItemStackAt(this, stack, posX, posY);
+    }
+
+    /**
+     * Draws an image of an ItemStack on the screen at
+     * the given screen X & Y starting positions. Makes
+     * specific items visible for display.
+     *
+     * <p><br>
+     *     Copied from {@link net.minecraft.client.gui.screen.inventory.ContainerScreen}.
+     * </br></p>
+     *
+     * @param widget the component widget implementation doing the drawing.
+     * @param stack the item or block to draw.
+     * @param posX the X position on screen at which to start drawing
+     *             an item of the ItemStack.
+     * @param posY the Y position on screen at which to start drawing
+     *             an item of the ItemStack.
+     */
+    static void renderItemStackAt(WidgetFix widget, ItemStack stack, int posX, int posY) {
+        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+        //noinspection deprecation
+        RenderSystem.translatef(0.0F, 0.0F, 32.0F);
+        widget.setBlitOffset(200);
+        itemRenderer.zLevel = 200.0F;
+        net.minecraft.client.gui.FontRenderer font = stack.getItem().getFontRenderer(stack);
+        itemRenderer.renderItemAndEffectIntoGUI(stack, posX, posY);
+        widget.setBlitOffset(0);
+        itemRenderer.zLevel = 0.0F;
+    }
+
+    /**
+     * Renders an image from resource location on the screens foremost render layer
+     * at the given screen coordinates. Allows specifying a Y position offset in
+     * the texture map for hover response.
+     *
+     * @param imageResource image texture located by resource location.
+     * @param screenPosX screen X position to start rendering the image at.
+     * @param screenPosY screen y position to start rendering the image at.
+     * @param textureStartXPos X coordinate in the image file to start rendering at.
+     * @param textureStartYPos Y coordinate in the image file to start rendering at.
+     * @param textureRenderWidth the width of the image to render, i.e. X coordinate to end rendering at.
+     * @param textureRenderHeight the height of the image to render, i.e. Y coordinate to end rendering at.
+     * @param imageXPixelResolution the width pixel resolution of the image file on disk
+     * @param imageYPixelResolution the height pixel resolution of the image file on disk
+     * @param hoverOffset amount of pixels downward to shift the Y start position by on mouse hover.
+     */
+    default void renderImage(MatrixStack matrix, ResourceLocation imageResource, int screenPosX, int screenPosY, int textureStartXPos,
+                             int textureStartYPos, int textureRenderWidth, int textureRenderHeight,
+                             int imageXPixelResolution, int imageYPixelResolution, int hoverOffset) {
+        renderImageResource(
+                asWidget(), matrix, imageResource, screenPosX, screenPosY, textureStartXPos, textureStartYPos,
+                textureRenderWidth, textureRenderHeight, imageXPixelResolution, imageYPixelResolution, hoverOffset
+        );
+    }
+
+    /**
+     * Renders an image from resource location on the screens foremost render layer
+     * at the given screen coordinates. Allows specifying a Y position offset in
+     * the texture map for hover response.
+     *
+     * @param imageResource image texture located by resource location.
+     * @param screenPosX screen X position to start rendering the image at.
+     * @param screenPosY screen y position to start rendering the image at.
+     * @param textureStartXPos X coordinate in the image file to start rendering at.
+     * @param textureStartYPos Y coordinate in the image file to start rendering at.
+     * @param textureRenderWidth the width of the image to render, i.e. X coordinate to end rendering at.
+     * @param textureRenderHeight the height of the image to render, i.e. Y coordinate to end rendering at.
+     * @param imageWidthPixelResolution the width pixel resolution of the image file on disk
+     * @param imageHeightPixelResolution the height pixel resolution of the image file on disk
+     * @param hoverOffset amount of pixels downward to shift the Y start position by on mouse hover.
+     */
+    static void renderImageResource(Widget widget, MatrixStack matrix, ResourceLocation imageResource, int screenPosX, int screenPosY,
+                                    int textureStartXPos, int textureStartYPos, int textureRenderWidth, int textureRenderHeight,
+                                    int imageWidthPixelResolution, int imageHeightPixelResolution, int hoverOffset) {
+        if (widget.func_230449_g_()) { //If hovered
+            textureStartYPos += hoverOffset;
+        }
+
+        renderImageResource(
+                matrix, imageResource, screenPosX, screenPosY, textureStartXPos, textureStartYPos,
+                textureRenderWidth, textureRenderHeight, imageWidthPixelResolution, imageHeightPixelResolution
+        );
+    }
+
+    /**
+     * Renders an image from resource location on the screens foremost render layer
+     * at the given screen coordinates.
+     *
+     * @param imageResource image texture located by resource location.
+     * @param screenPosX screen X position to start rendering the image at.
+     * @param screenPosY screen y position to start rendering the image at.
+     * @param textureStartXPos X coordinate in the image file to start rendering at.
+     * @param textureStartYPos Y coordinate in the image file to start rendering at.
+     * @param textureRenderWidth the width of the image to render, i.e. X coordinate to end rendering at.
+     * @param textureRenderHeight the height of the image to render, i.e. Y coordinate to end rendering at.
+     * @param imageWidthPixelResolution the width pixel resolution of the image file on disk
+     * @param imageHeightPixelResolution the height pixel resolution of the image file on disk
+     */
+    default void renderImage(MatrixStack matrix, ResourceLocation imageResource, int screenPosX, int screenPosY,
+                             int textureStartXPos, int textureStartYPos, int textureRenderWidth, int textureRenderHeight,
+                             int imageWidthPixelResolution, int imageHeightPixelResolution) {
+        renderImageResource(
+                matrix, imageResource, screenPosX, screenPosY, textureStartXPos, textureStartYPos,
+                textureRenderWidth, textureRenderHeight, imageWidthPixelResolution, imageHeightPixelResolution
+        );
+    }
+
+    /**
+     * Renders an image from resource location on the screens foremost render layer
+     * at the given screen coordinates.
+     *
+     * @param imageResource image texture located by resource location.
+     * @param screenPosX screen X position to start rendering the image at.
+     * @param screenPosY screen y position to start rendering the image at.
+     * @param textureStartXPos X coordinate in the image file to start rendering at.
+     * @param textureStartYPos Y coordinate in the image file to start rendering at.
+     * @param textureRenderWidth the width of the image to render, i.e. X coordinate to end rendering at.
+     * @param textureRenderHeight the height of the image to render, i.e. Y coordinate to end rendering at.
+     * @param imageXPixelResolution the width pixel resolution of the image file on disk
+     * @param imageYPixelResolution the height pixel resolution of the image file on disk
+     */
+    static void renderImageResource(MatrixStack matrix, ResourceLocation imageResource, int screenPosX, int screenPosY,
+                                    int textureStartXPos, int textureStartYPos, int textureRenderWidth, int textureRenderHeight,
+                                    int imageXPixelResolution, int imageYPixelResolution) {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getTextureManager().bindTexture(imageResource);
+
+        RenderSystem.enableDepthTest();
+        Widget.func_238463_a_(matrix, screenPosX, screenPosY, (float)textureStartXPos, (float)textureStartYPos,
+                textureRenderWidth, textureRenderHeight, imageXPixelResolution, imageYPixelResolution);
+    }
 
     // ###########
     // Rename util
@@ -75,6 +251,10 @@ interface WidgetFix {
     // ######################
     // Self Getters & Setters
     // ######################
+
+    default void setBlitOffset(int offset){
+        setBlitOffset(asWidget(), offset);
+    }
 
     default boolean isHovered() {
         return isHovered(asWidget());
@@ -168,4 +348,6 @@ interface WidgetFix {
     static int getHeight(Widget widget){
         return widget.func_238483_d_();
     }
+
+    static void setBlitOffset(Widget widget, int offset) { widget.func_230926_e_(offset); }
 }

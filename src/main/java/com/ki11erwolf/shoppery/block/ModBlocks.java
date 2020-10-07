@@ -2,24 +2,25 @@ package com.ki11erwolf.shoppery.block;
 
 import com.ki11erwolf.shoppery.util.QueueRegisterer;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * Holds all instances of shoppery blocks and handles the registration of them.
  */
-public class ShopperyBlocks extends QueueRegisterer<Block> {
+public final class ModBlocks extends QueueRegisterer<Block> {
 
     /**
      * Private singleton instance of this class.
      */
-    public static final ShopperyBlocks BLOCKS = new ShopperyBlocks();
-    private ShopperyBlocks(){}
+    public static final ModBlocks BLOCKS = new ModBlocks();
+    private ModBlocks(){}
 
-    public static final ShopperyBlock<?> TEST_BLOCK = new ShopperyBlock<ShopperyBlock<?>>(
-            Block.Properties.create(Material.EARTH), "yesst"
-    ).queueRegistration();
+    //############################
+    //   Public Block Instances
+    //############################
+
+    public static final ModBlock<?> TEST_BLOCK = new TestBlock("test_block").queueRegistration();
 
 
     //############################
@@ -30,7 +31,7 @@ public class ShopperyBlocks extends QueueRegisterer<Block> {
      * Forge block register event.
      *
      * <p>Iteratively registers every shoppery block queued
-     * for registration ({@link ShopperyBlock#queueRegistration()}
+     * for registration ({@link ModBlock#queueRegistration()}
      * to the game using forges block registration event.
      *
      * @param event forge event.

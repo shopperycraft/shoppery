@@ -1,6 +1,6 @@
 package com.ki11erwolf.shoppery.util;
 
-import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
 
 import java.text.NumberFormat;
@@ -19,7 +19,7 @@ public class CurrencyUtil {
      * the currency.
      */
     public static final String CURRENCY_SYMBOL
-            = ShopperyConfig.GENERAL_CONFIG.getCategory(General.class).getCurrencySymbol();
+            = ModConfig.GENERAL_CONFIG.getCategory(General.class).getCurrencySymbol();
 
     /** Static util class */
     private CurrencyUtil(){}
@@ -72,6 +72,7 @@ public class CurrencyUtil {
      *
      * @return the given amount as a price.
      */
+    @SuppressWarnings("SuspiciousRegexArgument") //Hasn't been a problem (yet?)
     public static String toShortString(double amount){
         String[] balance = (amount + "").split(".");
 

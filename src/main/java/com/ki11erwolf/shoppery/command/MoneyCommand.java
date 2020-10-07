@@ -2,7 +2,7 @@ package com.ki11erwolf.shoppery.command;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import com.ki11erwolf.shoppery.item.ShopperyItems;
+import com.ki11erwolf.shoppery.item.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -43,63 +43,63 @@ class MoneyCommand extends Command {
         switch (arguments[0].toLowerCase()){
             case "1":
                 if(playerWallet.subtract(1) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_ONE));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "5":
                 if(playerWallet.subtract(5) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIVE));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIVE));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "10":
                 if(playerWallet.subtract(10) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_TEN));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_TEN));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "20":
                 if(playerWallet.subtract(20) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_TWENTY));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_TWENTY));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "50":
                 if(playerWallet.subtract(50) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIFTY));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIFTY));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "100":
                 if(playerWallet.subtract(100) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE_HUNDRED));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_ONE_HUNDRED));
                 else localeMessage(player, "insufficient_funds");
                 break;
 
             case "500":
                 if(playerWallet.subtract(500) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIVE_HUNDRED));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIVE_HUNDRED));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "1k":
                 if(playerWallet.subtract(1000) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE_K));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_ONE_K));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "5k":
                 if(playerWallet.subtract(5000) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIVE_K));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIVE_K));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "10k":
                 if(playerWallet.subtract(10000) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_TEN_K));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_TEN_K));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "50k":
                 if(playerWallet.subtract(50000) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIFTY_K));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIFTY_K));
                 else localeMessage(player, "insufficient_funds");
                 break;
             case "100k":
                 if(playerWallet.subtract(100000) || player.isCreative())
-                    player.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE_HUNDRED_K));
+                    player.addItemStackToInventory(new ItemStack(ModItems.NOTE_ONE_HUNDRED_K));
                 else localeMessage(player, "insufficient_funds");
                 break;
             default:

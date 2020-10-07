@@ -2,7 +2,7 @@ package com.ki11erwolf.shoppery.price;
 
 import com.google.gson.*;
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.item.CurrencyItem;
+import com.ki11erwolf.shoppery.item.ICurrencyItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
@@ -233,7 +233,7 @@ class RegistryModifier {
         if(item == null || item == Items.AIR)
             return false;
 
-        return !(item instanceof CurrencyItem);
+        return !(item instanceof ICurrencyItem);
     }
 
     /**

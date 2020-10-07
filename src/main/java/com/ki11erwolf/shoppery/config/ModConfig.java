@@ -26,7 +26,7 @@ import java.io.File;
  * first used (i.e. lazily initialized). So it should be
  * ready to use at any point in the application/mod life-cycle.
  */
-public class ShopperyConfig {
+public class ModConfig {
 
     /**
      * The folder (within the run directory) where the configuration
@@ -58,7 +58,7 @@ public class ShopperyConfig {
     /**
      * Private (non-instantiatable) constructor.
      */
-    private ShopperyConfig(){}
+    private ModConfig(){}
 
     /**
      * Turns a config name into an actual file name including

@@ -9,13 +9,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
  * Holds all instances of shoppery items and handles
  * the registration of them.
  */
-public final class ShopperyItems extends QueueRegisterer<Item> {
+public final class ModItems extends QueueRegisterer<Item> {
 
     /**
      * Private instance of this class.
      */
-    public static final ShopperyItems ITEMS = new ShopperyItems();
-    private ShopperyItems(){}
+    public static final ModItems ITEMS = new ModItems();
+    private ModItems(){}
 
     //############################
     //   Public Item Instances
@@ -123,7 +123,7 @@ public final class ShopperyItems extends QueueRegisterer<Item> {
      * Forge item register event.
      *
      * <p>Iteratively registers every shoppery item queued
-     * for registration ({@link ShopperyItem#queueRegistration()}
+     * for registration ({@link ModItem#queueRegistration()}
      * to the game using forges item registration event.
      *
      * @param event forge event.
@@ -139,7 +139,7 @@ public final class ShopperyItems extends QueueRegisterer<Item> {
      *
      * @param item the item to queue.
      */
-    static void queueItem(ShopperyItem<?> item){
+    static void queueItem(ModItem<?> item){
         ITEMS.queueForRegistration(item);
     }
 }

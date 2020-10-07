@@ -3,7 +3,7 @@ package com.ki11erwolf.shoppery.packets;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import com.ki11erwolf.shoppery.item.ShopperyItems;
+import com.ki11erwolf.shoppery.item.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -102,41 +102,41 @@ public class MoneyWithdrawPacket extends Packet<MoneyWithdrawPacket> {
                     //Notes
                     switch (amount) {
                         case 1:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_ONE));
                             break;
                         case 5:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIVE));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIVE));
                             break;
                         case 10:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_TEN));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_TEN));
                             break;
                         case 20:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_TWENTY));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_TWENTY));
                             break;
                         case 50:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIFTY));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIFTY));
                             break;
                         case 100:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE_HUNDRED));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_ONE_HUNDRED));
                             break;
 
                         case 500:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIVE_HUNDRED));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIVE_HUNDRED));
                             break;
                         case 1_000:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE_K));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_ONE_K));
                             break;
                         case 5_000:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIVE_K));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIVE_K));
                             break;
                         case 10_000:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_TEN_K));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_TEN_K));
                             break;
                         case 50_000:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_FIFTY_K));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_FIFTY_K));
                             break;
                         case 100_000:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.NOTE_ONE_HUNDRED_K));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.NOTE_ONE_HUNDRED_K));
                             break;
                     }
                 }
@@ -145,22 +145,22 @@ public class MoneyWithdrawPacket extends Packet<MoneyWithdrawPacket> {
                     //Coins
                     switch (amount) {
                         case 1:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.COIN_ONE));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.COIN_ONE));
                             break;
                         case 5:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.COIN_FIVE));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.COIN_FIVE));
                             break;
                         case 10:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.COIN_TEN));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.COIN_TEN));
                             break;
                         case 20:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.COIN_TWENTY));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.COIN_TWENTY));
                             break;
                         case 50:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.COIN_FIFTY));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.COIN_FIFTY));
                             break;
                         case 80:
-                            player.inventory.addItemStackToInventory(new ItemStack(ShopperyItems.COIN_EIGHTY));
+                            player.inventory.addItemStackToInventory(new ItemStack(ModItems.COIN_EIGHTY));
                             break;
                     }
                 }

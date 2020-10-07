@@ -1,16 +1,21 @@
 package com.ki11erwolf.shoppery.item;
 
-import com.ki11erwolf.shoppery.ShopperyItemGroup;
+import com.ki11erwolf.shoppery.ShopperyTab;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import net.minecraft.item.Item;
 
 /**
- * Base class for all shoppery items.
+ /**
+ * Base class for all Shoppery mod Items.
  *
- * @generic T the class inheriting from this class.
+ * <p>Extends upon Minecraft's base {@link Item} class
+ * to add: a native {@link #queueRegistration() register}
+ * system & method, as well as other utilities.
+ *
+ * @generic T the Item child class inheriting from this class.
  */
 @SuppressWarnings("WeakerAccess")
-public class ShopperyItem<T extends ShopperyItem<T>> extends Item {
+public class ModItem<T extends ModItem<T>> extends Item {
 
     /**
      * Flag to prevent queuing an item
@@ -28,7 +33,7 @@ public class ShopperyItem<T extends ShopperyItem<T>> extends Item {
      * @param registryName the name to register
      *                     this item under.
      */
-    ShopperyItem(Properties properties, String registryName) {
+    ModItem(Properties properties, String registryName) {
         super(setItemGroup(properties));
         this.setRegistryName(ShopperyMod.MODID, registryName);
     }
@@ -48,7 +53,7 @@ public class ShopperyItem<T extends ShopperyItem<T>> extends Item {
      * @param registryName the name to register
      *                     this item under.
      */
-    ShopperyItem(Properties properties, boolean group, String registryName){
+    ModItem(Properties properties, boolean group, String registryName){
         super((group) ? setItemGroup(properties) : properties);
         this.setRegistryName(ShopperyMod.MODID, registryName);
     }
@@ -67,7 +72,7 @@ public class ShopperyItem<T extends ShopperyItem<T>> extends Item {
                     String.format("Item: %s already queued for registration.", this.getClass().getCanonicalName())
             );
 
-        ShopperyItems.queueItem(this);
+        ModItems.queueItem(this);
         isQueued = true;
 
         //noinspection unchecked //Should NOT be possible.
@@ -83,6 +88,6 @@ public class ShopperyItem<T extends ShopperyItem<T>> extends Item {
      * @return updated properties object.
      */
     private static Properties setItemGroup(Properties properties){
-        return properties.group(ShopperyItemGroup.INSTANCE);
+        return properties.group(ShopperyTab.INSTANCE);
     }
 }

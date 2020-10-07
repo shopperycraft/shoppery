@@ -9,7 +9,7 @@ package com.ki11erwolf.shoppery.item;
  * this interface provides a method for inheriting classes to define
  * their value, along with some related utility methods.
  */
-public interface CurrencyItem {
+public interface ICurrencyItem {
 
     /**
      * Gets the amount of cash this currency item is worth. The

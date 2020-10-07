@@ -1,6 +1,6 @@
 package com.ki11erwolf.shoppery.gui;
 
-import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.packets.FullBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FullBalanceReqPacket;
@@ -25,7 +25,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static com.ki11erwolf.shoppery.item.ShopperyItems.*;
+import static com.ki11erwolf.shoppery.item.ModItems.*;
 
 /**
  * Shoppery's Money section of players survival inventory GUI.
@@ -39,14 +39,14 @@ import static com.ki11erwolf.shoppery.item.ShopperyItems.*;
  * interfering with the Vanilla survival inventory GUI.
  */
 @OnlyIn(Dist.CLIENT)
-public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFix{
+public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
 
     /**
      * The texture map for the various GUI backgrounds
      * used by Shoppery.
      */
-    public static final ResourceLocation SHOPPERY_GUIS
-            = new ResourceLocation("shoppery", "textures/gui/shoppery_guis.png");
+    public static final ResourceLocation WALLET_GUI_TEXTURES
+            = new ResourceLocation("shoppery", "textures/gui/wallet_guis.png");
 
     /**
      * The amount of pixes to shift each tooltip on the x-axis.
@@ -65,7 +65,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      * multiple balance requests.
      */
     private static final WaitTimer BALANCE_REQUEST_TIMER
-            = new WaitTimer(ShopperyConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime());
+            = new WaitTimer(ModConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime());
 
     /**
      * The width of the money section background in pixels.
@@ -87,7 +87,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      * The widget acting as a slot that can both, deposit currency items
      * into the wallet and request the price of any items put in the slot.
      */
-    private InputSlot inputSlot;
+    private WalletInputSlot inputSlot;
 
     /**
      * The player this inventory belongs to.
@@ -111,7 +111,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
     /**
      * @param player the player the inventory belongs/is showed to.
      */
-    public ShopperyInventoryScreen(PlayerEntity player) {
+    public WalletInventoryScreen(PlayerEntity player) {
         super(player);
         this.player = player;
     }
@@ -130,8 +130,8 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
     protected void init() {
         calculateOriginPosition();
         initCashSection();
-        this.addButton(new WikiButton(relX, relY));
-        this.addButton((this.inputSlot = new InputSlot(player, relX + 122, relY + 36)));
+        this.addButton(new WalletWikiButton(relX, relY));
+        this.addButton((this.inputSlot = new WalletInputSlot(player, relX + 122, relY + 36)));
     }
 
     /** Obfuscated {@link #render(MatrixStack, int, int, float)}. */
@@ -202,7 +202,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      */
     protected void renderBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
         renderImage(
-                matrix, SHOPPERY_GUIS, relX, relY, 0, 0,
+                matrix, WALLET_GUI_TEXTURES, relX, relY, 0, 0,
                 WIDTH, HEIGHT, 256, 256
         );
     }
@@ -239,7 +239,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
         if(inputSlot.isOccupied()){
             renderTooltip2(matrix, fr, new StringTextComponent(
                     LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("buy")
-            ), X(24), Y(7), 0xff2424);
+            ), X(24), Y(7), 0xff1212);
 
             renderTooltip2(matrix, fr, new StringTextComponent(
                     LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("sell")
@@ -316,7 +316,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      * bounds.
      *
      * <p/>This has been extended to take the extended
-     * {@link ShopperyInventoryScreen} bounds into account.
+     * {@link WalletInventoryScreen} bounds into account.
      *
      * @return {@code true} if the click was outside of the gui
      * bounds, {@code false} otherwise.
@@ -346,47 +346,47 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
         int beginY = relY + 6;
 
         //Row 1
-        this.addButton(new MoneyButton(beginX, beginY, COIN_ONE, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, COIN_ONE, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, COIN_FIVE, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, COIN_FIVE, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, COIN_TEN, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, COIN_TEN, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, COIN_TWENTY, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, COIN_TWENTY, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, COIN_FIFTY, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, COIN_FIFTY, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, COIN_EIGHTY, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, COIN_EIGHTY, player));
 
         //Row 2
         beginX = relX + 144; beginY += 18;
 
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_ONE, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_ONE, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIVE, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_FIVE, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_TEN, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_TEN, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_TWENTY, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_TWENTY, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIFTY, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_FIFTY, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_ONE_HUNDRED, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_ONE_HUNDRED, player));
 
         //Row 3
         beginX = relX + 144; beginY += 18;
 
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIVE_HUNDRED, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_FIVE_HUNDRED, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_ONE_K, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_ONE_K, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIVE_K, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_FIVE_K, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_TEN_K, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_TEN_K, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_FIFTY_K, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_FIFTY_K, player));
         beginX += 18;
-        this.addButton(new MoneyButton(beginX, beginY, NOTE_ONE_HUNDRED_K, player));
+        this.addButton(new WalletMoneySlot(beginX, beginY, NOTE_ONE_HUNDRED_K, player));
     }
 
     // ************
@@ -414,7 +414,7 @@ public class ShopperyInventoryScreen extends InventoryScreen implements WidgetFi
      * Inventory screen, {@code false} otherwise.
      */
     public static boolean isShopperyInventoryDisplayed(){
-        return Minecraft.getInstance().currentScreen instanceof ShopperyInventoryScreen;
+        return Minecraft.getInstance().currentScreen instanceof WalletInventoryScreen;
     }
 
     /**

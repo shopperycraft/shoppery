@@ -1,6 +1,6 @@
 package com.ki11erwolf.shoppery.command;
 
-import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.price.ItemPrice;
 import com.ki11erwolf.shoppery.price.ItemPrices;
@@ -61,11 +61,11 @@ class PriceCommand extends Command{
         else
             localeMessage(playerEntity, "price",
                     price.getItem(), ((price.allowsBuying())
-                            ? ShopperyConfig.GENERAL_CONFIG.getCategory(General.class)
+                            ? ModConfig.GENERAL_CONFIG.getCategory(General.class)
                             .getCurrencySymbol() + price.getBuyPrice()
                             : "-1"),
                     ((price.allowsSelling())
-                            ? ShopperyConfig.GENERAL_CONFIG.getCategory(General.class)
+                            ? ModConfig.GENERAL_CONFIG.getCategory(General.class)
                             .getCurrencySymbol() + price.getSellPrice()
                             : "-1"),
                     price.getPriceFluctuation()

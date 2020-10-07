@@ -3,7 +3,7 @@ package com.ki11erwolf.shoppery.command;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.util.MCUtil;
 import net.minecraft.entity.player.PlayerEntity;
@@ -65,11 +65,11 @@ class PayCommand extends Command{
                 try{
                     toPlayerWallet.add(amount);
                     localeMessage(player, "received",
-                            player.getName().getString(), ShopperyConfig.GENERAL_CONFIG
+                            player.getName().getString(), ModConfig.GENERAL_CONFIG
                             .getCategory(General.class).getCurrencySymbol() + amount
                     );
                     localeMessage(player, "paid",
-                            ShopperyConfig.GENERAL_CONFIG
+                            ModConfig.GENERAL_CONFIG
                             .getCategory(General.class).getCurrencySymbol()
                             + amount, player.getName().getString()
                     );

@@ -1,8 +1,6 @@
 package com.ki11erwolf.shoppery;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
-import com.ki11erwolf.shoppery.block.ShopperyBlocks;
-import com.ki11erwolf.shoppery.item.ShopperyItems;
 import com.ki11erwolf.shoppery.price.ItemPrices;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -24,7 +22,9 @@ import org.apache.logging.log4j.util.StackLocatorUtil;
 import java.io.File;
 
 /**
- * The Shoppery "Main" mod class.
+ * The Shoppery Mods main/entry class. Holds core Shoppery
+ * systems, objects and variables, as well as handles
+ * proxies, events, and complete mod setup.
  */
 @Mod(ShopperyMod.MODID)
 public class ShopperyMod {
@@ -41,9 +41,15 @@ public class ShopperyMod {
 
     /**
      * The version number for this release of
-     * shopperycraft.
+     * Shopperycraft.
      */
     public static final String VERSION = "1.0.0";
+
+    /**
+     * The Minecraft version number this release of
+     * Shopperycraft is for.
+     */
+    public static final String MINECRAFT_VERSION = "1.16.3";
 
     /**
      * The directory where shoppery will save all its data.
@@ -54,47 +60,130 @@ public class ShopperyMod {
      * The proxy class (server or client) for this instance.
      */
     @SuppressWarnings({"FieldMayBeFinal", "deprecation"})
-    private static Proxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+    private static Proxy proxy = DistExecutor.runForDist(() -> ProxyClient::new, () -> ProxyServer::new);
 
     /**
-     * Default Constructor.
+     * Default Constructor for main Shoppery Mod class and
+     * non-static entry point.
      *
-     * Sets up mod event listeners & callbacks.
+     * <p>Calls the various setup methods that ultimately
+     * construct, setup, create, & make the mod. Setup
+     * methods are called in a specific order.
      */
     public ShopperyMod() {
-        ItemPrices.loadPriceRegistry();
+        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        initSetup(eventBus);
+    }
 
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modBus.addListener(this::setup);
-        modBus.addListener(this::enqueueIMC);
-        modBus.addListener(this::processIMC);
-        modBus.addListener(this::clientOnlySetup);
+    /**
+     * Handles calling the mods setup methods
+     * and events in the correct orders.
+     *
+     * <p>Firstly, handles pre-mod native setup
+     * before registering the server & client mod
+     * setup events along with inter-mod events
+     * and communication.
+     *
+     * <p>Secondly, passes control over to the
+     * proxy(s) for various registry object setup
+     * and registration with {@link
+     * #setupRegistry(IEventBus)}
+     *
+     * <p>Finally, registers all other hooks and
+     * events for Forge and FML.
+     *
+     * @param eventBus {@link FMLJavaModLoadingContext
+     * #getModEventBus() FML Mod Loading event bus}
+     */
+    private void initSetup(IEventBus eventBus){
+        LOGGER.info(String.format("%sBegin Shoppery-%s-%s setup!",
+                "\n------------------\n", VERSION, MINECRAFT_VERSION
+        ));
 
-        modBus.register(ShopperyBlocks.BLOCKS);
-        modBus.register(ShopperyItems.ITEMS);
+        //Native
+        setupNative();
 
+        //Client/Server
+        eventBus.addListener(this::setupServer);
+        eventBus.addListener(this::setupClient);
+
+        //Mod Communications
+        eventBus.addListener(this::enqueueIMC);
+        eventBus.addListener(this::processIMC);
+
+        //Registry
+        setupRegistry(eventBus);
+
+        //Other
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     /**
-     * First mod registration event. Called to
-     * initialize and register the shoppery mod.
+     * The pre-mod-setup register & setup event called by the mod
+     * during construction.
+     *
+     * <p>Called to construct and setup mod systems that don't
+     * depend (or directly depend) on MC/Forge or other Shoppery
+     * systems, and registered events.
+     *
+     * <p>Call order: First, before everything & anything, including
+     * the mod setup event(s).
+     */
+    private void setupNative(){
+        LOGGER.info("Starting ShopperyCraft native setup...");
+        proxy.onNativeSetup();
+    }
+
+
+    /**
+     * The mods server construct & setup event called by
+     * the mod after the native setup during construction.
+     *
+     * <p>Called to construct and setup MC/Forge dependent
+     * mod systems used by both the client and server.
+     *
+     * <p>Call order: directly after the native setup.
      *
      * @param event forge provided event.
      */
-    private void setup(final FMLCommonSetupEvent event){
-        LOGGER.info(String.format("Starting ShopperyCraft %s setup...", VERSION));
-        proxy.setup(event);
+    private void setupServer(final FMLCommonSetupEvent event){
+        LOGGER.info("Starting ShopperyCraft server setup...");
+        proxy.onServerSetup(event);
     }
 
     /**
-     * Client side mod registration event.
+     * The mods client construct & setup event called by
+     * the mod after the native setup during construction.
+     *
+     * <p>Called to construct and setup MC/Forge dependent
+     * mod systems used <b>only by the client</b>.
+     *
+     * <p>Call order: directly after the native & server setup.
      *
      * @param event forge provided event.
      */
-    private void clientOnlySetup(final FMLClientSetupEvent event) {
-        if(proxy instanceof ClientProxy)
-            proxy.clientOnlySetup(event);
+    private void setupClient(final FMLClientSetupEvent event) {
+        if(proxy instanceof ProxyClient) {
+            LOGGER.info("Starting ShopperyCraft client setup...");
+            proxy.onClientSetup(event);
+        }
+    }
+
+    /**
+     * The mods create and setup event for registry objects
+     * called by the mod during construction.
+     *
+     * <p>Called to setup and register any/all mod objects
+     * that need to be registered in the Forge Registry.
+     *
+     * <p>Call order: last, after native and client/server
+     * setup.
+     *
+     * @param eventBus forge FML event bus.
+     */
+    private void setupRegistry(final IEventBus eventBus){
+        LOGGER.info("Starting ShopperyCraft registry setup...");
+        proxy.onRegistrySetup(eventBus);
     }
 
     /**
@@ -132,7 +221,7 @@ public class ShopperyMod {
      */
     @SubscribeEvent
     public void onServerStopped(FMLServerStoppedEvent event){
-        if(!(proxy instanceof ClientProxy))
+        if(!(proxy instanceof ProxyClient))
             proxy.onServerStopped(event);
     }
 
@@ -154,14 +243,14 @@ public class ShopperyMod {
      * @return a new apache log4j logging instance.
      * Equivalent to {@link LogManager#getLogger()}.
      */
-    public static Logger getNewLogger(){
+    public static Logger getNewLogger() {
         return LogManager.getLogger(StackLocatorUtil.getCallerClass(2));
     }
 
     /**
      * @return the singleton {@link BankManager} instance.
      */
-    public static BankManager getBankManager(){
+    public static BankManager getBankManager() {
         return BankManager.INSTANCE;
     }
 
@@ -173,7 +262,7 @@ public class ShopperyMod {
      *
      * @return the singleton ItemPrices instance.
      */
-    public static ItemPrices getItemPrices(){
+    public static ItemPrices getItemPrices() {
         return ItemPrices.INSTANCE;
     }
 }

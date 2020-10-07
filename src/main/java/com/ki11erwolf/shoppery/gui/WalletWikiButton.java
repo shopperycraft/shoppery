@@ -16,11 +16,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * The Wiki button, added to the {@link ShopperyInventoryScreen}
+ * The Wiki button, added to the {@link WalletInventoryScreen}
  * that links the player to the Wiki website.
  */
 @OnlyIn(Dist.CLIENT)
-class WikiButton extends ImageButton implements WidgetFix {
+class WalletWikiButton extends ImageButton implements WidgetFix {
 
     /**
      * The Wiki's URL to link to.
@@ -50,10 +50,10 @@ class WikiButton extends ImageButton implements WidgetFix {
      * @param inventoryX X starting position.
      * @param inventoryY Y starting position.
      */
-    public WikiButton(int inventoryX, int inventoryY) {
+    public WalletWikiButton(int inventoryX, int inventoryY) {
         super(inventoryX + POSITION_X, inventoryY + POSITION_Y,
                 WIDTH, HEIGHT, TEXTURE_POSITION_X, TEXTURE_POSITION_Y,
-                HEIGHT + 1, ShopperyButton.BUTTON_TEXTURES,
+                HEIGHT + 1, WalletButton.WALLET_BUTTON_TEXTURES,
                 (button) -> confirmOpenWikiLink()
         );
     }
@@ -92,7 +92,7 @@ class WikiButton extends ImageButton implements WidgetFix {
                 matrixStack,
                 Minecraft.getInstance().fontRenderer,
                 new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("wiki_button")),
-                (this.getXPos() + (this.getWidth() / 2) + 56) + ShopperyInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET,
+                (this.getXPos() + (this.getWidth() / 2) + 56) + WalletInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET,
                 this.getYPos() + (this.getHeight() / 2) + 1, 0XF8F8F8
         );
     }

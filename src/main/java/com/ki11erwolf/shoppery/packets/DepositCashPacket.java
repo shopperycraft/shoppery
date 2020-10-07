@@ -4,7 +4,7 @@ import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
 import com.ki11erwolf.shoppery.item.CoinItem;
-import com.ki11erwolf.shoppery.item.CurrencyItem;
+import com.ki11erwolf.shoppery.item.ICurrencyItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -97,11 +97,11 @@ public class DepositCashPacket extends Packet<DepositCashPacket> {
                 //Get referenced objects
                 ItemStack deposit = player.inventory.getItemStack();
                 Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
-                CurrencyItem cItem;
+                ICurrencyItem cItem;
 
                 //Ensure item is a currency item.
-                if(deposit.getItem() instanceof CurrencyItem)
-                    cItem = (CurrencyItem) deposit.getItem();
+                if(deposit.getItem() instanceof ICurrencyItem)
+                    cItem = (ICurrencyItem) deposit.getItem();
                 else return;
 
                 //Do deposit

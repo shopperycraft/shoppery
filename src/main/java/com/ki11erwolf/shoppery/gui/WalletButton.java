@@ -1,7 +1,7 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.packets.FormattedBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FormattedBalanceReqPacket;
@@ -35,13 +35,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * <p/>Once initialized, the button will handle itself.
  */
 @OnlyIn(Dist.CLIENT)
-public abstract class ShopperyButton extends ImageButton implements WidgetFix {
+public abstract class WalletButton extends ImageButton implements WidgetFix {
 
     /**
      * The textures map for Shoppery buttons.
      */
-    public static final ResourceLocation BUTTON_TEXTURES
-            = new ResourceLocation("shoppery", "textures/gui/shoppery_buttons.png");
+    public static final ResourceLocation WALLET_BUTTON_TEXTURES
+            = new ResourceLocation("shoppery", "textures/gui/wallet_buttons.png");
 
     /**
      * Logging Object
@@ -68,7 +68,7 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
     static{
         if(BALANCE_REQUEST_TIMER == null)
             BALANCE_REQUEST_TIMER = new WaitTimer(
-                    ShopperyConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime()
+                    ModConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime()
             );
     }
 
@@ -93,10 +93,10 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
      * @param x the x coordinate of the button.
      * @param y the y coordinate of the button.
      */
-    private ShopperyButton(int x, int y, InventoryScreen inventoryGUI) {
+    private WalletButton(int x, int y, InventoryScreen inventoryGUI) {
         super(
                 x, y, 46, 18, 0, 0,
-                19, BUTTON_TEXTURES, ShopperyButton::onPressed
+                19, WALLET_BUTTON_TEXTURES, WalletButton::onPressed
         );
 
         this.inventoryGUI = inventoryGUI;
@@ -179,12 +179,12 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
 
         //To Shoppery inventory
         if(currentScreen instanceof InventoryScreen)
-            Minecraft.getInstance().displayGuiScreen(new ShopperyInventoryScreen(
+            Minecraft.getInstance().displayGuiScreen(new WalletInventoryScreen(
                     Minecraft.getInstance().player
             ));
 
         //To normal Minecraft inventory
-        if(currentScreen instanceof ShopperyInventoryScreen)
+        if(currentScreen instanceof WalletInventoryScreen)
             Minecraft.getInstance().displayGuiScreen(new InventoryScreen(
                     Minecraft.getInstance().player
             ));
@@ -210,8 +210,8 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
         Screen gui = event.getGui();
 
         //If either Shoppery or survival inventory is up
-        if(ShopperyInventoryScreen.isSurvivalInventoryDisplayed()
-                || ShopperyInventoryScreen.isShopperyInventoryDisplayed()) {
+        if(WalletInventoryScreen.isSurvivalInventoryDisplayed()
+                || WalletInventoryScreen.isShopperyInventoryDisplayed()) {
             InventoryScreen screen = (InventoryScreen) event.getGui();
 
             //and we have a player
@@ -226,7 +226,7 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
             ));
 
             //Then create and add new button
-            ShopperyButton button = makeButton(screen, player);
+            WalletButton button = makeButton(screen, player);
             event.addWidget(button);
         }
     }
@@ -241,14 +241,14 @@ public abstract class ShopperyButton extends ImageButton implements WidgetFix {
      * @return the newly created ShopperyButton for the
      * given InventoryScreen.
      */
-    private static ShopperyButton makeButton(InventoryScreen screen, PlayerEntity player){
-        return new ShopperyButton(
+    private static WalletButton makeButton(InventoryScreen screen, PlayerEntity player){
+        return new WalletButton(
                 screen.getGuiLeft() + REL_X, screen.field_230709_l_
                 /*screen.field_230708_k_*/ / 2 - REL_INV_Y, screen) {
 
             @Override
             protected String getShortenedBalance() {
-                ShopperyButton.requestBalance(player);
+                WalletButton.requestBalance(player);
                 return CurrencyUtil.CURRENCY_SYMBOL + FormattedBalanceRecPacket
                         .getLastKnownBalance();
             }

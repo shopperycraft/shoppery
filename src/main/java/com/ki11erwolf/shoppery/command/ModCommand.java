@@ -9,7 +9,7 @@ import net.minecraft.world.World;
  * Used to list commands and get information on
  * specific commands.
  */
-class ShopperyCommand extends Command {
+class ModCommand extends Command {
 
     /**
      * Name of the command.
@@ -19,7 +19,7 @@ class ShopperyCommand extends Command {
     /**
      * Shoppery command constructor.
      */
-    ShopperyCommand() {
+    ModCommand() {
         super(NAME);
     }
 

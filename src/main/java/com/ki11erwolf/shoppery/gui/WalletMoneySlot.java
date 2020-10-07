@@ -1,10 +1,10 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperySoundEvents;
-import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
-import com.ki11erwolf.shoppery.item.CurrencyItem;
-import com.ki11erwolf.shoppery.item.ShopperyItem;
+import com.ki11erwolf.shoppery.item.ICurrencyItem;
+import com.ki11erwolf.shoppery.item.ModItem;
 import com.ki11erwolf.shoppery.packets.*;
 import com.ki11erwolf.shoppery.util.WaitTimer;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -26,20 +26,20 @@ import java.util.UUID;
 
 /**
  * A button that represents a clickable Currency
- * Item within the {@link ShopperyInventoryScreen}.
+ * Item within the {@link WalletInventoryScreen}.
  *
  * <p/>The button will withdraw currency item
  * from the players wallet when clicked.
  */
 @OnlyIn(Dist.CLIENT)
-public class MoneyButton extends Widget implements WidgetFix {
+public class WalletMoneySlot extends Widget implements WidgetFix {
 
     /**
      * Timer to prevent spamming the server with
      * balance update requests.
      */
     private static final WaitTimer BALANCE_REQ_TIMER
-            = new WaitTimer(ShopperyConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime());
+            = new WaitTimer(ModConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime());
 
     /**
      * The height and width of the button.
@@ -61,7 +61,7 @@ public class MoneyButton extends Widget implements WidgetFix {
     /**
      * The currency item this Money Button represents.
      */
-    private final ShopperyItem<?> currencyItem;
+    private final ModItem<?> currencyItem;
 
     /**
      * The resource location that locates and identifies
@@ -105,7 +105,7 @@ public class MoneyButton extends Widget implements WidgetFix {
      * @param y Y coordinate
      * @param currencyItem the currency item to represent.
      */
-    public MoneyButton(int x, int y, ShopperyItem<?> currencyItem, PlayerEntity player) {
+    public WalletMoneySlot(int x, int y, ModItem<?> currencyItem, PlayerEntity player) {
         super(x, y, SIZE, SIZE, new StringTextComponent(""));
         this.playerUUID = player.getUniqueID();
         this.updateBalance();
@@ -113,7 +113,7 @@ public class MoneyButton extends Widget implements WidgetFix {
         if(currencyItem.getRegistryName() == null)
             throw new NullPointerException("Item registry name cannot be null.");
 
-        if(!(currencyItem instanceof CurrencyItem)) {
+        if(!(currencyItem instanceof ICurrencyItem)) {
             throw new IllegalArgumentException("Provided item is not a type of currency, coin, or note.");
         }
 
@@ -192,7 +192,7 @@ public class MoneyButton extends Widget implements WidgetFix {
     protected void renderLockOverlayIfAppropriate(MatrixStack matrix, int x, int y){
         if(!affordable()){
             renderImage(
-                    matrix, ShopperyInventoryScreen.SHOPPERY_GUIS, x, y, 0,
+                    matrix, WalletInventoryScreen.WALLET_GUI_TEXTURES, x, y, 0,
                     65, SIZE, SIZE, 256, 256
             );
         }
@@ -290,7 +290,7 @@ public class MoneyButton extends Widget implements WidgetFix {
      */
     public void onPress(){
         playDownSound(Minecraft.getInstance().getSoundHandler());
-        CurrencyItem cItem = (CurrencyItem) currencyItem;
+        ICurrencyItem cItem = (ICurrencyItem) currencyItem;
 
         if(cItem.isWholeCashValue())
             Packet.send(PacketDistributor.SERVER.noArg(),
@@ -336,7 +336,7 @@ public class MoneyButton extends Widget implements WidgetFix {
      * coin/note.
      */
     private boolean affordable(){
-        CurrencyItem cItem = (CurrencyItem) currencyItem;
+        ICurrencyItem cItem = (ICurrencyItem) currencyItem;
 
         if(balance >= 1){
             if(cItem.isFractionalCashValue())

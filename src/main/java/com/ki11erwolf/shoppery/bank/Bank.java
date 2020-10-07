@@ -3,7 +3,7 @@ package com.ki11erwolf.shoppery.bank;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.ki11erwolf.shoppery.config.ShopperyConfig;
+import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.util.MCUtil;
 import com.mojang.authlib.GameProfile;
@@ -77,7 +77,7 @@ public class Bank {
                 return null;
 
             givenWallet = new Wallet(
-                    player, ShopperyConfig.GENERAL_CONFIG.getCategory(General.class).getStartingBalance(), (byte)0
+                    player, ModConfig.GENERAL_CONFIG.getCategory(General.class).getStartingBalance(), (byte)0
             );
             walletMap.put(playerUUID, givenWallet);
         }

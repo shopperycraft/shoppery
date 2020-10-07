@@ -27,7 +27,7 @@ class BuildProperties {
 
     static MINECRAFT_VERSION = '1.16.3'
 
-    static FORGE_VERSION = '34.0.0'
+    static FORGE_VERSION = '34.1.11'
 
     static MAPPINGS_VERSION = '20200514-1.16'
 

@@ -14,7 +14,7 @@ import net.minecraft.world.World;
  * as Dollars to give simple, well known name
  * to the currency.
  */
-public class CoinItem extends ShopperyItem<CoinItem> implements CurrencyItem{
+public class CoinItem extends ModItem<CoinItem> implements ICurrencyItem {
 
     /**
      * Prefix for all coin item types.

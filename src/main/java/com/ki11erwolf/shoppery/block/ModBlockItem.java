@@ -1,14 +1,16 @@
-package com.ki11erwolf.shoppery.item;
+package com.ki11erwolf.shoppery.block;
 
+import com.ki11erwolf.shoppery.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 
 /**
- * A special Shoppery ItemBlock created to easily register
- * ItemBlocks when registering normals blocks.
+ * A rather special Shoppery mod Block that inherits from
+ * Minecraft's {@link BlockItem} class to provide a mod
+ * BlockItem with the native register system & method.
  */
-public class ShopperyItemBlock extends BlockItem {
+class ModBlockItem extends BlockItem {
 
     /**
      * Flag to prevent queuing an item
@@ -22,7 +24,7 @@ public class ShopperyItemBlock extends BlockItem {
      * @param blockIn the block this itemBlock is for.
      * @param properties the item block properties.
      */
-    public ShopperyItemBlock(Block blockIn, Item.Properties properties) {
+    protected ModBlockItem(Block blockIn, Item.Properties properties) {
         super(blockIn, properties);
     }
 
@@ -33,14 +35,14 @@ public class ShopperyItemBlock extends BlockItem {
      * @return {@code this}.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public ShopperyItemBlock queueRegistration(){
+    protected ModBlockItem queueRegistration(){
         if(isQueued)
             throw new IllegalStateException(
                     String.format("ItemBlock: %s already queued for registration.",
                             this.getClass().getCanonicalName())
             );
 
-        ShopperyItems.ITEMS.queueForRegistration(this);
+        ModItems.ITEMS.queueForRegistration(this);
         isQueued = true;
 
         return this;

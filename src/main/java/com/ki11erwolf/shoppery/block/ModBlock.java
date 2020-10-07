@@ -1,17 +1,21 @@
 package com.ki11erwolf.shoppery.block;
 
-import com.ki11erwolf.shoppery.ShopperyItemGroup;
+import com.ki11erwolf.shoppery.ShopperyTab;
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.item.ShopperyItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 
 /**
- * Base class for all shoppery blocks.
+ * Base class for all Shoppery mod blocks, including
+ * TileEntities & Tiles.
  *
- * @generic T the class inheriting from this class.
+ * <p>Extends upon Minecraft's base {@link Block} class
+ * to add: a native {@link #queueRegistration() register}
+ * system & method, as well as other utilities.
+ *
+ * @generic T the Block child class inheriting from this class.
  */
-public class ShopperyBlock<T> extends Block {
+public class ModBlock<T> extends Block {
 
     /**
      * Flag to prevent queuing a block
@@ -23,7 +27,7 @@ public class ShopperyBlock<T> extends Block {
      * The Item that represents this block in
      * the inventory.
      */
-    private final ShopperyItemBlock itemBlock;
+    private final ModBlockItem itemBlock;
 
     /**
      * Creates a new Block for the Shoppery mod.
@@ -31,8 +35,8 @@ public class ShopperyBlock<T> extends Block {
      * @param properties the properties the block will take.
      * @param registryName the name of the block in the registry.
      */
-    public ShopperyBlock(Properties properties, String registryName) {
-        this(properties, new Item.Properties().group(ShopperyItemGroup.INSTANCE), registryName);
+    public ModBlock(Properties properties, String registryName) {
+        this(properties, new Item.Properties().group(ShopperyTab.INSTANCE), registryName);
     }
 
     /**
@@ -43,12 +47,12 @@ public class ShopperyBlock<T> extends Block {
      *                       this block in the inventory will take on.
      * @param registryName the name of the block in the registry.
      */
-    public ShopperyBlock(Properties properties, Item.Properties itemProperties, String registryName) {
+    public ModBlock(Properties properties, Item.Properties itemProperties, String registryName) {
         super(properties);
         setRegistryName(ShopperyMod.MODID, registryName);
 
-        itemBlock = new ShopperyItemBlock(this, itemProperties);
-        itemBlock.setRegistryName(registryName);
+        itemBlock = new ModBlockItem(this, itemProperties);
+        itemBlock.setRegistryName(ShopperyMod.MODID, registryName);
     }
 
     /**
@@ -64,7 +68,7 @@ public class ShopperyBlock<T> extends Block {
                             this.getClass().getCanonicalName())
             );
 
-        ShopperyBlocks.queueItem(this);
+        ModBlocks.queueItem(this);
         isQueued = true;
 
         itemBlock.queueRegistration();

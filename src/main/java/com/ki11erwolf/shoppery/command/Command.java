@@ -57,7 +57,7 @@ public abstract class Command {
     /**
      * Instance of the shoppery command.
      */
-    public static final ShopperyCommand SHOPPERY_COMMAND;
+    public static final ModCommand SHOPPERY_COMMAND;
 
     /**
      * Instance of the money command.
@@ -280,7 +280,7 @@ public abstract class Command {
 
         //Instance initialization.
         PAY_COMMAND = new PayCommand();
-        SHOPPERY_COMMAND = new ShopperyCommand();
+        SHOPPERY_COMMAND = new ModCommand();
         MONEY_COMMAND = new MoneyCommand();
         BALANCE_COMMAND = new BalanceCommand();
         PRICE_COMMAND = new PriceCommand();

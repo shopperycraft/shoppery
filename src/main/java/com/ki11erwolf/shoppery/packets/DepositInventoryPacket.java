@@ -3,7 +3,7 @@ package com.ki11erwolf.shoppery.packets;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import com.ki11erwolf.shoppery.item.CurrencyItem;
+import com.ki11erwolf.shoppery.item.ICurrencyItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -77,11 +77,11 @@ public class DepositInventoryPacket extends Packet<DepositInventoryPacket> {
 
                 for(int i = 0; i < 100; i++){
                     ItemStack stack = player.inventory.getStackInSlot(i);
-                    CurrencyItem cItem;
+                    ICurrencyItem cItem;
 
-                    if(!(stack.getItem() instanceof CurrencyItem))
+                    if(!(stack.getItem() instanceof ICurrencyItem))
                         continue;
-                    else cItem = (CurrencyItem) stack.getItem();
+                    else cItem = (ICurrencyItem) stack.getItem();
 
                     if(cItem.isWholeCashValue()){
                         senderWallet.add(cItem.getSimpleCashValue() * stack.getCount());

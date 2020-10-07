@@ -6,14 +6,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
 /**
- * The base class for all Mod blocks that provide a tile entity.
- * This class extends the functionality of the base Block class
- * to provide for tile entities. Implementing classes are expected
- * to provide the tile entity.
+ * The base class for all Shoppery mod blocks that work with tile
+ * entities.
  *
- * @param <T> the tile entity class.
+ * <p>Inherits from {@link ModBlock}, providing the
+ * basic mod block functionality with additional functionality
+ * added for {@link TileEntity TileEntities or Tiles}.
+ *
+ * @param <T> the blocks tile entity class.
+ * @param <B> the implementing block child class.
  */
-public abstract class ShopperyTileBlock<T extends TileEntity> extends ShopperyBlock<ShopperyTileBlock<?>> {
+public abstract class ModBlockTile<T extends TileEntity, B extends ModBlockTile<T, B>>
+        extends ModBlock<B> {
 
     /**
      * Basic constructor for all Mod tile entities.
@@ -21,7 +25,7 @@ public abstract class ShopperyTileBlock<T extends TileEntity> extends ShopperyBl
      * @param properties the properties & behaviour of this specific block.
      * @param name the registry name of the block.
      */
-    protected ShopperyTileBlock(Properties properties, String name) {
+    protected ModBlockTile(Properties properties, String name) {
         super(properties, name);
     }
 

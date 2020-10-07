@@ -1,7 +1,7 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperySoundEvents;
-import com.ki11erwolf.shoppery.item.CurrencyItem;
+import com.ki11erwolf.shoppery.item.ICurrencyItem;
 import com.ki11erwolf.shoppery.packets.DepositCashPacket;
 import com.ki11erwolf.shoppery.packets.DepositInventoryPacket;
 import com.ki11erwolf.shoppery.packets.ItemPriceReqPacket;
@@ -33,7 +33,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * depositing ItemStacks, is done through packets.
  */
 @OnlyIn(Dist.CLIENT)
-public class InputSlot extends Widget implements WidgetFix {
+public class WalletInputSlot extends Widget implements WidgetFix {
 
     /**
      * The number of pixels to render of the image
@@ -61,7 +61,7 @@ public class InputSlot extends Widget implements WidgetFix {
      * @param yBegin starting Y position of the slot
      *               on screen.
      */
-    public InputSlot(PlayerEntity player, int xBegin, int yBegin) {
+    public WalletInputSlot(PlayerEntity player, int xBegin, int yBegin) {
         super(xBegin, yBegin, 18, 18, new StringTextComponent(""));
         this.player = player;
     }
@@ -110,7 +110,7 @@ public class InputSlot extends Widget implements WidgetFix {
      */
     private void renderBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
         renderImage(
-                matrix, ShopperyInventoryScreen.SHOPPERY_GUIS, getXPos(), getYPos(),
+                matrix, WalletInventoryScreen.WALLET_GUI_TEXTURES, getXPos(), getYPos(),
                 /* X */((WidgetFix.isHovered(this) || containedItem != null) ? 35 : 16),
                 /* Y */65, SIZE, SIZE, 256, 256
         );
@@ -128,7 +128,7 @@ public class InputSlot extends Widget implements WidgetFix {
             this.renderTooltip2(
                     matrix, Minecraft.getInstance().fontRenderer,
                     new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_1")),
-                    this.getXPos() + (getWidth() - 66) + ShopperyInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET,
+                    this.getXPos() + (getWidth() - 66) + WalletInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET,
                     this.getYPos() + ((getHeight() / 2) - 4) - 5,
                     0XF8F8F8
             );
@@ -138,7 +138,7 @@ public class InputSlot extends Widget implements WidgetFix {
             this.renderTooltip2(
                     matrix, Minecraft.getInstance().fontRenderer,
                     new StringTextComponent(LocaleDomains.TOOLTIP.sub(LocaleDomains.WIDGET).get("input_slot_2")),
-                    (this.getXPos() + getWidth() - 67) + (ShopperyInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET - 8),
+                    (this.getXPos() + getWidth() - 67) + (WalletInventoryScreen.COMPONENT_TOOLTIP_X_OFFSET - 8),
                     this.getYPos() + (getHeight() / 2) - 4 + 5,
                     0XF8F8F8
             );
@@ -195,7 +195,7 @@ public class InputSlot extends Widget implements WidgetFix {
                     new DepositInventoryPacket(player.getUniqueID().toString())
             );
             playDepositSound();
-        } else if(heldStack.getItem() instanceof CurrencyItem){ //Cash Deposit
+        } else if(heldStack.getItem() instanceof ICurrencyItem){ //Cash Deposit
             Packet.send(PacketDistributor.SERVER.noArg(),
                     new DepositCashPacket(player.getUniqueID().toString(), button == 0)
             );

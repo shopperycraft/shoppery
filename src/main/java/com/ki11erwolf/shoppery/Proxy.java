@@ -1,6 +1,7 @@
 package com.ki11erwolf.shoppery;
 
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -14,19 +15,57 @@ import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 public interface Proxy {
 
     /**
-     * First mod registration event. Called to
-     * initialize and register the shoppery mod.
+     * The pre-mod-setup register & setup event called by the mod
+     * during construction.
      *
-     * @param event forge provided event.
+     * <p>Called to construct and setup mod systems that don't
+     * depend (or directly depend) on MC/Forge or other Shoppery
+     * systems, and registered events.
+     *
+     * <p>Call order: First, before everything & anything, including
+     * the mod setup event(s).
      */
-    void setup(final FMLCommonSetupEvent event);
+    void onNativeSetup();
 
     /**
-     * Client side mod registration event.
+     * The mods server construct & setup event called by
+     * the mod after the native setup during construction.
+     *
+     * <p>Called to construct and setup MC/Forge dependent
+     * mod systems used by both the client and server.
+     *
+     * <p>Call order: directly after the native setup.
      *
      * @param event forge provided event.
      */
-    default void clientOnlySetup(final FMLClientSetupEvent event){}
+    void onServerSetup(final FMLCommonSetupEvent event);
+
+    /**
+     * The mods create and setup event for registry objects
+     * called by the mod during construction.
+     *
+     * <p>Called to setup and register any/all mod objects
+     * that need to be registered in the Forge Registry.
+     *
+     * <p>Call order: last, after native and client/server
+     * setup.
+     *
+     * @param eventBus forge FML event bus.
+     */
+    void onRegistrySetup(final IEventBus eventBus);
+
+    /**
+     * The mods client construct & setup event called by
+     * the mod after the native setup during construction.
+     *
+     * <p>Called to construct and setup MC/Forge dependent
+     * mod systems used <b>only by the client</b>.
+     *
+     * <p>Call order: directly after the native & server setup.
+     *
+     * @param event forge provided event.
+     */
+    default void onClientSetup(final FMLClientSetupEvent event){}
 
     /**
      * InterModCommunication message send event.

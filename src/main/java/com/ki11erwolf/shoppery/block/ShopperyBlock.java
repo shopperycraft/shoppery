@@ -1,6 +1,7 @@
 package com.ki11erwolf.shoppery.block;
 
 import com.ki11erwolf.shoppery.ShopperyItemGroup;
+import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.item.ShopperyItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -44,7 +45,7 @@ public class ShopperyBlock<T> extends Block {
      */
     public ShopperyBlock(Properties properties, Item.Properties itemProperties, String registryName) {
         super(properties);
-        setRegistryName(registryName);
+        setRegistryName(ShopperyMod.MODID, registryName);
 
         itemBlock = new ShopperyItemBlock(this, itemProperties);
         itemBlock.setRegistryName(registryName);
@@ -59,7 +60,8 @@ public class ShopperyBlock<T> extends Block {
     T queueRegistration(){
         if(isQueued)
             throw new IllegalStateException(
-                    String.format("Item: %s already queued for registration.", this.getClass().getCanonicalName())
+                    String.format("Item: %s already queued for registration.",
+                            this.getClass().getCanonicalName())
             );
 
         ShopperyBlocks.queueItem(this);

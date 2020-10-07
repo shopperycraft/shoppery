@@ -46,13 +46,6 @@ public class NoteItem extends ShopperyItem<NoteItem> implements CurrencyItem {
     }
 
     /**
-     * @return how much money this note is worth (worth > 0)
-     */
-    public int getWorth() {
-        return worth;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * Adds the amount of money this note is worth
@@ -80,4 +73,15 @@ public class NoteItem extends ShopperyItem<NoteItem> implements CurrencyItem {
         return super.onItemRightClick(world, player, hand);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return a whole double value, with no
+     * decimal/fraction value, that gives the
+     * cash value/worth of this note item.
+     */
+    @Override
+    public double getCashValue() {
+        return this.worth;
+    }
 }

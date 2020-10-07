@@ -3,8 +3,7 @@ package com.ki11erwolf.shoppery.packets;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import com.ki11erwolf.shoppery.item.CoinItem;
-import com.ki11erwolf.shoppery.item.NoteItem;
+import com.ki11erwolf.shoppery.item.CurrencyItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -78,14 +77,19 @@ public class DepositInventoryPacket extends Packet<DepositInventoryPacket> {
 
                 for(int i = 0; i < 100; i++){
                     ItemStack stack = player.inventory.getStackInSlot(i);
+                    CurrencyItem cItem;
 
-                    if(stack.getItem() instanceof NoteItem){
-                        senderWallet.add(((NoteItem) stack.getItem()).getWorth() * stack.getCount());
+                    if(!(stack.getItem() instanceof CurrencyItem))
+                        continue;
+                    else cItem = (CurrencyItem) stack.getItem();
+
+                    if(cItem.isWholeCashValue()){
+                        senderWallet.add(cItem.getSimpleCashValue() * stack.getCount());
                         stack.setCount(0);
                     }
 
-                    if(stack.getItem() instanceof CoinItem){
-                        int amount = ((CoinItem) stack.getItem()).getWorth() * stack.getCount();
+                    if(cItem.isFractionalCashValue()){
+                        int amount = cItem.getSimpleCashValue() * stack.getCount();
 
                         senderWallet.add(amount / 100, (byte)(amount % 100));
                         stack.setCount(0);

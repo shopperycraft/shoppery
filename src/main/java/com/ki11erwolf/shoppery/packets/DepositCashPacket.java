@@ -4,7 +4,7 @@ import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
 import com.ki11erwolf.shoppery.item.CoinItem;
-import com.ki11erwolf.shoppery.item.NoteItem;
+import com.ki11erwolf.shoppery.item.CurrencyItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -97,19 +97,23 @@ public class DepositCashPacket extends Packet<DepositCashPacket> {
                 //Get referenced objects
                 ItemStack deposit = player.inventory.getItemStack();
                 Wallet senderWallet = BankManager._getWallet(player.getEntityWorld(), player);
+                CurrencyItem cItem;
+
+                //Ensure item is a currency item.
+                if(deposit.getItem() instanceof CurrencyItem)
+                    cItem = (CurrencyItem) deposit.getItem();
+                else return;
 
                 //Do deposit
-                if(deposit.getItem() instanceof NoteItem){
+                if(cItem.isWholeCashValue()){
                     senderWallet.add(
-                            ((NoteItem) deposit.getItem()).getWorth() * (packet.stack ? deposit.getCount() : 1)
+                            cItem.getSimpleCashValue() * (packet.stack ? deposit.getCount() : 1)
                     );
 
                     if(packet.stack) deposit.setCount(0);
                     else deposit.shrink(1);
                 } else if(deposit.getItem() instanceof CoinItem){
-                    int amount = ((CoinItem) deposit.getItem()).getWorth()
-                            * (packet.stack ? deposit.getCount() : 1);
-
+                    int amount = cItem.getSimpleCashValue() * (packet.stack ? deposit.getCount() : 1);
                     senderWallet.add(amount / 100, (byte)(amount % 100));
 
                     if(packet.stack) deposit.setCount(0);

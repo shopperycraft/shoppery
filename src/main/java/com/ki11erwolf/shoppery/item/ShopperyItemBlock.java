@@ -40,7 +40,7 @@ public class ShopperyItemBlock extends BlockItem {
                             this.getClass().getCanonicalName())
             );
 
-        ShopperyItems.INSTANCE.queueForRegistration(this);
+        ShopperyItems.ITEMS.queueForRegistration(this);
         isQueued = true;
 
         return this;

@@ -1,24 +1,20 @@
 package com.ki11erwolf.shoppery.item;
 
-import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.util.QueueRegisterer;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 /**
  * Holds all instances of shoppery items and handles
  * the registration of them.
  */
-@SuppressWarnings("unused")//References found by reflection.
-@Mod.EventBusSubscriber(modid = ShopperyMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class ShopperyItems extends QueueRegisterer<Item> {
 
     /**
      * Private instance of this class.
      */
-    protected static final ShopperyItems INSTANCE = new ShopperyItems();
+    public static final ShopperyItems ITEMS = new ShopperyItems();
     private ShopperyItems(){}
 
     //############################
@@ -133,8 +129,8 @@ public final class ShopperyItems extends QueueRegisterer<Item> {
      * @param event forge event.
      */
     @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event) {
-        INSTANCE.iterateQueue(item -> event.getRegistry().register(item));
+    public void registerItems(RegistryEvent.Register<Item> event) {
+        this.iterateQueue(item -> event.getRegistry().register(item));
     }
 
     /**
@@ -144,6 +140,6 @@ public final class ShopperyItems extends QueueRegisterer<Item> {
      * @param item the item to queue.
      */
     static void queueItem(ShopperyItem<?> item){
-        INSTANCE.queueForRegistration(item);
+        ITEMS.queueForRegistration(item);
     }
 }

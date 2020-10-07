@@ -43,13 +43,6 @@ public class CoinItem extends ShopperyItem<CoinItem> implements CurrencyItem{
     }
 
     /**
-     * @return The worth/worth (in cents) of this coin (0 < worth <= 100).
-     */
-    public byte getWorth(){
-        return this.worth;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * Adds the amount of money this coin is worth
@@ -77,4 +70,23 @@ public class CoinItem extends ShopperyItem<CoinItem> implements CurrencyItem{
         return super.onItemRightClick(world, player, hand);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return a decimal {@code double} value, that gives
+     * the cash value/worth of this cent item. The value
+     * is always less than one (1) and above zero (0):
+     * {@code value > 0 && value < 1}, with a fraction
+     * that gives the value of this cent item.
+     *
+     * <br/>E.g. {@code 0.5} is 50 cents and {@code 0.05} is
+     * 5 cents.
+     */
+    @Override
+    public double getCashValue() {
+        if(this.worth < 10)
+            return Double.parseDouble("0.0" + this.worth);//Add .0 if less than 10
+        else
+            return Double.parseDouble("0." + this.worth);
+    }
 }

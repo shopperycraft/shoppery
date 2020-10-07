@@ -3,8 +3,7 @@ package com.ki11erwolf.shoppery.gui;
 import com.ki11erwolf.shoppery.ShopperySoundEvents;
 import com.ki11erwolf.shoppery.config.ShopperyConfig;
 import com.ki11erwolf.shoppery.config.categories.General;
-import com.ki11erwolf.shoppery.item.CoinItem;
-import com.ki11erwolf.shoppery.item.NoteItem;
+import com.ki11erwolf.shoppery.item.CurrencyItem;
 import com.ki11erwolf.shoppery.item.ShopperyItem;
 import com.ki11erwolf.shoppery.packets.*;
 import com.ki11erwolf.shoppery.util.WaitTimer;
@@ -114,8 +113,8 @@ public class MoneyButton extends Widget implements WidgetFix {
         if(currencyItem.getRegistryName() == null)
             throw new NullPointerException("Item registry name cannot be null.");
 
-        if(!(currencyItem instanceof NoteItem) && !(currencyItem instanceof CoinItem)) {
-            throw new IllegalArgumentException("Provided item is not a type of coin or note currency");
+        if(!(currencyItem instanceof CurrencyItem)) {
+            throw new IllegalArgumentException("Provided item is not a type of currency, coin, or note.");
         }
 
         this.currencyItem = currencyItem;
@@ -291,12 +290,17 @@ public class MoneyButton extends Widget implements WidgetFix {
      */
     public void onPress(){
         playDownSound(Minecraft.getInstance().getSoundHandler());
-        Packet.send(PacketDistributor.SERVER.noArg(),
-                ((currencyItem instanceof NoteItem)
-                        ? new MoneyWithdrawPacket(playerUUID.toString(), true, ((NoteItem)currencyItem).getWorth())
-                        : new MoneyWithdrawPacket(playerUUID.toString(), false, ((CoinItem)currencyItem).getWorth())
-                )
-        );
+        CurrencyItem cItem = (CurrencyItem) currencyItem;
+
+        if(cItem.isWholeCashValue())
+            Packet.send(PacketDistributor.SERVER.noArg(),
+                    new MoneyWithdrawPacket(playerUUID.toString(), true, cItem.getSimpleCashValue())
+            );
+
+        else if(cItem.isFractionalCashValue())
+            Packet.send(PacketDistributor.SERVER.noArg(),
+                    new MoneyWithdrawPacket(playerUUID.toString(), false, cItem.getSimpleCashValue())
+            );
     }
 
     /**
@@ -332,14 +336,16 @@ public class MoneyButton extends Widget implements WidgetFix {
      * coin/note.
      */
     private boolean affordable(){
+        CurrencyItem cItem = (CurrencyItem) currencyItem;
+
         if(balance >= 1){
-            if(currencyItem instanceof CoinItem)
+            if(cItem.isFractionalCashValue())
                 return true;
-            else return balance >= ((NoteItem)currencyItem).getWorth();
+            else return balance >= cItem.getSimpleCashValue();
         } else {
-            if(currencyItem instanceof NoteItem)
+            if(cItem.isWholeCashValue())
                 return false;
-            else return cents >= ((CoinItem)currencyItem).getWorth();
+            else return cents >= cItem.getSimpleCashValue();
         }
     }
 

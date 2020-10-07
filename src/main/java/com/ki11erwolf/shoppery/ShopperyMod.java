@@ -1,9 +1,12 @@
 package com.ki11erwolf.shoppery;
 
 import com.ki11erwolf.shoppery.bank.BankManager;
+import com.ki11erwolf.shoppery.block.ShopperyBlocks;
+import com.ki11erwolf.shoppery.item.ShopperyItems;
 import com.ki11erwolf.shoppery.price.ItemPrices;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -61,10 +64,14 @@ public class ShopperyMod {
     public ShopperyMod() {
         ItemPrices.loadPriceRegistry();
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientOnlySetup);
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.addListener(this::setup);
+        modBus.addListener(this::enqueueIMC);
+        modBus.addListener(this::processIMC);
+        modBus.addListener(this::clientOnlySetup);
+
+        modBus.register(ShopperyBlocks.BLOCKS);
+        modBus.register(ShopperyItems.ITEMS);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

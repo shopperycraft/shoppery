@@ -1,28 +1,26 @@
 package com.ki11erwolf.shoppery.block;
 
-import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.util.QueueRegisterer;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 /**
  * Holds all instances of shoppery blocks and handles the registration of them.
  */
-@Mod.EventBusSubscriber(modid = ShopperyMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ShopperyBlocks extends QueueRegisterer<Block> {
 
     /**
      * Private singleton instance of this class.
      */
-    private static final ShopperyBlocks INSTANCE = new ShopperyBlocks();
+    public static final ShopperyBlocks BLOCKS = new ShopperyBlocks();
     private ShopperyBlocks(){}
 
     public static final ShopperyBlock<?> TEST_BLOCK = new ShopperyBlock<ShopperyBlock<?>>(
-            Block.Properties.create(Material.EARTH), "test"
+            Block.Properties.create(Material.EARTH), "yesst"
     ).queueRegistration();
+
 
     //############################
     //     Block Registration
@@ -38,8 +36,8 @@ public class ShopperyBlocks extends QueueRegisterer<Block> {
      * @param event forge event.
      */
     @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Block> event) {
-        INSTANCE.iterateQueue(item -> event.getRegistry().register(item));
+    public void registerBlocks(RegistryEvent.Register<Block> event) {
+        this.iterateQueue(item -> event.getRegistry().register(item));
     }
 
     /**
@@ -49,7 +47,7 @@ public class ShopperyBlocks extends QueueRegisterer<Block> {
      * @param block the block to queue.
      */
     static void queueItem(Block block){
-        INSTANCE.queueForRegistration(block);
+        BLOCKS.queueForRegistration(block);
     }
 
 }

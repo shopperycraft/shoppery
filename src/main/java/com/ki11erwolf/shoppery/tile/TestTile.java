@@ -4,33 +4,29 @@ import com.ki11erwolf.shoppery.block.ModBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.IntNBT;
-import net.minecraft.tileentity.TileEntity;
-import org.lwjgl.system.NonnullDefault;
 
-import javax.annotation.Nonnull;
+public class TestTile extends ModTile {
 
-public class TestTile extends TileEntity {
+    static final TileDefinition<?> TILE_DEFINITION = new TileDefinition<>(
+            "test", TestTile::new, ModBlocks.TEST_BLOCK
+    );
 
-    static final TileDefinition<TestTile> TILE_DEFINITION =
-            new TileDefinition<>("test", TestTile::new, ModBlocks.TEST_BLOCK);
+    //
 
     public int i = 0;
 
     public TestTile() {
-        super(TILE_DEFINITION.getTileType());
+        super(TILE_DEFINITION);
     }
 
-    @Override @Nonnull @NonnullDefault
-    public CompoundNBT write(CompoundNBT tags) {
-        super.write(tags);
+    @Override
+    protected CompoundNBT onWrite(CompoundNBT tags) {
         tags.put("val", IntNBT.valueOf(i));
-        return tags;
+        return null;
     }
 
-    @Override @NonnullDefault
-    public void func_230337_a_(BlockState state, CompoundNBT tags) {
-        super.func_230337_a_(state, tags);
+    @Override
+    protected void onRead(BlockState state, CompoundNBT tags) {
         i = tags.getInt("val");
     }
-
 }

@@ -1,6 +1,7 @@
 package com.ki11erwolf.shoppery.block;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.tile.ModTile;
 import com.ki11erwolf.shoppery.tile.TestTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
@@ -22,11 +23,6 @@ public class TestBlock extends ModBlockTile<TestTile, TestBlock> {
 
     protected TestBlock(String name) {
         super(AbstractBlock.Properties.create(Material.ROCK), name);
-    }
-
-    @Override
-    public Class<TestTile> getTileEntityClass() {
-        return TestTile.class;
     }
 
     @Deprecated @Override @Nonnull @NonnullDefault @SuppressWarnings("deprecation")
@@ -51,7 +47,12 @@ public class TestBlock extends ModBlockTile<TestTile, TestBlock> {
     }
 
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public Class<TestTile> getTileClass() {
+        return TestTile.class;
+    }
+
+    @Override
+    public ModTile createTile(BlockState state, IBlockReader world) {
         return new TestTile();
     }
 }

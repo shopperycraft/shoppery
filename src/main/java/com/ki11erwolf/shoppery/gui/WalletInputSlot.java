@@ -124,6 +124,8 @@ public class WalletInputSlot extends Widget implements WidgetFix {
      * @param y mouse Y position at time of render.
      */
     private void renderTooltip(MatrixStack matrix, int x, int y) {
+        if(!WalletInventoryScreen.ALLOW_TOOLTIPS) return;
+
         if(this.isHovered() || isOccupied()) {
             this.renderTooltip2(
                     matrix, Minecraft.getInstance().fontRenderer,
@@ -177,15 +179,13 @@ public class WalletInputSlot extends Widget implements WidgetFix {
     /**
      * Called when the slot is clicked.
      *
-     * <p/>Handles getting and containing
-     * the ItemStack the player is holding.
+     * <p/>Handles getting and containing the ItemStack
+     * the player is holding.
      *
-     * @param xClickPos the X position of the
-     *                  mouse when the button
-     *                  was clicked.
-     * @param yClickPos the Y position of the
-     *                  mouse when the button
-     *                  was clicked.
+     * @param xClickPos the X position of the mouse when
+     * the button was clicked.
+     * @param yClickPos the Y position of the mouse when
+     * the button was clicked.
      */
     protected void onClick(double xClickPos, double yClickPos, int button) {
         ItemStack heldStack = player.inventory.getItemStack().copy();

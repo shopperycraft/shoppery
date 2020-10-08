@@ -30,12 +30,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 /**
  * The player inventory button added by shoppery to display
  * the players balance and allows them to deposit/withdraw
- * money.
+ * money by opening the wallet gui.
  *
  * <p/>Once initialized, the button will handle itself.
  */
 @OnlyIn(Dist.CLIENT)
-public abstract class WalletButton extends ImageButton implements WidgetFix {
+public abstract class WalletToggleButton extends ImageButton implements WidgetFix {
 
     /**
      * The textures map for Shoppery buttons.
@@ -93,10 +93,10 @@ public abstract class WalletButton extends ImageButton implements WidgetFix {
      * @param x the x coordinate of the button.
      * @param y the y coordinate of the button.
      */
-    private WalletButton(int x, int y, InventoryScreen inventoryGUI) {
+    private WalletToggleButton(int x, int y, InventoryScreen inventoryGUI) {
         super(
                 x, y, 46, 18, 0, 0,
-                19, WALLET_BUTTON_TEXTURES, WalletButton::onPressed
+                19, WALLET_BUTTON_TEXTURES, WalletToggleButton::onPressed
         );
 
         this.inventoryGUI = inventoryGUI;
@@ -226,7 +226,7 @@ public abstract class WalletButton extends ImageButton implements WidgetFix {
             ));
 
             //Then create and add new button
-            WalletButton button = makeButton(screen, player);
+            WalletToggleButton button = makeButton(screen, player);
             event.addWidget(button);
         }
     }
@@ -241,14 +241,14 @@ public abstract class WalletButton extends ImageButton implements WidgetFix {
      * @return the newly created ShopperyButton for the
      * given InventoryScreen.
      */
-    private static WalletButton makeButton(InventoryScreen screen, PlayerEntity player){
-        return new WalletButton(
+    private static WalletToggleButton makeButton(InventoryScreen screen, PlayerEntity player){
+        return new WalletToggleButton(
                 screen.getGuiLeft() + REL_X, screen.field_230709_l_
                 /*screen.field_230708_k_*/ / 2 - REL_INV_Y, screen) {
 
             @Override
             protected String getShortenedBalance() {
-                WalletButton.requestBalance(player);
+                WalletToggleButton.requestBalance(player);
                 return CurrencyUtil.CURRENCY_SYMBOL + FormattedBalanceRecPacket
                         .getLastKnownBalance();
             }

@@ -1,6 +1,6 @@
 package com.ki11erwolf.shoppery;
 
-import com.ki11erwolf.shoppery.gui.WalletButton;
+import com.ki11erwolf.shoppery.gui.WalletToggleButton;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -15,7 +15,7 @@ public class ProxyClient extends ProxyServer {
      */
     @Override
     public void onClientSetup(FMLClientSetupEvent event) {
-        WalletButton.init();
+        WalletToggleButton.init();
     }
 
     /**

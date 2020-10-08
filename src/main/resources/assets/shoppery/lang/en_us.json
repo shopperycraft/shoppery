@@ -30,7 +30,9 @@
   "shoppery.text.screen.sell":                            "Sell for",
   "shoppery.text.screen.no_price":                        "No Prices for Item",
 
-  "shoppery.tooltip.widget.wiki_button":                  "Open the Wiki",
+  "shoppery.tooltip.widget.help_button.wiki":             "Open Wiki (LMB)",
+  "shoppery.tooltip.widget.help_button.command":          "/Shoppery (RMB)",
+
   "shoppery.tooltip.widget.input_slot_1":                 "Price Check",
   "shoppery.tooltip.widget.input_slot_2":                 "& Cash Deposit",
 

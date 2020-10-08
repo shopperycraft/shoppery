@@ -1,6 +1,7 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.config.ModConfig;
+import com.ki11erwolf.shoppery.config.categories.Appearance;
 import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.packets.FullBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FullBalanceReqPacket;
@@ -53,6 +54,13 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * Helps to line up tooltips with the rest of the widgets.
      */
     public static final int COMPONENT_TOOLTIP_X_OFFSET = - 29;
+
+    /**
+     * Boolean value indicating if Wallet GUI tooltips should be shown.
+     * Is set by config.
+     */
+    protected static final boolean ALLOW_TOOLTIPS = ModConfig.GENERAL_CONFIG.getCategory(Appearance.class)
+            .allowTooltipsInWalletGui();
 
     /**
      * The error message displayed as the players balance, if any error
@@ -130,7 +138,7 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
     protected void init() {
         calculateOriginPosition();
         initCashSection();
-        this.addButton(new WalletWikiButton(relX, relY));
+        this.addButton(new WalletHelpButton(relX, relY));
         this.addButton((this.inputSlot = new WalletInputSlot(player, relX + 122, relY + 36)));
     }
 
@@ -279,10 +287,8 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * information screen section.
      */
     protected void drawPlayerBalance(MatrixStack matrix){
-        func_238471_a_(
-                matrix, field_230712_o_,
-                CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
-                X(73), Y(23), 0x00E500
+        func_238471_a_(matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
+                X(73), Y(23), ModConfig.GENERAL_CONFIG.getCategory(Appearance.class).getWalletGuiBalanceColor()
         );
     }
 

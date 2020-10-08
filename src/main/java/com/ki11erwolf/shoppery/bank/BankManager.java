@@ -45,6 +45,10 @@ import java.util.UUID;
  */
 public enum BankManager {
 
+    //The thought of completely removing all dependencies
+    //on MC, Forge, & Mojang code. Then making wrapper objects
+    //to depend on instead seemed promising for a moment...
+
     /**
      * Singleton instance of this class.
      */
@@ -346,9 +350,8 @@ public enum BankManager {
         //Print (logger is unreliable) out when we save the bank
         //and from where.
         System.out.printf(
-                "Attempting to save shoppery bank %s from %s%n",
-            bank.getWorldName(),
-            StackLocatorUtil.getCallerClass(6)
+            "Attempting to save shoppery bank %s from %s%n",
+            bank.getWorldName(), StackLocatorUtil.getCallerClass(6)
         );
 
         JsonObject jBank = bank.getBankAsJsonObject();

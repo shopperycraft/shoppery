@@ -209,28 +209,27 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
     }
 
     /**
-     * Calculates the current animation key
-     * frame based on the amount of time passed
-     * during renders.
+     * Calculates the current animation key frame
+     * based on the amount of time passed during
+     * renders.
      *
-     * <p/>Effectively steps through the
-     * animation render cycle, in sync
-     * with the frame rate.
+     * <p/>Effectively steps through the animation
+     * render cycle, in sync with the frame rate.
      *
-     * <p/>Called each render cycle, but only
-     * when the animation(s) are supposed to
-     * be playing.
+     * <p/>Called each render cycle, but only steps
+     * through when the animation(s) are supposed to
+     * be changed.
      *
-     * @param fps the amount of time (in milliseconds)
-     *            the frame took render.
+     * @param frameTime the amount of time the frame
+     * took render.
      */
-    private void stepAnimationRenderer(float fps){
+    private void stepAnimationRenderer(float frameTime){
         if(renderTime >= (1000 / FRAMES_PER_SECOND)){
             renderTime = 0;
             if(frame >= FRAMES - 1)
                 frame = 0;
             else frame++;
-        } else renderTime += fps * 100;
+        } else renderTime += frameTime * 100;
     }
 
     /**

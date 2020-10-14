@@ -1,17 +1,27 @@
 {
   "withdraw": {
-    "category": "block",
-    "subtitle": "shoppery.subtitle.withdraw",
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.withdraw",
     "sounds": ["shoppery:withdraw"]
   },
   "deposit": {
-    "category": "block",
-    "subtitle": "shoppery.subtitle.deposit",
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.deposit",
     "sounds": ["shoppery:deposit"]
   },
-  "transaction": {
-    "category": "block",
-    "subtitle": "shoppery.subtitle.transaction",
-    "sounds": ["shoppery:transaction"]
+  "transaction1": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.transaction1",
+    "sounds": ["shoppery:transaction1"]
+  },
+  "transaction2": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.transaction2",
+    "sounds": ["shoppery:transaction2"]
+  },
+  "decline": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.decline",
+    "sounds": ["shoppery:decline"]
   }
 }

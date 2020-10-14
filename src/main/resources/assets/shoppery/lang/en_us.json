@@ -1,6 +1,12 @@
 {
   "itemGroup.shoppery":                                   "ShopperyCraft",
 
+  "shoppery.sound.subtitle.withdraw":                     "Money withdrawn",
+  "shoppery.sound.subtitle.deposit":                      "Money deposited",
+  "shoppery.sound.subtitle.transaction1":                 "Cash transaction",
+  "shoppery.sound.subtitle.transaction2":                 "Cash transaction",
+  "shoppery.sound.subtitle.decline":                      "Transaction declined",
+
   "item.shoppery.coin_one":                               "One Cent (1¢)",
   "item.shoppery.coin_five":                              "Five Cents (5¢)",
   "item.shoppery.coin_ten":                               "Ten Cents (10¢)",

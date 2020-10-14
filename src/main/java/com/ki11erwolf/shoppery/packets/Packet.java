@@ -157,16 +157,23 @@ public abstract class Packet<S extends Packet<S>> {
     }
 
     /**
-     * Sends the given packet to the given
-     * recipient.
+     * Sends the given packet to the requested recipient.
+     * Allows sending an event and/or data between the client
+     * and server.
      *
-     * @param target the recipient. See {@link PacketDistributor}.
-     * @param packet the packet to send.
-     * @param <M> the packet class type.
+     * <p/><b>Targets:</b><ul>
+     *     <li>{@link PacketDistributor#SERVER} -
+     *     {@code PacketDistributor.SERVER.noArg()}</li>
+     *     <li>{@link PacketDistributor#PLAYER} -
+     *     {@code PacketDistributor.PLAYER.with(() -> ctx.get().getSender())}</li>
+     * </ul><br/>
+     *
+     * @param target the recipient target to receive and handle
+     * the packet, such as the client.
+     * @param packet the exact packet type and contents to send.
+     * @param <M> the packet type class.
      */
-    public static <M> void send(PacketDistributor.PacketTarget target, M packet){
-        //Spams the debug log too much.
-        //ShopperyMod.getNewLogger().debug("Sending packet: " + packet.getClass().getName());
+    public static <M> void send(PacketDistributor.PacketTarget target, M packet) {
         MANAGER.handler.send(target, packet);
     }
 
@@ -195,6 +202,7 @@ public abstract class Packet<S extends Packet<S>> {
         MANAGER.register(new PlayerCentsReqPacket(null));
         MANAGER.register(new PlayerCentsRecPacket((byte)0));
 
+        MANAGER.register(new PlaySoundOnClientPacket(null, "", 0F, 0F));
         MANAGER.register(new DepositInventoryPacket(null));
         MANAGER.register(new MoneyWithdrawPacket(null, false, 0));
         MANAGER.register(new PlayerMessagePacket(null, null, null));

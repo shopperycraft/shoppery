@@ -155,23 +155,24 @@ public enum ItemPrices {
 
     /**
      * Allows obtaining the price of an Item or Block from
-     * the registry name of the Item/Block as a resource
-     * location.
+     * the registry, using the registry name of the
+     * Item/Block as a resource location.
      *
-     * @param item the registry name of the Item/Block to
-     *             get the price of.
+     * @param registryName the registry name of the Item/Block
+     *                     to get the price of.
      * @return the ItemPrice for the Item/Block matching
      * the given registry name, or {@code null} if no
      * ItemPrice for the given Item/Block could be found.
      */
-    public static ItemPrice getPrice(ResourceLocation item){
+    public static ItemPrice getPrice(ResourceLocation registryName){
         PriceRegistry.INSTANCE.assertUsable();
-        return PriceRegistry.INSTANCE.getPriceMap().getOrDefault(item, null);
+        return PriceRegistry.INSTANCE.getPriceMap().getOrDefault(registryName, null);
     }
 
     /**
-     * Allows obtaining an ItemPrice contained within
-     * the registry completely randomly.
+     * Allows obtaining a random ItemPrice from the registry.
+     * A random ItemPrice anywhere in the registry is found
+     * and returned whenever called.
      *
      * @return a random ItemPrice in the registry.
      */
@@ -185,11 +186,14 @@ public enum ItemPrices {
     }
 
     /**
-     * Allows obtaining an ItemPrice contained within
-     * the registry completely randomly.
+     * Allows obtaining a random ItemPrice from the registry,
+     * using a provided {@link Random} object instance to
+     * get the random ItemPrice in the registry. A random
+     * ItemPrice anywhere in the registry is found and
+     * returned whenever called.
      *
-     * @param random the random object instance to use
-     *               to get the random item price.
+     * @param random a {@link Random} object that can be
+     * used to calculate the random numbers used.
      * @return a random ItemPrice in the registry.
      */
     public static ItemPrice getRandomPrice(Random random){
@@ -342,9 +346,26 @@ public enum ItemPrices {
         return getPrice(block);
     }
 
+
     /**
-     * Allows obtaining an ItemPrice contained within
-     * the registry completely randomly.
+     * Allows obtaining the price of an Item or Block from
+     * the registry, using the registry name of the
+     * Item/Block as a resource location.
+     *
+     * @param registryName the registry name of the Item/Block
+     *                     to  get the price of.
+     * @return the ItemPrice for the Item/Block matching
+     * the given registry name, or {@code null} if no
+     * ItemPrice for the given Item/Block could be found.
+     */
+    public ItemPrice getItemPrice(ResourceLocation registryName){
+        return getPrice(registryName);
+    }
+
+    /**
+     * Allows obtaining a random ItemPrice from the registry.
+     * A random ItemPrice anywhere in the registry is found
+     * and returned whenever called.
      *
      * @return a random ItemPrice in the registry.
      */
@@ -353,11 +374,14 @@ public enum ItemPrices {
     }
 
     /**
-     * Allows obtaining an ItemPrice contained within
-     * the registry completely randomly.
+     * Allows obtaining a random ItemPrice from the registry,
+     * using a provided {@link Random} object instance to
+     * get the random ItemPrice in the registry. A random
+     * ItemPrice anywhere in the registry is found and
+     * returned whenever called.
      *
-     * @param random the random object instance to use
-     *               to get the random item price.
+     * @param random a {@link Random} object that can be
+     * used to calculate the random numbers used.
      * @return a random ItemPrice in the registry.
      */
     public static ItemPrice getRandomItemPrice(Random random){

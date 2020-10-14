@@ -53,7 +53,7 @@ public abstract class DebugItem extends ModItem<DebugItem> {
 
         if(player.isSneaking())
             return new ActionResult<>(switchToNextDebugItem(player, hand)
-                    ? ActionResultType.PASS : ActionResultType.FAIL, player.getHeldItem(hand));
+                    ? ActionResultType.SUCCESS : ActionResultType.FAIL, player.getHeldItem(hand));
 
         return new ActionResult<>(ActionResultType.FAIL, player.getHeldItem(hand));
     }

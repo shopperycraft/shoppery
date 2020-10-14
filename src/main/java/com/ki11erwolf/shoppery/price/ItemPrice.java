@@ -168,37 +168,70 @@ public class ItemPrice {
     }
 
     /**
-     * @return the buy price of the item {@link #getBuyPrice()}
-     * with fluctuation applied. The value returned is not
-     * always the same and should be saved.
+     * @return a random buying price for the item, that within
+     * +/- {@link #fluctuation}% of the original buying price.
+     * Returns a new value every call.
+     *
+     * @see #applyFluctuation(double)
      */
-    public double getBuyPriceWithFluctuation(){
-        double buy = getBuyPrice();
-
-        if(buy <= 0)
-            return 0;
-
-        double change = (buy * (MathUtil.getRandomDoubleInRange(0, fluctuation)/100));
-        if(MathUtil.getRandomBoolean()) buy += change; else buy -= change;
-
-        return MathUtil.roundToTwoDecimals((buy > 0) ? buy : 0.01);
+    public double getFluctuatingBuyPrice(){
+        return applyFluctuation(buy);
     }
 
     /**
-     * @return the sell price of the item {@link #getSellPrice()}
-     * with fluctuation applied. The value returned is not
-     * always the same and should be saved.
+     * @return a random selling price for the item, that within
+     * +/- {@link #fluctuation}% of the original selling price.
+     * Returns a new value every call.
+     *
+     * @see #applyFluctuation(double)
      */
-    public double getSellPriceWithFluctuation(){
-        double sell = getSellPrice();
+    public double getFluctuatingSellPrice(){
+        return applyFluctuation(sell);
+    }
 
-        if(sell <= 0)
-            return 0;
+    /**
+     * Creates a new ItemPrice object based upon this ItemPrice,
+     * for the same Item/Block as this ItemPrice, where the
+     * buying and selling prices have been changed (+/-) by a
+     * percentage of the original prices (using {@link #fluctuation}
+     * as the percentage).
+     *
+     * @see #applyFluctuation(double)
+     * @return the new ItemPrice object for the same Item/Block
+     * as this ItemPrice object, containing fluctuated buying and
+     * selling prices.
+     */
+    public ItemPrice withPriceFluctuation(){
+        double exactBuy = -1;
+        double exactSell = -1;
 
-        double change = (sell * (MathUtil.getRandomDoubleInRange(0, fluctuation)/100));
-        if(MathUtil.getRandomBoolean()) sell += change; else sell -= change;
+        if(this.canBuy()) exactBuy = getFluctuatingBuyPrice();
+        if(this.canSell())  exactSell = getFluctuatingSellPrice();
 
-        return MathUtil.roundToTwoDecimals((sell > 0) ? sell : 0.01);
+        if(exactSell >= exactBuy){
+            exactSell = exactBuy / 2;
+        }
+
+        return new ItemPrice(this.getItem(), exactBuy, exactSell, 0);
+    }
+
+    /**
+     * Used to change a value, usually a price, by a
+     * random percentage between {@code 0} and
+     * {@link #fluctuation}, in either the positive
+     * or negative direction.
+     *
+     * @param value the input value to calculate
+     * @return a random value calculated from the
+     * input value and the ItemPrice's fluctuation.
+     */
+    protected double applyFluctuation(double value){
+        if(value <= 0) return 0;
+
+        double change = (value * (MathUtil.getRandomDoubleInRange(0, fluctuation)/100));
+        if(MathUtil.getRandomBoolean()) value += change; else value -= change;
+
+        return MathUtil.roundToTwoDecimals((value > 0) ? value : 0.01);
     }
 
     /**
@@ -212,52 +245,6 @@ public class ItemPrice {
                 item.toString(), prohibitBuy, buy, prohibitSell, sell, fluctuation
         );
     }
-
-    // ***************
-    //    Creation
-    // ***************
-
-    /**
-     * Used to create an ItemPrice for the Item/Block
-     * from this ItemPrice, where the buy and sell
-     * values are changed by this objects fluctuation
-     * amount.
-     *
-     * @return the newly created ItemPrice with buy
-     * and sell values changed by the fluctuation
-     * percentage.
-     */
-    public ItemPrice createUsingFluctuation(){
-        double exactBuy = -1;
-        double exactSell = -1;
-
-        if(this.canBuy()) exactBuy = applyFluctuation(buy);
-        if(this.canSell())  exactSell = applyFluctuation(sell);
-
-        if(exactSell >= exactBuy){
-            exactSell = exactBuy / 2;
-        }
-
-        return new ItemPrice(this.getItem(), exactBuy, exactSell, 0);
-    }
-
-    /**
-     * Takes in a value and changes it by a random
-     * percentage based upon the fluctuation amount.
-     *
-     * @param value the value to fluctuate.
-     * @return the value changed by the fluctuation amount.
-     */
-    protected double applyFluctuation(double value){
-        double percentageFluctuation = fluctuation / 100;
-        double maxPriceFluctuation = value * percentageFluctuation;
-        double actualFluctuation = MathUtil.getRandomDoubleInRange(
-                0, value + maxPriceFluctuation
-        );
-
-        return (MathUtil.getRandomBoolean()) ? value + actualFluctuation : value - actualFluctuation;
-    }
-
 
     // ***************
     // Json Conversion

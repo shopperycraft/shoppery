@@ -1,7 +1,16 @@
 package com.ki11erwolf.shoppery.item;
 
+import com.ki11erwolf.shoppery.block.ShopBlock;
+import com.ki11erwolf.shoppery.tile.ShopTile;
+import com.ki11erwolf.shoppery.util.CurrencyUtil;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 
 /**
  * Enum list of all the different types of debug items.
@@ -15,38 +24,38 @@ public enum DebugItemTypes {
      * tile block information.
      */
     READ("read", (context) -> {
-//        World world = context.getWorld();
-//        PlayerEntity player = context.getPlayer();
-//        BlockState blockState = world.getBlockState(context.getPos());
-//
-//        if(blockState.getBlock() instanceof ShopBlock && player != null && world.isRemote){
-//            TileEntity tile = world.getTileEntity(context.getPos());
-//            if(!(tile instanceof ShopTile))
-//                return ActionResultType.FAIL;
-//
-//            ItemPrice shopTileItemPrice = ((ShopTile)tile).getShopItemPrice();
-//
-//            player.sendMessage(new StringTextComponent(
-//                    TextFormatting.GOLD + "-------------- Shop Block Info --------------"
-//            ), player.getUniqueID());
-//
-//            player.sendMessage(new StringTextComponent(
-//                    TextFormatting.GREEN + "Trading Item: " +
-//                            TextFormatting.BLUE + shopTileItemPrice.getItem()
-//            ), player.getUniqueID());
-//
-//            player.sendMessage(new StringTextComponent(TextFormatting.GREEN + "For: " +
-//                    TextFormatting.BLUE + "Buy " + CurrencyUtil.CURRENCY_SYMBOL + shopTileItemPrice.getBuyPrice() +
-//                    TextFormatting.GOLD + " / " +
-//                    TextFormatting.RED + "Sell "  + CurrencyUtil.CURRENCY_SYMBOL + shopTileItemPrice.getSellPrice()
-//            ), player.getUniqueID());
-//
-//            player.sendMessage(new StringTextComponent(
-//                    TextFormatting.GOLD + "-------------------------------------------"
-//            ), player.getUniqueID());
-//        }
+        World world = context.getWorld();
+        PlayerEntity player = context.getPlayer();
+        BlockState blockState = world.getBlockState(context.getPos());
 
-        return ActionResultType.PASS;
+        if(blockState.getBlock() instanceof ShopBlock && player != null && !world.isRemote){
+            TileEntity tile = world.getTileEntity(context.getPos());
+            if(!(tile instanceof ShopTile))
+                return ActionResultType.FAIL;
+
+            ShopTile shop = ((ShopTile)tile);
+
+            player.sendMessage(new StringTextComponent(
+                    TextFormatting.GOLD + "-------------- Shop Block Info --------------"
+            ), player.getUniqueID());
+
+            player.sendMessage(new StringTextComponent(
+                    TextFormatting.GREEN + "Trading Item: " +
+                            TextFormatting.BLUE + shop.getTradedItem()
+            ), player.getUniqueID());
+
+            player.sendMessage(new StringTextComponent(TextFormatting.GREEN + "For: " +
+                    TextFormatting.BLUE + "Buy " + CurrencyUtil.CURRENCY_SYMBOL + shop.getBuyPrice() +
+                    TextFormatting.GOLD + " / " +
+                    TextFormatting.RED + "Sell "  + CurrencyUtil.CURRENCY_SYMBOL + shop.getSellPrice()
+            ), player.getUniqueID());
+
+            player.sendMessage(new StringTextComponent(
+                    TextFormatting.GOLD + "-------------------------------------------"
+            ), player.getUniqueID());
+        }
+
+        return ActionResultType.SUCCESS;
     }),
 
     /**
@@ -54,7 +63,7 @@ public enum DebugItemTypes {
      * block information which cannot normally be
      * changed.
      */
-    SET("modify", (context) -> ActionResultType.PASS);
+    SET("modify", (context) -> ActionResultType.SUCCESS);
 
     /**
      * The prefix name used to register the debug

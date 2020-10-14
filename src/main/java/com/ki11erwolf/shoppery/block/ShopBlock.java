@@ -22,14 +22,20 @@ public class ShopBlock extends ModBlockTile<ShopTile, ShopBlock> {
         super(AbstractBlock.Properties.create(Material.WOOD), registryName);
     }
 
-    @SuppressWarnings("deprecation") @Deprecated @ParametersAreNonnullByDefault @Nonnull
+    @Override @SuppressWarnings("deprecation") @Deprecated @ParametersAreNonnullByDefault @Nonnull
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player,
                                              Hand hand, BlockRayTraceResult hit) {
+        if(!player.isSneaking()) return ActionResultType.FAIL;
+        if(world.isRemote()) return ActionResultType.SUCCESS;
 
-        return ActionResultType.PASS;
+        //Only allow for the base type.
+        if(state.getBlock().getClass() == ShopBlock.class)
+            getTile(world, pos).activate();
+
+        return ActionResultType.SUCCESS;
     }
 
-    //Tile
+    // Tile
 
     @Override
     public Class<ShopTile> getTileClass() {
@@ -40,6 +46,4 @@ public class ShopBlock extends ModBlockTile<ShopTile, ShopBlock> {
     public ModTile createTile(BlockState state, IBlockReader world) {
         return new ShopTile();
     }
-
-
 }

@@ -20,7 +20,10 @@ public final class ModBlocks extends QueueRegisterer<Block> {
     //   Public Block Instances
     //############################
 
-    public static final TestBlock TEST_BLOCK = new TestBlock("test_block").queueRegistration();
+    /**
+     * The most basic shop block.
+     */
+    public static final ShopBlock SHOP_BLOCK = new ShopBlock("shop").queueRegistration();
 
     //############################
     //     Block Registration

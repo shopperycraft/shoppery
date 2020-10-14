@@ -34,7 +34,7 @@ public class CoinItem extends ModItem<CoinItem> implements ICurrencyItem {
      * @param worth the worth (in cents) of this coin (0 < worth <= 100).
      */
     CoinItem(String coinName, byte worth) {
-        super(new Properties(), ITEM_NAME_PREFIX + coinName);
+        super(ITEM_NAME_PREFIX + coinName);
 
         if(worth < 0 || worth > 100)
             throw new IllegalArgumentException("Value out of range (0 < worth <= 100): " + worth);

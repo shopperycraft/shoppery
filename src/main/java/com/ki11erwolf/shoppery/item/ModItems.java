@@ -1,9 +1,14 @@
 package com.ki11erwolf.shoppery.item;
 
+import com.ki11erwolf.shoppery.config.ModConfig;
+import com.ki11erwolf.shoppery.config.categories.General;
 import com.ki11erwolf.shoppery.util.QueueRegisterer;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds all instances of shoppery items and handles
@@ -20,6 +25,8 @@ public final class ModItems extends QueueRegisterer<Item> {
     //############################
     //   Public Item Instances
     //############################
+
+    //Coin Items
 
     /**
      * The one(1) cents coin item.
@@ -50,6 +57,8 @@ public final class ModItems extends QueueRegisterer<Item> {
      * The eighty(80) cents coin item.
      */
     public static final CoinItem COIN_EIGHTY = new CoinItem("eighty", (byte)80).queueRegistration();   //6
+
+    // Note Items
 
     /**
      * The one(1) bill note.
@@ -114,6 +123,29 @@ public final class ModItems extends QueueRegisterer<Item> {
      */
     public static final NoteItem NOTE_ONE_HUNDRED_K                                                              //6
             = new NoteItem("one_hundred_k", 100_000).queueRegistration();
+
+    // Debug Items
+
+    /**
+     * Flag set by config that tells us if we should enable the debug items or not.
+     */
+    private static final boolean ENABLE_DEBUG_ITEMS = ModConfig.GENERAL_CONFIG.getCategory(General.class).isDebugItemEnabled();
+
+    /**
+     * The debug items as a list.
+     */
+    public static final List<DebugItem> DEBUG_ITEMS = new ArrayList<>();
+
+    /* Sets the debug item types and registers them if enabled by config */
+    static {
+        for(DebugItemTypes type : DebugItemTypes.values()){
+            DebugItem item = DebugItem.newDebugItem(type);
+            DEBUG_ITEMS.add(item);
+
+            if(ENABLE_DEBUG_ITEMS)
+                item.queueRegistration();
+        }
+    }
 
     //############################
     //     Item Registration

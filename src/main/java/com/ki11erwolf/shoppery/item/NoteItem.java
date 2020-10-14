@@ -37,7 +37,7 @@ public class NoteItem extends ModItem<NoteItem> implements ICurrencyItem {
      *              is worth (worth > 0).
      */
     NoteItem(String noteName, int worth) {
-        super(new Properties(), ITEM_NAME_PREFIX + noteName);
+        super(ITEM_NAME_PREFIX + noteName);
 
         if(worth < 0)
             throw new IllegalArgumentException("Invalid worth of note (worth < 0). Worth: " + worth);

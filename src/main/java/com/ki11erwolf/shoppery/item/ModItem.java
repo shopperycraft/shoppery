@@ -26,6 +26,20 @@ public class ModItem<T extends ModItem<T>> extends Item {
     /**
      * Package private constructor to prevent
      * item instance creation from outside
+     * packages. Creates a new blank{@link
+     * Item.Properties}.
+     *
+     *
+     * @param registryName the name to register
+     *                     this item under.
+     */
+    ModItem(String registryName){
+        this(new Item.Properties(), registryName);
+    }
+
+    /**
+     * Package private constructor to prevent
+     * item instance creation from outside
      * packages.
      *
      * @param properties properties specific
@@ -68,8 +82,9 @@ public class ModItem<T extends ModItem<T>> extends Item {
      */
     T queueRegistration(){
         if(isQueued)
-            throw new IllegalStateException(
-                    String.format("Item: %s already queued for registration.", this.getClass().getCanonicalName())
+            throw new IllegalStateException(String.format(
+                "Item: %s already queued for registration.",
+                    this.getClass().getCanonicalName())
             );
 
         ModItems.queueItem(this);

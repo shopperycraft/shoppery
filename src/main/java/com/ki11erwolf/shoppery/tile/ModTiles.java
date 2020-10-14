@@ -54,7 +54,7 @@ public final class ModTiles extends QueueRegisterer<TileDefinition<? extends Mod
      * here within the static block.
      */
     static {
-        queue(TestTile.TILE_DEFINITION);
+        queue(ShopTile.TILE_DEFINITION);
     }
 
     /**

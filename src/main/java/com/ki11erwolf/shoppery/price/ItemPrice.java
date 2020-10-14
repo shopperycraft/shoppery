@@ -178,7 +178,7 @@ public class ItemPrice {
         if(buy <= 0)
             return 0;
 
-        double change = (buy * (MathUtil.getRandomDoubleInRage(0, fluctuation)/100));
+        double change = (buy * (MathUtil.getRandomDoubleInRange(0, fluctuation)/100));
         if(MathUtil.getRandomBoolean()) buy += change; else buy -= change;
 
         return MathUtil.roundToTwoDecimals((buy > 0) ? buy : 0.01);
@@ -195,7 +195,7 @@ public class ItemPrice {
         if(sell <= 0)
             return 0;
 
-        double change = (sell * (MathUtil.getRandomDoubleInRage(0, fluctuation)/100));
+        double change = (sell * (MathUtil.getRandomDoubleInRange(0, fluctuation)/100));
         if(MathUtil.getRandomBoolean()) sell += change; else sell -= change;
 
         return MathUtil.roundToTwoDecimals((sell > 0) ? sell : 0.01);
@@ -212,6 +212,52 @@ public class ItemPrice {
                 item.toString(), prohibitBuy, buy, prohibitSell, sell, fluctuation
         );
     }
+
+    // ***************
+    //    Creation
+    // ***************
+
+    /**
+     * Used to create an ItemPrice for the Item/Block
+     * from this ItemPrice, where the buy and sell
+     * values are changed by this objects fluctuation
+     * amount.
+     *
+     * @return the newly created ItemPrice with buy
+     * and sell values changed by the fluctuation
+     * percentage.
+     */
+    public ItemPrice createUsingFluctuation(){
+        double exactBuy = -1;
+        double exactSell = -1;
+
+        if(this.canBuy()) exactBuy = applyFluctuation(buy);
+        if(this.canSell())  exactSell = applyFluctuation(sell);
+
+        if(exactSell >= exactBuy){
+            exactSell = exactBuy / 2;
+        }
+
+        return new ItemPrice(this.getItem(), exactBuy, exactSell, 0);
+    }
+
+    /**
+     * Takes in a value and changes it by a random
+     * percentage based upon the fluctuation amount.
+     *
+     * @param value the value to fluctuate.
+     * @return the value changed by the fluctuation amount.
+     */
+    protected double applyFluctuation(double value){
+        double percentageFluctuation = fluctuation / 100;
+        double maxPriceFluctuation = value * percentageFluctuation;
+        double actualFluctuation = MathUtil.getRandomDoubleInRange(
+                0, value + maxPriceFluctuation
+        );
+
+        return (MathUtil.getRandomBoolean()) ? value + actualFluctuation : value - actualFluctuation;
+    }
+
 
     // ***************
     // Json Conversion

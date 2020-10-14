@@ -3,30 +3,29 @@ package com.ki11erwolf.shoppery.tile;
 import com.ki11erwolf.shoppery.block.ModBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.IntNBT;
 
-public class TestTile extends ModTile {
+public class ShopTile extends ModTile{
+
+    // Type & Constructor
 
     static final TileDefinition<?> TILE_DEFINITION = new TileDefinition<>(
-            "test", TestTile::new, ModBlocks.TEST_BLOCK
+            "shop", ShopTile::new, ModBlocks.SHOP_BLOCK
     );
 
-    //
-
-    public int i = 0;
-
-    public TestTile() {
+    public ShopTile() {
         super(TILE_DEFINITION);
     }
 
+    // Read/Write
+
     @Override
     protected CompoundNBT onWrite(CompoundNBT tags) {
-        tags.put("val", IntNBT.valueOf(i));
-        return null;
+
+        return tags;
     }
 
     @Override
     protected void onRead(BlockState state, CompoundNBT tags) {
-        i = tags.getInt("val");
+
     }
 }

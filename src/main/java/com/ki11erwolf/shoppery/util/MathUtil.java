@@ -41,14 +41,29 @@ public final class MathUtil {
      *
      * @param min the minimum number the value can be.
      * @param max the maximum number the value can be.
+     * @param random the random object instance to use.
      * @return the random integer in range.
      */
-    public static int getRandomIntegerInRange(int min, int max) {
+    public static int getRandomIntegerInRange(Random random, int min, int max) {
         if (min >= max) {
             throw new IllegalArgumentException("Maximum integer must be greater than minimum integer");
         }
 
-        return RANDOM_INSTANCE.nextInt((max - min) + 1) + min;
+        return random.nextInt((max - min) + 1) + min;
+    }
+
+    /**
+     * Returns a random integer in the range
+     * of {@code min} to {@code max} inclusive.
+     * <p>
+     * e.g. {@code getRandomIntegerInRange(0, 5) => 0, 1, 2, 3, 4 or 5}
+     *
+     * @param min the minimum number the value can be.
+     * @param max the maximum number the value can be.
+     * @return the random integer in range.
+     */
+    public static int getRandomIntegerInRange(int min, int max) {
+        return getRandomIntegerInRange(RANDOM_INSTANCE, min, max);
     }
 
     /**
@@ -58,7 +73,7 @@ public final class MathUtil {
      * the range (inclusive) of {@code min}
      * and {@code max}.
      */
-    public static double getRandomDoubleInRage(double min, double max){
+    public static double getRandomDoubleInRange(double min, double max){
         return ThreadLocalRandom.current().nextDouble(min, max + 0.01);
     }
 

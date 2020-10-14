@@ -2,6 +2,7 @@ package com.ki11erwolf.shoppery.price;
 
 import com.google.gson.Gson;
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.util.MathUtil;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -9,6 +10,7 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.File;
+import java.util.Random;
 
 /**
  * The public price registry API. Provides access to the
@@ -151,6 +153,54 @@ public enum ItemPrices {
         return PriceRegistry.INSTANCE.getPriceMap().get(block.getRegistryName());
     }
 
+    /**
+     * Allows obtaining the price of an Item or Block from
+     * the registry name of the Item/Block as a resource
+     * location.
+     *
+     * @param item the registry name of the Item/Block to
+     *             get the price of.
+     * @return the ItemPrice for the Item/Block matching
+     * the given registry name, or {@code null} if no
+     * ItemPrice for the given Item/Block could be found.
+     */
+    public static ItemPrice getPrice(ResourceLocation item){
+        PriceRegistry.INSTANCE.assertUsable();
+        return PriceRegistry.INSTANCE.getPriceMap().getOrDefault(item, null);
+    }
+
+    /**
+     * Allows obtaining an ItemPrice contained within
+     * the registry completely randomly.
+     *
+     * @return a random ItemPrice in the registry.
+     */
+    public static ItemPrice getRandomPrice(){
+        PriceRegistry.INSTANCE.assertUsable();
+
+        int randomIndexInRage = MathUtil.getRandomIntegerInRange(
+                0, PriceRegistry.INSTANCE.getPriceMap().size() - 1
+        );
+        return PriceRegistry.INSTANCE.getPriceMap().values().toArray(new ItemPrice[0])[randomIndexInRage];
+    }
+
+    /**
+     * Allows obtaining an ItemPrice contained within
+     * the registry completely randomly.
+     *
+     * @param random the random object instance to use
+     *               to get the random item price.
+     * @return a random ItemPrice in the registry.
+     */
+    public static ItemPrice getRandomPrice(Random random){
+        PriceRegistry.INSTANCE.assertUsable();
+
+        int randomIndexInRage = MathUtil.getRandomIntegerInRange(
+                random, 0, PriceRegistry.INSTANCE.getPriceMap().size() - 1
+        );
+        return PriceRegistry.INSTANCE.getPriceMap().values().toArray(new ItemPrice[0])[randomIndexInRage];
+    }
+
     // *******
     // Setters
     // *******
@@ -290,6 +340,28 @@ public enum ItemPrices {
      */
     public ItemPrice getItemPrice(Block block){
         return getPrice(block);
+    }
+
+    /**
+     * Allows obtaining an ItemPrice contained within
+     * the registry completely randomly.
+     *
+     * @return a random ItemPrice in the registry.
+     */
+    public static ItemPrice getRandomItemPrice(){
+        return getRandomPrice();
+    }
+
+    /**
+     * Allows obtaining an ItemPrice contained within
+     * the registry completely randomly.
+     *
+     * @param random the random object instance to use
+     *               to get the random item price.
+     * @return a random ItemPrice in the registry.
+     */
+    public static ItemPrice getRandomItemPrice(Random random){
+        return getRandomPrice(random);
     }
 
     // ****************

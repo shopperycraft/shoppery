@@ -22,6 +22,9 @@
   "item.shoppery.note_fifty_k":                           "Fifty-Thousand Dollars ($50,000)",
   "item.shoppery.note_one_hundred_k":                     "One-Hundred-Thousand Dollars ($100,000)",
 
+  "item.shoppery.debug_item_read":                        "[Read Mode] Debugging Item",
+  "item.shoppery.debug_item_modify":                      "[Modify Mode] Debugging Item",
+
   "$": "Below translations follow the 'shoppery.domain.sub_domain.*' style of grouping.",
 
   "shoppery.title.screen.wallet":                         "%s's Wallet",

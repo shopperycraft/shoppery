@@ -1,8 +1,8 @@
 package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.config.ModConfig;
-import com.ki11erwolf.shoppery.config.categories.Appearance;
-import com.ki11erwolf.shoppery.config.categories.General;
+import com.ki11erwolf.shoppery.config.categories.AppearanceConfig;
+import com.ki11erwolf.shoppery.config.categories.GeneralConfig;
 import com.ki11erwolf.shoppery.packets.FullBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FullBalanceReqPacket;
 import com.ki11erwolf.shoppery.packets.ItemPriceRecPacket;
@@ -59,7 +59,7 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * Boolean value indicating if Wallet GUI tooltips should be shown.
      * Is set by config.
      */
-    protected static final boolean ALLOW_TOOLTIPS = ModConfig.GENERAL_CONFIG.getCategory(Appearance.class)
+    protected static final boolean ALLOW_TOOLTIPS = ModConfig.GENERAL_CONFIG.getCategory(AppearanceConfig.class)
             .allowTooltipsInWalletGui();
 
     /**
@@ -73,7 +73,7 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * multiple balance requests.
      */
     private static final WaitTimer BALANCE_REQUEST_TIMER
-            = new WaitTimer(ModConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime());
+            = new WaitTimer(ModConfig.GENERAL_CONFIG.getCategory(GeneralConfig.class).getPacketWaitTime());
 
     /**
      * The width of the money section background in pixels.
@@ -288,7 +288,7 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      */
     protected void drawPlayerBalance(MatrixStack matrix){
         func_238471_a_(matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
-                X(73), Y(23), ModConfig.GENERAL_CONFIG.getCategory(Appearance.class).getWalletGuiBalanceColor()
+                X(73), Y(23), ModConfig.GENERAL_CONFIG.getCategory(AppearanceConfig.class).getWalletGuiBalanceColor()
         );
     }
 

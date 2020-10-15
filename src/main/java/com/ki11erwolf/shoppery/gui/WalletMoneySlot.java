@@ -2,7 +2,7 @@ package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperySoundEvents;
 import com.ki11erwolf.shoppery.config.ModConfig;
-import com.ki11erwolf.shoppery.config.categories.General;
+import com.ki11erwolf.shoppery.config.categories.GeneralConfig;
 import com.ki11erwolf.shoppery.item.ICurrencyItem;
 import com.ki11erwolf.shoppery.item.ModItem;
 import com.ki11erwolf.shoppery.packets.*;
@@ -39,7 +39,7 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
      * balance update requests.
      */
     private static final WaitTimer BALANCE_REQ_TIMER
-            = new WaitTimer(ModConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime());
+            = new WaitTimer(ModConfig.GENERAL_CONFIG.getCategory(GeneralConfig.class).getPacketWaitTime());
 
     /**
      * The height and width of the button.

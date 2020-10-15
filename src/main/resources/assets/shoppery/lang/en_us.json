@@ -1,11 +1,14 @@
 {
   "itemGroup.shoppery":                                   "ShopperyCraft",
 
-  "shoppery.sound.subtitle.withdraw":                     "Money withdrawn",
-  "shoppery.sound.subtitle.deposit":                      "Money deposited",
-  "shoppery.sound.subtitle.transaction1":                 "Cash transaction",
-  "shoppery.sound.subtitle.transaction2":                 "Cash transaction",
-  "shoppery.sound.subtitle.decline":                      "Transaction declined",
+  "shoppery.sound.subtitle.withdraw":                     "Cash withdraw",
+  "shoppery.sound.subtitle.deposit":                      "Cash deposit",
+  "shoppery.sound.subtitle.transact":                     "Cash transaction",
+  "shoppery.sound.subtitle.transact.alternative":         "Cash transaction (Alternative)",
+  "shoppery.sound.subtitle.cash_register":                "Cash register open",
+  "shoppery.sound.subtitle.decline":                      "Transaction failed",
+
+  "block.shoppery.shop":                                  "Basic Singleplayer Shop",
 
   "item.shoppery.coin_one":                               "One Cent (1¢)",
   "item.shoppery.coin_five":                              "Five Cents (5¢)",

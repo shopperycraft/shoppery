@@ -6,7 +6,7 @@ import com.ki11erwolf.shoppery.config.StringConfigValue;
 
 import java.awt.*;
 
-public class Appearance extends ConfigCategory {
+public class AppearanceConfig extends ConfigCategory {
 
     /**
      * Boolean Configuration object that adds the config value
@@ -37,7 +37,7 @@ public class Appearance extends ConfigCategory {
      * under the name "Appearance" to store settings
      * that affect looks.
      */
-    public Appearance() {
+    public AppearanceConfig() {
         super("Appearance");
     }
 

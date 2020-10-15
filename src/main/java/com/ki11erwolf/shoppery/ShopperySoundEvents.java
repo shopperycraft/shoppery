@@ -1,5 +1,7 @@
 package com.ki11erwolf.shoppery;
 
+import com.ki11erwolf.shoppery.config.ModConfig;
+import com.ki11erwolf.shoppery.config.categories.SoundConfig;
 import com.ki11erwolf.shoppery.packets.Packet;
 import com.ki11erwolf.shoppery.packets.PlaySoundOnClientPacket;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,6 +18,12 @@ import java.util.Map;
  * mod.
  */
 public final class ShopperySoundEvents {
+
+    /**
+     * A public global reference to the configuration settings related to
+     * sound & sound events.
+     */
+    public static final SoundConfig SOUND_CONFIG = ModConfig.GENERAL_CONFIG.getCategory(SoundConfig.class);
 
     /**
      * An internal map of Shoppery sound events mapped to their registry names.
@@ -37,16 +45,22 @@ public final class ShopperySoundEvents {
     public static final SoundEvent DEPOSIT = newSoundEvent("deposit");
 
     /**
-     * The teller transaction sound effect. Used when a shop has sold/purchased
+     * The (primary) cash register transaction sound effect. Used when a shop has sold/purchased
      * an item.
      */
-    public static final SoundEvent TRANSACTION_1 = newSoundEvent("transaction1");
+    public static final SoundEvent TRANSACT = newSoundEvent("transact");
 
     /**
-     * The bag transaction sound effect. Used when a shop has sold/purchased
-     * an item.
+     * The (alternative) cash register transaction sound effect. Used when a shop has
+     * sold/purchased an item.
      */
-    public static final SoundEvent TRANSACTION_2 = newSoundEvent("transaction2");
+    public static final SoundEvent TRANSACT_ALT = newSoundEvent("transact_alt");
+
+    /**
+     * The shop cash register sound effect. Used when a shop has been opened or
+     * activated.
+     */
+    public static final SoundEvent CASH_REGISTER = newSoundEvent("cash_register");
 
     /**
      * The transaction declined (failed/not allowed) sound effect. Used when a
@@ -94,8 +108,7 @@ public final class ShopperySoundEvents {
             return;
         }
 
-        Packet.send(PacketDistributor.PLAYER.with(
-                () -> (ServerPlayerEntity)player),
+        Packet.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player),
                 new PlaySoundOnClientPacket(player, soundEvent, volume, pitch)
         );
     }

@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileReader;
@@ -29,6 +30,11 @@ import java.util.Map;
  * persisted prices back into the registry.
  */
 class RegistryModifier {
+
+    /**
+     * The mod logger instance for this class.
+     */
+    private static final Logger LOG = ShopperyMod.getNewLogger();
 
     /**
      * The json file where all changes will be saved.
@@ -134,9 +140,7 @@ class RegistryModifier {
 
             return true;
         } catch (IOException e) {
-            ShopperyMod.getNewLogger().error(
-                    "Failed to write json to PERSISTENT_FILE: " + PERSISTENT_FILE, e
-            );
+            LOG.error("Failed to write json to PERSISTENT_FILE: " + PERSISTENT_FILE, e);
             return false;
         }
     }
@@ -178,9 +182,7 @@ class RegistryModifier {
 
             return persistentFileJson;
         } catch (Exception e) {
-            ShopperyMod.getNewLogger().error(
-                    "Failed to parse PERSISTENT_FILE json: " + PERSISTENT_FILE, e
-            );
+            LOG.error("Failed to parse PERSISTENT_FILE json: " + PERSISTENT_FILE, e);
             JsonObject newFileJson = new JsonObject();
             newFileJson.add("prices", new JsonObject());
             return newFileJson;
@@ -251,9 +253,8 @@ class RegistryModifier {
             //noinspection ResultOfMethodCallIgnored
             PERSISTENT_FILE.createNewFile();
         } catch (IOException e) {
-            ShopperyMod.getNewLogger().error(
-                    "Failed to create PERSISTENT_FILE: "
-                            + PERSISTENT_FILE + " before write", e
+            LOG.error("Failed to create PERSISTENT_FILE: "
+                    + PERSISTENT_FILE + " before write", e
             );
         }
     }

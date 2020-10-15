@@ -2,7 +2,7 @@ package com.ki11erwolf.shoppery.gui;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.config.ModConfig;
-import com.ki11erwolf.shoppery.config.categories.General;
+import com.ki11erwolf.shoppery.config.categories.GeneralConfig;
 import com.ki11erwolf.shoppery.packets.FormattedBalanceRecPacket;
 import com.ki11erwolf.shoppery.packets.FormattedBalanceReqPacket;
 import com.ki11erwolf.shoppery.packets.Packet;
@@ -68,7 +68,7 @@ public abstract class WalletToggleButton extends ImageButton implements WidgetFi
     static{
         if(BALANCE_REQUEST_TIMER == null)
             BALANCE_REQUEST_TIMER = new WaitTimer(
-                    ModConfig.GENERAL_CONFIG.getCategory(General.class).getPacketWaitTime()
+                    ModConfig.GENERAL_CONFIG.getCategory(GeneralConfig.class).getPacketWaitTime()
             );
     }
 

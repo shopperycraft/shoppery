@@ -2,22 +2,28 @@
   "withdraw": {
     "category": "player",
     "subtitle": "shoppery.sound.subtitle.withdraw",
-    "sounds": ["shoppery:withdraw"]
+    "sounds": ["shoppery:withdraw"],
+    "license": "Creative Commons Attribution 3.0 Unported (CC BY 3.0)"
   },
   "deposit": {
     "category": "player",
     "subtitle": "shoppery.sound.subtitle.deposit",
     "sounds": ["shoppery:deposit"]
   },
-  "transaction1": {
+  "transact": {
     "category": "player",
-    "subtitle": "shoppery.sound.subtitle.transaction1",
-    "sounds": ["shoppery:transaction1"]
+    "subtitle": "shoppery.sound.subtitle.transact",
+    "sounds": ["shoppery:transact"]
   },
-  "transaction2": {
+  "transact_alt": {
     "category": "player",
-    "subtitle": "shoppery.sound.subtitle.transaction2",
-    "sounds": ["shoppery:transaction2"]
+    "subtitle": "shoppery.sound.subtitle.transact.alternative",
+    "sounds": ["shoppery:transact_alt"]
+  },
+  "cash_register": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.cash_register",
+    "sounds": ["shoppery:cash_register"]
   },
   "decline": {
     "category": "player",

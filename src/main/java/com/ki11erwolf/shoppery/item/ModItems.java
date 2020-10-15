@@ -1,7 +1,7 @@
 package com.ki11erwolf.shoppery.item;
 
 import com.ki11erwolf.shoppery.config.ModConfig;
-import com.ki11erwolf.shoppery.config.categories.General;
+import com.ki11erwolf.shoppery.config.categories.GeneralConfig;
 import com.ki11erwolf.shoppery.util.QueueRegisterer;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
@@ -129,7 +129,7 @@ public final class ModItems extends QueueRegisterer<Item> {
     /**
      * Flag set by config that tells us if we should enable the debug items or not.
      */
-    private static final boolean ENABLE_DEBUG_ITEMS = ModConfig.GENERAL_CONFIG.getCategory(General.class).isDebugItemEnabled();
+    private static final boolean ENABLE_DEBUG_ITEMS = ModConfig.GENERAL_CONFIG.getCategory(GeneralConfig.class).isDebugItemEnabled();
 
     /**
      * The debug items as a list.

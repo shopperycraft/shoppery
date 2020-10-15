@@ -37,6 +37,16 @@ public abstract class ModBlockTile<T extends TileEntity, B extends ModBlockTile<
     }
 
     /**
+     * Basic constructor for all Mod tile entities.
+     *
+     * @param properties the properties & behaviour of this specific block.
+     * @param name the registry name of the block.
+     */
+    protected ModBlockTile(String name, Properties properties) {
+        super(properties, name);
+    }
+
+    /**
      * Always returns {@code true} as implementing classes
      * are tile entity blocks.
      *

@@ -1,8 +1,13 @@
 package com.ki11erwolf.shoppery.tile;
 
+import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.price.ItemPrice;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
@@ -16,6 +21,11 @@ import java.util.Objects;
  * net.minecraft.tileentity.TileEntity#markDirty()}).
  */
 class ShopTileData {
+
+    /**
+     * Modding logger instance for this class.
+     */
+    private static final Logger LOG = ShopperyMod.getNewLogger();
 
     /**
      * A String value that is used as a key to store a specific
@@ -35,6 +45,14 @@ class ShopTileData {
      * the {@link ShopTile} is trading.
      */
     private ResourceLocation item;
+
+    /**
+     * The actual Item or Block instance that this Shop trades.
+     * This object is never saved or loaded - it is always set from
+     * the registry using {@link #item}. Used as a validation test
+     * and as a reference.
+     */
+    private IItemProvider itemObject;
 
     /**
      * The price that the {@link ShopTile} will sell
@@ -65,6 +83,7 @@ class ShopTileData {
         this.item = itemPrice.getItem();
         this.buy = itemPrice.getBuyPrice();
         this.sell = itemPrice.getSellPrice();
+        clearAndValidateItemObject();
         shopTile.markDirty();
     }
 
@@ -77,6 +96,7 @@ class ShopTileData {
      */
     public void setItem(ResourceLocation item){
         this.item = Objects.requireNonNull(item);
+        clearAndValidateItemObject();
         shopTile.markDirty();
     }
 
@@ -111,13 +131,37 @@ class ShopTileData {
      * Will reset the traded {@link #item} to none and will
      * reset the prices to {@code 0}.
      */
-    public void reset(){
+    public void reset() {
         this.item = null;
         this.buy = 0;
         this.sell = 0;
+        clearAndValidateItemObject();
     }
 
     // Accessors
+
+    /**
+     * @return {@code true} if the actual Item object instance
+     * within the registry that is registered under the item id
+     * ({@link #item}) exists and can be used. Will return {@code
+     * false} if no item/ItemID has been set yet, if the ItemID
+     * is invalid, or if no Item/Block is registered using the
+     * ItemID.
+     */
+    public boolean isItemValid(){
+        return hasValidItemObject();
+    }
+
+    /**
+     * @return {@code true} if the Shop has an
+     * item id for the item to trade, and if
+     * the item id references a loaded mod.
+     * Will return {@code false} if the item id
+     * is blank or {@code null}.
+     */
+    public boolean isItemSet(){
+        return isItemIDSet();
+    }
 
     /**
      * @return The registry name of the Item or Block
@@ -125,6 +169,18 @@ class ShopTileData {
      */
     public ResourceLocation getItem() {
         return item;
+    }
+
+    /**
+     * @return the actual Item object instance within
+     * the registry that is registered under the item id
+     * ({@link #item}). Will return {@code null} if no
+     * item/ItemID has been set yet, if the ItemID is
+     * invalid, or if no Item/Block is registered using
+     * the ItemID.
+     */
+    public IItemProvider getItemObject() {
+        return itemObject;
     }
 
     /**
@@ -143,13 +199,108 @@ class ShopTileData {
         return sell;
     }
 
+    // Item & Price
+
     /**
-     * @return {@code true} if and only if the {@link #item}
-     * the ShopTile is trading is valid and points to a
-     * registered Item/Block in the registry.
+     * Does a thorough check to find out if the
+     * Shop has a set & valid item id for the
+     * item it's trading. Used to determine if
+     * the Shop has been setup or not. This
+     * method will NOT check if the item exists.
+     *
+     * @return {@code true} if the Shop has an
+     * item id for the item to trade, and if
+     * the item id references a loaded mod.
+     * Will return {@code false} if the item id
+     * is blank or {@code null}.
      */
-    public boolean hasItem() {
-        return item != null && !item.getPath().equals("");
+    protected boolean isItemIDSet(){
+        if(item == null) return false;
+
+        String namespace = item.getNamespace();
+        String path = item.getPath();
+
+        if(namespace.equals("") || path.equals(""))
+            return false;
+
+        return ModList.get().isLoaded(namespace);
+    }
+
+    /**
+     * Attempts to further validate item id of the Shops traded
+     * item by matching the item id to an existing item in
+     * the registry. If we find an item object we can be sure
+     * the item id is valid.
+     *
+     * @return the item object in the registry that matches
+     * the Shops item id, if it could be found, otherwise
+     * {@code null} is returned to indicate the item id
+     * is not valid.
+     */
+    protected IItemProvider getItemObjectInstance() {
+        IItemProvider itm = ForgeRegistries.ITEMS.getValue(item);
+
+        if(itm == null)
+            LOG.error("Failed to get a valid Item from " +
+                "Shop ItemID: " + item.toString());
+
+        return itm;
+    }
+
+    /**
+     * Provides that the Shops {@link #item} is set, valid,
+     * and can be used.
+     *
+     * <p/> Attempts to validate the ItemID of the Shops
+     * traded item, by checking that it has been set, and
+     * that it is set correctly. Once that is done, the
+     * ItemID is used to obtain an actual Item/Block from
+     * the registry. The obtained Item/Block object can
+     * be used to prove the ItemID is usable. No object
+     * proves the ItemID is unusable.
+     */
+    protected void validateItemObject(){
+        //Clear instance if ID not set
+        if(!isItemIDSet()){
+            itemObject = null;
+            return;
+        }
+
+        //Try set object if ID is set
+        if(itemObject == null){
+            itemObject = getItemObjectInstance();
+        }
+
+        //If object is set, check that it matches the ID.
+        if(!hasValidItemObject())
+            itemObject = null;
+    }
+
+    /**
+     * Clears the object instance reference to the Shops
+     * item and then attempts to validate it once again.
+     * Used whenever the ItemID is changed to keep the
+     * object instance up-to-date with the ItemID.
+     */
+    protected void clearAndValidateItemObject(){
+        this.itemObject = null;
+        validateItemObject();
+    }
+
+    /**
+     * @return {@code true} if the actual Item object instance
+     * within the registry that is registered under the item id
+     * ({@link #item}) exists and can be used. Will return {@code
+     * false} if no item/ItemID has been set yet, if the ItemID
+     * is invalid, or if no Item/Block is registered using the
+     * ItemID.
+     */
+    protected boolean hasValidItemObject(){
+        if(itemObject == null) return false;
+        if(itemObject.asItem().getRegistryName() == null)
+            return false;
+
+        return (item.equals(itemObject.asItem().getRegistryName()));
     }
 
     // Other
@@ -161,10 +312,10 @@ class ShopTileData {
      * of this object instance and the data contained within.
      */
     @Override
-    public String toString(){
-        return String.format(
-                "ShopTileData[item=%s, buy=%s, sell=%s]",
-                (item != null) ? item.toString() : "null", buy, sell
+    public String toString() {
+        return String.format("ShopTileData[item=%s, buy=%s, sell=%s, object=%s]",
+                (item != null) ? item.toString() : "null", buy, sell,
+                itemObject == null ? "null" : itemObject.asItem().getClass().getCanonicalName()
         );
     }
 
@@ -179,16 +330,16 @@ class ShopTileData {
      *            read and stored.
      * @return the {@link CompoundNBT} passed as a parameter.
      */
-    protected CompoundNBT setNBTFromData(CompoundNBT nbt){
+    protected CompoundNBT readNBT(CompoundNBT nbt) {
         String itemNamespace = nbt.getString(KEY_ITEM_NAMESPACE);
         String itemPath = nbt.getString(KEY_ITEM_PATH);
 
         if(!itemPath.equals(""))
             this.item = new ResourceLocation(itemNamespace, itemPath);
 
+        clearAndValidateItemObject();
         this.buy = nbt.getDouble(KEY_ITEM_BUY);
         this.sell = nbt.getDouble(KEY_ITEM_SELL);
-
         return nbt;
     }
 
@@ -201,7 +352,7 @@ class ShopTileData {
      * @return the {@link CompoundNBT} passed as a parameter,
      * now containing the ShopTiles data.
      */
-    protected CompoundNBT getDataAsNBT(CompoundNBT nbt){
+    protected CompoundNBT writeNBT(CompoundNBT nbt) {
         if(item != null) {
             nbt.putString(KEY_ITEM_NAMESPACE, this.item.getNamespace());
             nbt.putString(KEY_ITEM_PATH, this.item.getPath());

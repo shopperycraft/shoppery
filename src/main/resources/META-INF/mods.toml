@@ -22,7 +22,7 @@ displayURL="https://shopperycraft.github.io" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="shoppery_banner.png" #optional
 # A text field displayed in the mod UI
-credits="Ki11er_wolf - Mod Author. FreeSound.org (https://freesound.org/) - Sound Effects." #optional
+credits="\n      Developer:  Ki11er_wolf\n      Sound Effects:  FreeSound ( https://freesound.org/ )" #optional
 # A text field displayed in the mod UI
 authors="Ki11er_wolf" #optional
 # The description text for the mod (multi line!) (#mandatory)

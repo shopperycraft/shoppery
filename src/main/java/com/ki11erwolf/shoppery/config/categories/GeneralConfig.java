@@ -9,7 +9,7 @@ import com.ki11erwolf.shoppery.config.StringConfigValue;
  * Config category for general/miscellaneous
  * config settings.
  */
-public class General extends ConfigCategory {
+public class GeneralConfig extends ConfigCategory {
 
     /**
      * Config property to allow changing the delay time (in ms)
@@ -41,7 +41,7 @@ public class General extends ConfigCategory {
     private final StringConfigValue currencySymbol = new StringConfigValue(
             "currency-symbol",
             "The currency symbol (e.g. $) Shoppery uses to represent its currency. " +
-                      "The symbol can be series of letters.",
+                      "The symbol can be series of any letters as opposed to a single character.",
             "$", this
     );
 
@@ -61,8 +61,8 @@ public class General extends ConfigCategory {
      * Config category for general/miscellaneous
      * config settings.
      */
-    public General() {
-        super("general");
+    public GeneralConfig() {
+        super("General");
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.ki11erwolf.shoppery.util;
 
 import com.ki11erwolf.shoppery.config.ModConfig;
-import com.ki11erwolf.shoppery.config.categories.General;
+import com.ki11erwolf.shoppery.config.categories.GeneralConfig;
 
 import java.text.NumberFormat;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class CurrencyUtil {
      * the currency.
      */
     public static final String CURRENCY_SYMBOL
-            = ModConfig.GENERAL_CONFIG.getCategory(General.class).getCurrencySymbol();
+            = ModConfig.GENERAL_CONFIG.getCategory(GeneralConfig.class).getCurrencySymbol();
 
     /** Static util class */
     private CurrencyUtil(){}

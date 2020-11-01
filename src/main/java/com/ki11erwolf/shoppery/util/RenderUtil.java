@@ -47,9 +47,9 @@ public final class RenderUtil {
      *
      * <p>Then to play the animation, ensure {@link #onRender
      * (float)} is called every render cycle from the {@code
-     * render()} method. The animation will pause on its
-     * current frame as soon as {@code onRender()} is
-     * no longer being called.
+     * render()} method. The animation will pause on its current
+     * frame as soon as {@code onRender()} is  no longer being
+     * called.
      */
     public static class TimedAnimationStepper {
 

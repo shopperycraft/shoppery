@@ -65,7 +65,7 @@ public class ShopTile extends ModTile {
         //Init Vars
         boolean paid;
         Wallet wallet = BankManager._getBank(world).getWallet(player);
-        boolean isReversal = transactions.reverseTransaction(player.getUniqueID(), false);
+        boolean isReversal = transactions.reverseTransaction(player, false);
 
         //Try Take Pay
         if(!isReversal)
@@ -84,7 +84,7 @@ public class ShopTile extends ModTile {
 
         //Log
         if(!isReversal)
-            transactions.logTransaction(player.getUniqueID(), true);
+            transactions.logTransaction(player, true);
 
         return true; //Successful trade
     }
@@ -112,7 +112,7 @@ public class ShopTile extends ModTile {
 
             // Init Vars
             Wallet wallet = BankManager._getBank(world).getWallet(player);
-            boolean isReversal = transactions.reverseTransaction(player.getUniqueID(), true);
+            boolean isReversal = transactions.reverseTransaction(player, true);
 
             //Take Item
             foundItem.shrink(1);
@@ -124,7 +124,7 @@ public class ShopTile extends ModTile {
 
             //Log
             if(!isReversal)
-                transactions.logTransaction(player.getUniqueID(), false);
+                transactions.logTransaction(player, false);
 
             return true;
         }

@@ -194,7 +194,7 @@ public class Wallet {
      * is not in the correct format.
      */
     public void add(float balance){
-        add(String.valueOf(balance));
+        add(CurrencyUtil.floatToCurrency(balance));
     }
 
     /**
@@ -384,7 +384,7 @@ public class Wallet {
      * and the amount was taken off, {@code false} otherwise.
      */
     public boolean subtract(float balance){
-        return subtract(String.valueOf(balance));
+        return subtract(CurrencyUtil.floatToCurrency(balance));
     }
 
     /**

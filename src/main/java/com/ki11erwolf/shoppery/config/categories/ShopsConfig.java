@@ -2,6 +2,7 @@ package com.ki11erwolf.shoppery.config.categories;
 
 import com.ki11erwolf.shoppery.config.BooleanConfigValue;
 import com.ki11erwolf.shoppery.config.ConfigCategory;
+import com.ki11erwolf.shoppery.config.IntegerConfigValue;
 import com.ki11erwolf.shoppery.config.StringConfigValue;
 
 /**
@@ -51,6 +52,34 @@ public class ShopsConfig extends ConfigCategory {
                     "in order to trade with shops. This value affects all players " +
                     "in the server!",
             false, this
+    );
+
+    /**
+     * The config property defining the config flag that allows
+     * making shops unbreakable by players.
+     */
+    private final BooleanConfigValue preventBreaking = new BooleanConfigValue(
+            "prevent-breaking-of-shops",
+            "A flag that allows making shops unbreakable (like Bedrock) by " +
+                    "all players, when set to 'true'. When 'false', shops can be " +
+                    "vandalised by players on multiplayer servers.",
+            true, this
+    );
+
+    /**
+     * The config property defining the integer value that allows
+     * setting the amount of time (in seconds) that a player
+     * has to reverse a shop transaction.
+     */
+    private final IntegerConfigValue transactionReverseTimeLimit = new IntegerConfigValue(
+            "time-limit-on-transaction-reversals",
+            "The amount of time, in seconds, that shops will give players to " +
+                    "reverse a transaction, effectively undoing the purchase/sale. Allows " +
+                    "a minimum time of 30 seconds and maximum time of 10 minutes (600s).",
+            2 * 60,    // 2m
+            30,              // 30s
+            10 * 60,         // 10m
+            this
     );
 
     /**
@@ -104,6 +133,24 @@ public class ShopsConfig extends ConfigCategory {
      */
     public boolean isBuyLeftClick(){
         return getBuyButton().equals(BUY_BUTTON_LEFT);
+    }
+
+    /**
+     * @return {@code true} if the config value that
+     * defines if the breaking of shops is prevented,
+     * {@code false} otherwise.
+     */
+    public boolean isBreakingPrevented() {
+        return preventBreaking.getValue();
+    }
+
+    /**
+     * @return the amount of time (in milliseconds, ranging from
+     * 30,000ms to 600,000ms) that a shop should allow players
+     * to reverse any transaction, as set within the config file.
+     */
+    public int getReversalTimeLimit() {
+        return transactionReverseTimeLimit.getValue() * 1000;
     }
 
     /**

@@ -13,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IItemProvider;
@@ -22,11 +23,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ShopTile extends ModTile {
 
-    protected static final ShopsConfig SHOPS_CONFIG = ModConfig.GENERAL_CONFIG.getCategory(ShopsConfig.class);
-
-    static final TileDefinition<?> TILE_DEFINITION = new TileDefinition<>(
+    protected static final TileDefinition<?> TILE_DEFINITION = new TileDefinition<>(
             "shop", ShopTile::new, ModBlocks.SHOP_BLOCK
     );
+
+    protected static final ShopsConfig SHOPS_CONFIG = ModConfig.GENERAL_CONFIG.getCategory(ShopsConfig.class);
+
+    private final ShopTransactions transactions = new ShopTransactions();
 
     private final ShopTileData data;
 
@@ -46,40 +49,89 @@ public class ShopTile extends ModTile {
     protected void setupRandomPrice() {
         ItemPrice randomSetPrice = ItemPrices.getRandomPrice().withPriceFluctuation();
         if(!checkPrice(randomSetPrice))
-            setupRandomPrice();
+            setupRandomPrice(); //Repeat until valid price is found
 
         setupPrice(randomSetPrice);
     }
 
     // Trading
 
-    protected boolean trySellToPlayer(World world, PlayerEntity player) {
+    protected boolean tradeItemForPay(World world, PlayerEntity player) {
         //Check side and player sneak/inventory
         if(!canTrade(world, player)) return false;
         //Don't allow selling unsellable items.
         if(getBuyPrice() <= 0) return false;
 
-        //Check player balance
-        Wallet playerWallet = BankManager._getBank(world).getWallet(player);
-        if(!playerWallet.subtract(Float.parseFloat(String.valueOf(getBuyPrice())))) {
-            return false;
-        }
+        //Init Vars
+        boolean paid;
+        Wallet wallet = BankManager._getBank(world).getWallet(player);
+        boolean isReversal = transactions.reverseTransaction(player.getUniqueID(), false);
 
-        //Give item
+        //Try Take Pay
+        if(!isReversal)
+            paid = wallet.subtract((float) getBuyPrice());
+        else paid = wallet.subtract((float) getSellPrice());
+
+        //Must trade - pay taken!
+        if(!paid) return false;
+
+        //Give Item
         IItemProvider itemToTrade = data.getItemObject();
         if(!player.addItemStackToInventory(new ItemStack(itemToTrade)))
             world.addEntity(new ItemEntity(world,player.getPosX(),
                     player.getPosY(), player.getPosZ(), new ItemStack(itemToTrade)
             ));
 
-        return true;
+        //Log
+        if(!isReversal)
+            transactions.logTransaction(player.getUniqueID(), true);
+
+        return true; //Successful trade
     }
 
-    protected boolean tryBuyFromPlayer(World world, PlayerEntity player){
-        return false;
+    protected boolean tradePayForItem(World world, PlayerEntity player){
+        //Check side and player sneak/inventory
+        if(!canTrade(world, player)) return false;
+        //Don't allow buying non-purchasable items.
+        if(getSellPrice() <= 0) return false;
+
+        Item toFind = data.getItemObject().asItem();
+        for(ItemStack stack : player.inventory.mainInventory) {
+            //Check for nulls
+            if(stack.getItem().getRegistryName() == null || toFind.getRegistryName() == null){
+                continue;
+            }
+
+            //Check for and find trade item
+            ItemStack foundItem;
+            if(stack.getItem().getRegistryName().equals(toFind.getRegistryName())){
+                foundItem = stack;
+            } else continue;
+
+            //Can trade!
+
+            // Init Vars
+            Wallet wallet = BankManager._getBank(world).getWallet(player);
+            boolean isReversal = transactions.reverseTransaction(player.getUniqueID(), true);
+
+            //Take Item
+            foundItem.shrink(1);
+
+            //Give Pay
+            if(!isReversal)
+                wallet.add((float) getSellPrice());
+            else wallet.add((float) getBuyPrice());
+
+            //Log
+            if(!isReversal)
+                transactions.logTransaction(player.getUniqueID(), false);
+
+            return true;
+        }
+
+        return false; //Failed trade
     }
 
-    @SuppressWarnings("RedundantIfStatement")
     protected boolean canTrade(World world, PlayerEntity player){
         if(world.isRemote)
             return false;
@@ -87,10 +139,7 @@ public class ShopTile extends ModTile {
         if(SHOPS_CONFIG.requireSneakToUse() && !player.isSneaking())
             return false;
 
-        if(SHOPS_CONFIG.requireEmptyHandToUse() && !player.getHeldItemMainhand().isEmpty())
-            return false;
-
-        return true;
+        return !SHOPS_CONFIG.requireEmptyHandToUse() || player.getHeldItemMainhand().isEmpty();
     }
 
     protected IItemProvider getItemInstance() {
@@ -102,7 +151,7 @@ public class ShopTile extends ModTile {
 
     // Public API
 
-    public boolean sellToPlayer(World world, PlayerEntity player) {
+    public boolean playerBuyRequest(World world, PlayerEntity player) {
         if(!(player instanceof ServerPlayerEntity))
             return false;
 
@@ -112,7 +161,7 @@ public class ShopTile extends ModTile {
             return true;
         }
 
-        if(trySellToPlayer(world, player)) {
+        if(tradeItemForPay(world, player)) {
             playTradeSoundEvent(world, player);
             return true;
         }
@@ -121,34 +170,56 @@ public class ShopTile extends ModTile {
         return false;
     }
 
-    public ResourceLocation getTradedItem(){
+    public boolean playerSellRequest(World world, PlayerEntity player) {
+        if(!(player instanceof ServerPlayerEntity))
+            return false;
+
+        //Setup shop if not already.
+        if(ensureSetup()) {
+            playActivatedSoundEvent(world, player);
+            return true;
+        }
+
+        if(tradePayForItem(world, player)) {
+            playTradeSoundEvent(world, player);
+            return true;
+        }
+
+        playFailSoundEvent(world, player);
+        return false;
+    }
+
+    public ResourceLocation getTradedItem() {
         return data.getItem();
     }
 
-    public double getBuyPrice(){
+    public double getBuyPrice() {
         return data.getBuy();
     }
 
-    public double getSellPrice(){
+    public double getSellPrice() {
         return data.getSell();
     }
 
     // Sound
 
     protected void playActivatedSoundEvent(World world, PlayerEntity player){
-        ShopperySoundEvents.sendSoundEvent(player, ShopperySoundEvents.CASH_REGISTER,
+        if(ShopperySoundEvents.SOUND_CONFIG.playActivatedSoundEffect())
+            ShopperySoundEvents.sendSoundEvent(player, ShopperySoundEvents.CASH_REGISTER,
                 1.0F, (float) MathUtil.getRandomDoubleInRange(0.8, 1.4));
     }
 
     protected void playFailSoundEvent(World world, PlayerEntity player){
-        ShopperySoundEvents.sendSoundEvent(player, ShopperySoundEvents.DECLINE, 1.0F, 1.0F);
+        if(ShopperySoundEvents.SOUND_CONFIG.playTransactionDeclinedSoundEffect())
+            ShopperySoundEvents.sendSoundEvent(player, ShopperySoundEvents.DECLINE, 1.0F, 1.0F);
     }
 
     protected void playTradeSoundEvent(World world, PlayerEntity player){
-        ShopperySoundEvents.sendSoundEvent(player, ShopperySoundEvents.SOUND_CONFIG.useAltTransactionSound()
-                        ? ShopperySoundEvents.TRANSACT_ALT : ShopperySoundEvents.TRANSACT,
-                1.0F, (float) MathUtil.getRandomDoubleInRange(0.9, 1.3)
-        );
+        if(ShopperySoundEvents.SOUND_CONFIG.playTransactionSoundEffect())
+            ShopperySoundEvents.sendSoundEvent(player, ShopperySoundEvents.SOUND_CONFIG.useAltTransactionSound()
+                            ? ShopperySoundEvents.TRANSACT_ALT : ShopperySoundEvents.TRANSACT,
+                    1.0F, (float) MathUtil.getRandomDoubleInRange(0.9, 1.3)
+            );
     }
 
     // Setup Check

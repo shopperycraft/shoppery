@@ -122,7 +122,7 @@ public class Bank {
     /**
      * @return the world this bank is linked to.
      */
-    public World getWorld(){return world;}
+    public World getWorld() { return world; }
 
     /**
      * @return the name (given at world creation)

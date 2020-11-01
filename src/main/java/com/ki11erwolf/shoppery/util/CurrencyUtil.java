@@ -52,6 +52,31 @@ public class CurrencyUtil {
     }
 
     /**
+     * Converts any given input {@code float} into a valid String
+     * that be used within currency.
+     *
+     * <p/>Used to avoid missing trailing zeros, where {@code "3.90"}
+     * is stored as {@code 3.9} within a float.
+     *
+     * @param balance the input currency amount as a native float value.
+     * @return a valid currency string representation of the amount the
+     * float value originally specified.
+     */
+    public static String floatToCurrency(float balance){
+        String bal = String.valueOf(balance);
+        String[] flags = {
+                ".9", ".8", ".7", ".6", ".5", ".4", ".3", ".2", ".1", ".0",
+        };
+
+        for(String flag : flags){
+            if(bal.endsWith(flag))
+                return bal + "0";
+        }
+
+        return bal;
+    }
+
+    /**
      * Will create a String that correctly displays the
      * given {@code balance} and {@code cents} as a price.
      * Includes separating commas.

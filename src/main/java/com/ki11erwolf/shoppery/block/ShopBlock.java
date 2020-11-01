@@ -27,30 +27,35 @@ public class ShopBlock extends ModBlockTile<ShopTile, ShopBlock> {
     public ShopBlock(String registryName) {
         super(registryName, AbstractBlock.Properties
                 .create(Material.WOOD).harvestTool(ToolType.AXE).noDrops()
-                .hardnessAndResistance(10F, 1200F)
+                .hardnessAndResistance(
+                        (SHOPS_CONFIG.isBreakingPrevented()) ? -1.0F : 10.0F, 3600000.0F
+                )
         );
     }
 
     protected ActionResultType onBlockInteract(World world, BlockPos pos, BlockState state, PlayerEntity player,
                                                boolean sneaking, boolean remote, boolean rightClick){
-        // Do on server-side
+        // Do on client-side
         if(remote) return ActionResultType.SUCCESS;
 
-        //Left-Click
-        if(!rightClick){
-            if(SHOPS_CONFIG.isBuyLeftClick())
-                return getTile(world, pos).sellToPlayer(world, player) ?
+        if(!rightClick){ //Left-Click & set to left-click
+            if(SHOPS_CONFIG.isBuyLeftClick()) {
+                return getTile(world, pos).playerBuyRequest(world, player) ?
                         ActionResultType.SUCCESS : ActionResultType.FAIL;
+            } else {
+                return getTile(world, pos).playerSellRequest(world, player) ?
+                        ActionResultType.SUCCESS : ActionResultType.FAIL;
+            }
         }
 
-        //Right-Click
-        if(rightClick) {
-            if(SHOPS_CONFIG.isBuyRightClick())
-                return getTile(world, pos).sellToPlayer(world, player) ?
-                        ActionResultType.SUCCESS : ActionResultType.FAIL;
+        if(!(SHOPS_CONFIG.isBuyLeftClick())) { //Right-Click & set to right-click
+            return getTile(world, pos).playerBuyRequest(world, player) ?
+                    ActionResultType.SUCCESS : ActionResultType.FAIL;
+        } else {
+            return getTile(world, pos).playerSellRequest(world, player) ?
+                    ActionResultType.SUCCESS : ActionResultType.FAIL;
         }
 
-        return ActionResultType.FAIL;
     }
 
     // MC Click Handlers

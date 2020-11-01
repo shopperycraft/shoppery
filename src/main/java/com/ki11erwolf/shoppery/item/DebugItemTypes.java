@@ -45,9 +45,11 @@ public enum DebugItemTypes {
             ), player.getUniqueID());
 
             player.sendMessage(new StringTextComponent(TextFormatting.GREEN + "For: " +
-                    TextFormatting.BLUE + "Buy " + CurrencyUtil.CURRENCY_SYMBOL + shop.getBuyPrice() +
+                    TextFormatting.BLUE + "Buy " + CurrencyUtil.CURRENCY_SYMBOL +
+                    CurrencyUtil.floatToCurrency((float) shop.getBuyPrice()) +
                     TextFormatting.GOLD + " / " +
-                    TextFormatting.RED + "Sell "  + CurrencyUtil.CURRENCY_SYMBOL + shop.getSellPrice()
+                    TextFormatting.RED + "Sell "  + CurrencyUtil.CURRENCY_SYMBOL +
+                    CurrencyUtil.floatToCurrency((float) shop.getSellPrice())
             ), player.getUniqueID());
 
             player.sendMessage(new StringTextComponent(

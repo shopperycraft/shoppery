@@ -62,6 +62,9 @@ public abstract class ModBlockTile<T extends TileEntity, B extends ModBlockTile<
     // ****************
 
     /**
+     * Provided to all BlockTile implementations so that
+     * they can specify the Tile class, which they should.
+     *
      * @return the class of the exact Tile/TE this block
      * provides.
      */

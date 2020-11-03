@@ -21,12 +21,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * The definition of the base Shop Block item class - the most basic type of shop,
- * containing everything necessary and proving a solid foundation for the other
- * additional Shop Blocks variations.
+ * The block class for the <b>Randomly Generated Singleplayer Shop</b> - the simplest
+ * type of shop, containing everything necessary for a shop, and proving a solid
+ * foundation for other additional Shop Block variations. The parent to all shop
+ * block variations as well.
  *
- * <p/>Contains the base logic, characteristics, appearance, and properties,
- * that affect every Shop Block, and defines the Shop Block item class as a whole.
+ * <p/>The base logic, characteristics, appearance, and properties that defines
+ * the Shop Block item class as a whole and that affect every Shop Block.
  *
  * <p/>The {@link ShopTile} class handles each Shop Block individually and defines
  * how they work, with a dedicated ShopTile object for each block in the world.
@@ -72,28 +73,27 @@ public class ShopBlock extends ModBlockTile<ShopTile, ShopBlock> {
      * @return the results of the action: success or failure.
      */
     protected ActionResultType onClicked(World world, BlockPos pos, BlockState state, PlayerEntity player,
-                                         boolean sneaking, boolean remote, boolean rightClick){
+                                         boolean sneaking, boolean remote, boolean rightClick) {
         // Do on client-side
         if(remote) return ActionResultType.SUCCESS;
 
         if(!rightClick){ //Left-Click & set to left-click
             if(SHOPS_CONFIG.isBuyLeftClick()) {
-                return getTile(world, pos).playerBuyRequest(world, player) ?
+                return getTile(world, pos).purchaseItem(world, player) ?
                         ActionResultType.SUCCESS : ActionResultType.FAIL;
             } else {
-                return getTile(world, pos).playerSellRequest(world, player) ?
+                return getTile(world, pos).sellItem(world, player) ?
                         ActionResultType.SUCCESS : ActionResultType.FAIL;
             }
         }
 
         if(!(SHOPS_CONFIG.isBuyLeftClick())) { //Right-Click & set to right-click
-            return getTile(world, pos).playerBuyRequest(world, player) ?
+            return getTile(world, pos).purchaseItem(world, player) ?
                     ActionResultType.SUCCESS : ActionResultType.FAIL;
         } else {
-            return getTile(world, pos).playerSellRequest(world, player) ?
+            return getTile(world, pos).sellItem(world, player) ?
                     ActionResultType.SUCCESS : ActionResultType.FAIL;
         }
-
     }
 
     // MC Click Handlers

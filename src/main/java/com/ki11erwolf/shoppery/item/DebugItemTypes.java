@@ -41,7 +41,7 @@ public enum DebugItemTypes {
 
             player.sendMessage(new StringTextComponent(
                     TextFormatting.GREEN + "Trading Item: " +
-                            TextFormatting.BLUE + shop.getTradedItem()
+                            TextFormatting.BLUE + shop.getItem()
             ), player.getUniqueID());
 
             player.sendMessage(new StringTextComponent(TextFormatting.GREEN + "For: " +

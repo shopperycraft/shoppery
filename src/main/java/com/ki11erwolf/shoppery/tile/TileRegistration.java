@@ -8,7 +8,8 @@ import java.util.function.Supplier;
 
 /**
  * A simple data holder and static {@link TileEntityType} used
- * in the creation of {@link TileEntity Tiles}.
+ * in the creation of {@link TileEntity Tiles}. Used to register
+ * a specific Tile and TileType to the game.
  *
  * <p>Created to avoid the direct use of TileTypes within the Tile
  * and ModTiles classes. Done using a TileDefinition object for
@@ -30,7 +31,7 @@ import java.util.function.Supplier;
  *
  * @param <T> the Tile class defining and using the TileDefinition.
  */
-class TileDefinition<T extends ModTile> {
+class TileRegistration<T extends ModTile> {
 
     /**
      * The simple registry name of the tile entity
@@ -77,7 +78,7 @@ class TileDefinition<T extends ModTile> {
      * @param tileSupplier {@link #getTileSupplier()}
      * @param blockTiles {@link #getBlockTiles()}
      */
-    TileDefinition(String registryName, Supplier<T> tileSupplier, ModBlock<?>... blockTiles) {
+    TileRegistration(String registryName, Supplier<T> tileSupplier, ModBlock<?>... blockTiles) {
         this(registryName, tileSupplier, true, blockTiles);
     }
 
@@ -93,8 +94,8 @@ class TileDefinition<T extends ModTile> {
      * {@code "_tile"} to the registry name.
      * @param blockTiles {@link #getBlockTiles()}
      */
-    TileDefinition(String registryName, Supplier<T> tileSupplier,
-                   boolean prefixName, ModBlock<?>... blockTiles) {
+    TileRegistration(String registryName, Supplier<T> tileSupplier,
+                     boolean prefixName, ModBlock<?>... blockTiles) {
         this.registryName = registryName + (prefixName ? "_tile" : "");
         this.blockTiles = blockTiles;
         this.tileSupplier = tileSupplier;

@@ -24,10 +24,10 @@ import org.apache.logging.log4j.Logger;
  * complexity of Tiles and TileTypes behind the scenes.
  *
  * <p>Provides a {@code static} block and a {@link
- * #queue(TileDefinition)} method where Tiles TileDefinitions
+ * #queue(TileRegistration)} method where Tiles TileDefinitions
  * can be easily queued.
  */
-public final class ModTiles extends QueueRegisterer<TileDefinition<? extends ModTile>> {
+public final class ModTiles extends QueueRegisterer<TileRegistration<? extends ModTile>> {
 
     /**
      * Modding logger instance for this class.
@@ -54,18 +54,18 @@ public final class ModTiles extends QueueRegisterer<TileDefinition<? extends Mod
      * here within the static block.
      */
     static {
-        queue(ShopTile.TILE_DEFINITION);
+        queue(ShopTile.REGISTRATION);
     }
 
     /**
      * Adds a Tile to the queue of Tiles to be created and
      * registered. Tiles are queued and registered using
-     * {@link TileDefinition} objects.
+     * {@link TileRegistration} objects.
      *
      * @param tile the Tile & TileType to create and queue,
      *             defined by a TileDefinition.
      */
-    public static void queue(TileDefinition<? extends ModTile> tile){
+    public static void queue(TileRegistration<? extends ModTile> tile){
         TILES.queueForRegistration(tile);
     }
 
@@ -79,7 +79,7 @@ public final class ModTiles extends QueueRegisterer<TileDefinition<? extends Mod
      *
      * <p>Will attempt to create & register a TileType
      * for all the Tiles queued for registration, using
-     * {@link TileDefinition}'s.
+     * {@link TileRegistration}'s.
      *
      * Assuming success, the created & registered TileType
      * will be passed back to the Tiles TileDefinition for
@@ -94,7 +94,7 @@ public final class ModTiles extends QueueRegisterer<TileDefinition<? extends Mod
     }
 
     /**
-     * Using a {@link TileDefinition} and Forges Tile Registry, will
+     * Using a {@link TileRegistration} and Forges Tile Registry, will
      * create & register a TileType for a Tile.
      *
      * <p>The Tiles & TileTypes are created/defined using TileDefinitions.
@@ -108,7 +108,7 @@ public final class ModTiles extends QueueRegisterer<TileDefinition<? extends Mod
      *                       create & register.
      * @param tileRegistry Forge's Tile Registry.
      */
-    private void createRegisterAndPass(TileDefinition<? extends ModTile> tileDefinition,
+    private void createRegisterAndPass(TileRegistration<? extends ModTile> tileDefinition,
                                        IForgeRegistry<TileEntityType<?>> tileRegistry){
         //Registry Name
         ResourceLocation registryName = new ResourceLocation(ShopperyMod.MODID,

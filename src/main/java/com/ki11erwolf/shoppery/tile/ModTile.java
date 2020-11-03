@@ -22,7 +22,7 @@ public abstract class ModTile extends TileEntity {
      * Contains the registered TileType object for the TileEntity
      * super class as well, if registered successfully.
      */
-    protected final TileDefinition<? extends ModTile> definition;
+    protected final TileRegistration<? extends ModTile> definition;
 
     /**
      * Creates a new basic ModTile that
@@ -32,7 +32,7 @@ public abstract class ModTile extends TileEntity {
      *                       allows it to be registered using {@link
      *                       ModTiles}.
      */
-    public ModTile(TileDefinition<? extends ModTile> tileDefinition) {
+    public ModTile(TileRegistration<? extends ModTile> tileDefinition) {
         super(Objects.requireNonNull(tileDefinition).getTileType());
         this.definition = tileDefinition;
     }

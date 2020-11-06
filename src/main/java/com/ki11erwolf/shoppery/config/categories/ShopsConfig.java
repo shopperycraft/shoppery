@@ -63,7 +63,7 @@ public class ShopsConfig extends ConfigCategory {
             "A flag that allows making shops unbreakable (like Bedrock) by " +
                     "all players, when set to 'true'. When 'false', shops can be " +
                     "vandalised by players on multiplayer servers.",
-            true, this
+            false, this
     );
 
     /**

@@ -33,7 +33,7 @@ public enum DebugItemTypes {
             if(!(tile instanceof ShopTile))
                 return ActionResultType.FAIL;
 
-            ShopTile shop = ((ShopTile)tile);
+            ShopTile<?> shop = ((ShopTile<?>)tile);
 
             player.sendMessage(new StringTextComponent(
                     TextFormatting.GOLD + "-------------- Shop Block Info --------------"

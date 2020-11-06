@@ -8,13 +8,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
+
 /**
  * The base class for all Shoppery mod blocks that work with tile
  * entities.
  *
- * <p>Inherits from {@link ModBlock}, providing the
- * basic mod block functionality with additional functionality
- * added for {@link TileEntity TileEntities or Tiles}.
+ * <p>Inherits from {@link ModBlock}, providing the basic mod block
+ * functionality with additional functionality added for {@link
+ * TileEntity TileEntities or Tiles}.
  *
  * @param <T> the blocks tile entity class.
  * @param <B> the implementing block child class.
@@ -62,25 +64,40 @@ public abstract class ModBlockTile<T extends TileEntity, B extends ModBlockTile<
     // ****************
 
     /**
-     * Provided to all BlockTile implementations so that
-     * they can specify the Tile class, which they should.
+     * Specifies the specific class of the {@link ModTile}
+     * implementation used by and linked to this block. The
+     * class type must never change between calls and must
+     * match the class of the object returned by {@link
+     * #createTile(BlockState, IBlockReader)}.
      *
-     * @return the class of the exact Tile/TE this block
-     * provides.
+     * @return the exact class of the Tile implementation
+     * used by and linked to this block.
      */
-    public abstract Class<T> getTileClass();
+    protected abstract Class<T> getTileType();
 
     /**
-     * Called when the block is created/placed in world
-     * and needs to provide a Tile instance. Should
-     * construct and return a new Tile instance for this
-     * block whenever called.
+     * Called to create a new object instance of the exact
+     * {@link ModTile Tile} this tile block is linked to.
+     * The object instance must match the exact class type
+     * specified by {@link #getTileType()}. Implementations
+     * need simply to provide a new object instance of the
+     * specific Tile type used by this block.
      *
-     * @param world the world the block is in.
-     * @param state the block state of the block.
-     * @return the newly constructed tile entity.
+     * <p/> This method is the mods alternative to {@link
+     * #createTileEntity(BlockState, IBlockReader)}, and
+     * should be used to provide the Tile instead of the
+     * original.
+     *
+     * @param state the state of the specific block, as it
+     *              exists in the world, that needs the Tile.
+     * @param world the world, in which the block is placed,
+     *              that needs the Tile.
+     * @return a new object instance, of the exact {@link
+     * ModTile} implementation used by and linked to this
+     * block.
      */
-    public abstract ModTile createTile(BlockState state, IBlockReader world);
+    @Nonnull
+    protected abstract ModTile createTile(BlockState state, IBlockReader world);
 
     /**
      * @deprecated use ModBlockTile provided {@link
@@ -95,7 +112,14 @@ public abstract class ModBlockTile<T extends TileEntity, B extends ModBlockTile<
      */
     @Override @Deprecated
     public TileEntity createTileEntity(BlockState state, IBlockReader world){
-        return createTile(state, world);
+        TileEntity entity;
+        if(!(entity = createTile(state, world)).getClass().equals(getTileType()))
+            throw new IllegalStateException(String.format(
+                    "Block '%s': Tile type and object don't match.",
+                    this.getClass().getCanonicalName())
+            );
+
+        return entity;
     }
 
     // ***********
@@ -125,12 +149,12 @@ public abstract class ModBlockTile<T extends TileEntity, B extends ModBlockTile<
 
     /**
      * Checks that a given Tile is not {@code null}
-     * and that it is of type {@link #getTileClass()}.
+     * and that it is of type {@link #getTileType()}.
      *
      * @param toCheck the Tile to check for {@code null} or
      *                Class mismatch.
      * @return {@code true} if Tile is not {@code null} and
-     * of type {@link #getTileClass()}.
+     * of type {@link #getTileType()}.
      */
     protected boolean checkTile(TileEntity toCheck){
         if(toCheck == null) {
@@ -138,9 +162,9 @@ public abstract class ModBlockTile<T extends TileEntity, B extends ModBlockTile<
             return false;
         }
 
-        if(toCheck.getClass() != getTileClass()){
+        if(toCheck.getClass() != getTileType()){
             LOG.warn("Failed to get exact Tile from TE. " + String.format(
-                    "%s != %s", toCheck.getClass(), getTileClass()));
+                    "%s != %s", toCheck.getClass(), getTileType()));
             return false;
         }
 

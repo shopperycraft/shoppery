@@ -16,9 +16,12 @@ import net.minecraft.util.ResourceLocation;
  * <p/>Every ItemPrice has fluctuation - the percentage
  * the prices can vary (fluctuate) by.
  *
- * <p/>An ItemPrice can be prohibited, either
- * prohibiting buy, selling, or both. When prohibited,
- * the item cannot be bought, sold, or both.
+ * <p/>An ItemPrice can be prohibited when either prohibiting
+ * buying, selling, or both. When prohibited, the item
+ * cannot be bought, sold, or both.
+ *
+ * @see ItemPrices ItemPrices - the registry for obtaining and
+ * changing the prices of Items and block.
  */
 public class ItemPrice {
 

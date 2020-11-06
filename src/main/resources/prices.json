@@ -582,6 +582,8 @@
       "shulker_shell": 120
     },
     "shoppery": {
+      "basic_shop": null,
+
       "coin_one": null,
       "coin_five": null,
       "coin_ten": null,

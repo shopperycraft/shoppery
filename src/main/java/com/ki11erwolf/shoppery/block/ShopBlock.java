@@ -3,7 +3,6 @@ package com.ki11erwolf.shoppery.block;
 import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.ShopsConfig;
 import com.ki11erwolf.shoppery.item.DebugItem;
-import com.ki11erwolf.shoppery.tile.ModTile;
 import com.ki11erwolf.shoppery.tile.ShopTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
@@ -13,7 +12,6 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
@@ -21,18 +19,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * The block class for the <b>Randomly Generated Singleplayer Shop</b> - the simplest
- * type of shop, containing everything necessary for a shop, and proving a solid
- * foundation for other additional Shop Block variations. The parent to all shop
- * block variations as well.
+ * The parent class and template for the different Shop Block
+ * implementations, such as the {@link BasicShopBlock}. ShopBlock
+ * is {@code abstract} and cannot be instantiated directly!
  *
- * <p/>The base logic, characteristics, appearance, and properties that defines
- * the Shop Block item class as a whole and that affect every Shop Block.
+ * <p/> The Shop Block class takes care of the majority of the
+ * work when creating a new type of Shop. Including block clicks,
+ * appearance, behaviour, properties, as well as providing some
+ * additional convenience. The implementing classes of custom
+ * Shop implementations needs only provide what makes them unique.
  *
- * <p/>The {@link ShopTile} class handles each Shop Block individually and defines
- * how they work, with a dedicated ShopTile object for each block in the world.
+ * @param <T> the specific {@link ShopTile} implementation that is used
+ *           together with and linked to this block implementation.
  */
-public class ShopBlock extends ModBlockTile<ShopTile, ShopBlock> {
+public abstract class ShopBlock<T extends ShopTile<?>> extends ModBlockTile<T, ShopBlock<T>> {
 
     /**
      * A convenient reference to the global config settings for Shops.
@@ -40,7 +40,9 @@ public class ShopBlock extends ModBlockTile<ShopTile, ShopBlock> {
     protected static final ShopsConfig SHOPS_CONFIG = ModConfig.GENERAL_CONFIG.getCategory(ShopsConfig.class);
 
     /**
-     * Creates a new basic shop block under the specified unique registry name.
+     * Creates a new Shop Block under the specified unique registry name. It's
+     * recommended that the same registry name be used for the {@link ShopTile}
+     * as well. Material and properties are set automatically.
      *
      * @param registryName the unique identifying name that this shop block instance
      * will be registered under and identified by.
@@ -53,6 +55,8 @@ public class ShopBlock extends ModBlockTile<ShopTile, ShopBlock> {
                 )
         );
     }
+
+    // Click Logic
 
     /**
      * The onClick callback for Shop Blocks.
@@ -137,30 +141,5 @@ public class ShopBlock extends ModBlockTile<ShopTile, ShopBlock> {
     @Override @SuppressWarnings("deprecation") @ParametersAreNonnullByDefault
     public void onBlockClicked(BlockState state, World world, BlockPos pos, PlayerEntity player) {
         onClicked(world, pos, state, player, player.isSneaking(), world.isRemote, false);
-    }
-
-    // Tile
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return the class object for the {@link ShopTile} class:
-     * {@link ShopTile#getClass()}.
-     */
-    @Override
-    public Class<ShopTile> getTileClass() {
-        return ShopTile.class;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param state the block state of the block.
-     * @param world the world the block is in.
-     * @return a newly constructed {@link ShopTile} instance.
-     */
-    @Override
-    public ModTile createTile(BlockState state, IBlockReader world) {
-        return new ShopTile();
     }
 }

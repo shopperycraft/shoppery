@@ -8,7 +8,7 @@
   "shoppery.sound.subtitle.cash_register":                "Cash register open",
   "shoppery.sound.subtitle.decline":                      "Transaction failed",
 
-  "block.shoppery.shop":                                  "Basic Singleplayer Shop",
+  "block.shoppery.basic_shop":                            "Basic Shop",
 
   "item.shoppery.coin_one":                               "One Cent (1¢)",
   "item.shoppery.coin_five":                              "Five Cents (5¢)",

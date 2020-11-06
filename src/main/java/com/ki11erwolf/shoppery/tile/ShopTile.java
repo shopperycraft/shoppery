@@ -3,11 +3,9 @@ package com.ki11erwolf.shoppery.tile;
 import com.ki11erwolf.shoppery.ShopperySoundEvents;
 import com.ki11erwolf.shoppery.bank.BankManager;
 import com.ki11erwolf.shoppery.bank.Wallet;
-import com.ki11erwolf.shoppery.block.ModBlocks;
 import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.ShopsConfig;
 import com.ki11erwolf.shoppery.price.ItemPrice;
-import com.ki11erwolf.shoppery.price.ItemPrices;
 import com.ki11erwolf.shoppery.util.MathUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
@@ -19,28 +17,21 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.Objects;
 
 /**
- * The base Tile for Shops and Shop types, as well as the Tile used for the {@link
- * com.ki11erwolf.shoppery.block.ShopBlock standard standard RNG singleplayer shop}.
+ * The parent class and template for the different Shop Block
+ * implementations, such as the {@link BasicShopTile}. Provides
+ * much of the groundwork needed to create a functioning Shop.
  *
- * <br>Provides everything necessary for a very simple, yet complete shop in Minecraft.
- * Used as the Tile object instance for the standard RNG singleplayer shop.
+ * //TODO: Finish Documentation
  *
- * <p/>In addition, this class is designed to be used as a parent class for the Tiles of
- * specialized Shops and shop types. Supporting the easy creation of additional, more
- * complex Shops and Shop types by providing a solid foundation designed to be built
- * upon, extended in functionality, and adaptable.
+ * @param <T> the exact implementation of {@link ShopTileData} to
+ *           use as the data container and manager for this type
+ *           of Shop Tile.
  */
-public class ShopTile extends ModTile {
-
-    /**
-     * The Tile registration object for this specific tile.
-     */
-    protected static final TileRegistration<?> REGISTRATION = new TileRegistration<>(
-            "shop", ShopTile::new, ModBlocks.SHOP_BLOCK
-    );
+public abstract class ShopTile<T extends ShopTileData> extends ModTile {
 
     /**
      * A convenience reference to the global shops configuration settings.
@@ -48,51 +39,62 @@ public class ShopTile extends ModTile {
     protected static final ShopsConfig SHOPS_CONFIG = ModConfig.GENERAL_CONFIG.getCategory(ShopsConfig.class);
 
     /**
-     * This shop tiles transaction manager that aids in tracking,
-     * timing, and reversing trades with players.
+     * This Shops recent transactions. Helps reverse/undo recent player
+     * transactions upon request.
      */
     private final ShopTransactions transactions = new ShopTransactions();
 
     /**
-     * This shop tiles data manager - aids in the storage & I/O of the tiles data.
+     * This Shops internal {@link ShopTileData data manager and container}.
+     * Exact implementation may be different depending on Shop type.
      */
-    private final ShopTileData data;
+    private final T data;
 
-    /**
-     * Creates a new basic shop and shop block tile.
-     */
-    public ShopTile() {
-        super(REGISTRATION);
-        data = new ShopTileData(this);
+    public ShopTile(TileRegistration<? extends ModTile> tileDefinition) {
+        super(tileDefinition);
+        this.data = Objects.requireNonNull(createDataManager());
     }
 
-    // Init & Setup
+    // Impl & Setup
 
     /**
-     * Attempts the complete setup and construction of this specific Shop Tile.
-     *
-     * The setup <b>should</b>, assuming it's possible, have the Shop correctly
-     * setup and ready for use, with an Item to trade and price(s) to trade the
-     * item at. In rare cases, where setup is simply not possible, the shops
-     * traded item should not be set and the setup should fail.
-     *
-     * <p/>Implementing shop classes are expected to override this method and
-     * provide their own implementation.
+     * Requests that the specific Shop implementation
+     * setup itself as best it can.
      */
-    protected void setup() {
-        setupSelf();
+    protected abstract void setup();
+
+    /**
+     * Requests that the specific Shop implementation
+     * create a brand new object {@link ShopTileData}
+     * object, or some implementation thereof that
+     * is capable of storing the data the Shop Tile
+     * needs and uses.
+     *
+     * @return a new {@link ShopTileData} object, or
+     * some implementation thereof, that can be used
+     * to store the data of the specific Shop Tile
+     * implementation.
+     */
+    protected abstract T createDataManager();
+
+    // Impl API
+
+    /**
+     * @return this Shops internal {@link ShopTileData data manager and
+     * container} implementation instance, which handles the data required
+     * by this specific Shop type.
+     */
+    protected T getData() {
+        return data;
     }
 
     /**
-     * Sets up the shop as to sell a randomly chosen item, at a similar
-     * price to the original.
+     * @return this Shops {@link ShopTransactions transactions}
+     * - allows checking for and reversing/undoing recent player
+     * transactions that have been logged.
      */
-    private void setupSelf() {
-        ItemPrice randomSetPrice = ItemPrices.getRandomPrice().withPriceFluctuation();
-        if(!isValidTrade(randomSetPrice))
-            setupSelf(); //Repeat until valid price is found
-
-        setShopsTrade(randomSetPrice);
+    protected ShopTransactions getTransactions() {
+        return transactions;
     }
 
     // Trading
@@ -129,7 +131,7 @@ public class ShopTile extends ModTile {
         if(!paid) return false;
 
         //Give Item
-        IItemProvider itemToTrade = data.getItemObject();
+        IItemProvider itemToTrade = getData().getItemObject();
         if(!player.addItemStackToInventory(new ItemStack(itemToTrade)))
             world.addEntity(new ItemEntity(world,player.getPosX(),
                     player.getPosY(), player.getPosZ(), new ItemStack(itemToTrade)
@@ -160,7 +162,7 @@ public class ShopTile extends ModTile {
         //Don't allow buying non-purchasable items.
         if(getSellPrice() <= 0) return false;
 
-        Item toFind = data.getItemObject().asItem();
+        Item toFind = getData().getItemObject().asItem();
         for(ItemStack stack : player.inventory.mainInventory) {
             //Check for nulls
             if(stack.getItem().getRegistryName() == null || toFind.getRegistryName() == null){
@@ -216,17 +218,6 @@ public class ShopTile extends ModTile {
         return !SHOPS_CONFIG.requireEmptyHandToUse() || player.getHeldItemMainhand().isEmpty();
     }
 
-    /**
-     * @return the Item object instance this shop is setup
-     * to trade, or {@code null} if not setup.
-     */
-    protected IItemProvider getItemObject() {
-        IItemProvider itemToTrade = ForgeRegistries.ITEMS.getValue(getItem());
-        itemToTrade = (itemToTrade == null) ? ForgeRegistries.BLOCKS.getValue(getItem()) : itemToTrade;
-
-        return itemToTrade;
-    }
-
     // Public API
 
     /**
@@ -248,7 +239,10 @@ public class ShopTile extends ModTile {
 
         //Setup shop if not already.
         if(ensureSetup()) {
-            playOpenedSoundEvent(world, player);
+            if(validateSetup())
+                playOpenedSoundEvent(world, player);
+            else playFailSoundEvent(world, player);
+
             return true;
         }
 
@@ -281,7 +275,10 @@ public class ShopTile extends ModTile {
 
         //Setup shop if not already.
         if(ensureSetup()) {
-            playOpenedSoundEvent(world, player);
+            if(validateSetup())
+                playOpenedSoundEvent(world, player);
+            else playFailSoundEvent(world, player);
+
             return true;
         }
 
@@ -301,21 +298,21 @@ public class ShopTile extends ModTile {
      * an item.
      */
     public ResourceLocation getItem() {
-        return data.getItem();
+        return getData().getItem();
     }
 
     /**
      * @return the price this specific shop will sell its item for.
      */
     public double getBuyPrice() {
-        return data.getBuy();
+        return getData().getBuy();
     }
 
     /**
      * @return the price this specific shop will buy its item for.
      */
     public double getSellPrice() {
-        return data.getSell();
+        return getData().getSell();
     }
 
     // Setup
@@ -346,15 +343,15 @@ public class ShopTile extends ModTile {
      * valid, {@code false} if not.
      */
     protected boolean validateSetup() {
-        if(data.isItemSet()) {
+        if(getData().isItemSet()) {
             // If setup and valid.
-            if(data.isItemValid()) {
+            if(getData().isItemValid()) {
                 return true;
             }
 
             // If not validated.
-            data.validateItemObject();
-            return data.isItemValid();
+            getData().validateItemObject();
+            return getData().isItemValid();
         }
 
         return false;
@@ -395,7 +392,7 @@ public class ShopTile extends ModTile {
      *             trade.
      */
     protected void setShopsTrade(ItemPrice item) {
-        this.data.setFromItemPrice(item);
+        this.getData().setFromItemPrice(item);
     }
 
     // Read/Write
@@ -404,7 +401,7 @@ public class ShopTile extends ModTile {
      * {@inheritDoc}
      *
      * <p/>Delegates the responsibility of writing nbt
-     * to the {@link #data} object.
+     * to the {@link #getData()} object.
      *
      * @param tags the CompoundNBT object provided by
      *             Forge. Use to write memory data to
@@ -414,7 +411,7 @@ public class ShopTile extends ModTile {
      */
     @Override
     protected CompoundNBT onWrite(CompoundNBT tags) {
-        data.writeNBT(tags);
+        getData().writeNBT(tags);
         return tags;
     }
 
@@ -422,7 +419,7 @@ public class ShopTile extends ModTile {
      * {@inheritDoc}
      *
      * <p/>Delegates the responsibility of reading nbt
-     * to the {@link #data} object.
+     * to the {@link #getData()} object.
      *
      * @param state the block providing the Tile as it
      *              exists in the world.
@@ -431,7 +428,7 @@ public class ShopTile extends ModTile {
      */
     @Override
     protected void onRead(BlockState state, CompoundNBT tags) {
-        data.readNBT(tags);
+        getData().readNBT(tags);
     }
 
     // Sound

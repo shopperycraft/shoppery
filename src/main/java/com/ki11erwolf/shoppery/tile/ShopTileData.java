@@ -12,13 +12,21 @@ import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 
 /**
- * A helper object for {@link ShopTile}s that holds and
- * manages the data (traded item & prices) of the ShopTile.
- * In addition to this, the object also provides to/from
- * NBT methods to easily read and write the data in the
- * Tile. Data is modified using setter methods that make
- * sure to mark the Tile as dirty ({@link
- * net.minecraft.tileentity.TileEntity#markDirty()}).
+ * Dedicated data management and storage object for {@link ShopTile}'s
+ * core internal data. <br/> Handles the complex task of dealing with
+ * Shop Tile data directly - including {@link CompoundNBT NBT} I/O,
+ * validation, and object conversions - as a simple object common to
+ * all Shop Tiles. Additionally, this class can be extended upon to
+ * create custom implementations for more complex Shop Tiles with more
+ * data.
+ *
+ * <p/> The <i>standard</i> ShopTileData object only handles data
+ * common to all Shops: the Item to trade and the prices to buy and sell
+ * the Item at. Shop Tile implementations that require additional or
+ * more complex data storage and handling, need to provide their own
+ * implementation. Implementations <b>MUST</b> override {@link #writeNBT(
+ * CompoundNBT)} and {@link #readNBT(CompoundNBT)} in order to read and
+ * write the additional data.
  */
 class ShopTileData {
 
@@ -38,7 +46,7 @@ class ShopTileData {
      * The {@link ShopTile} that created this object
      * to hold its data.
      */
-    protected final ShopTile shopTile;
+    protected final ShopTile<?> shopTile;
 
     /**
      * The registry name of the Item or Block that
@@ -73,7 +81,7 @@ class ShopTileData {
      * @param shopTile the specific ShopTile to hold
      * and manage data for.
      */
-    public ShopTileData(ShopTile shopTile){
+    public ShopTileData(ShopTile<?> shopTile){
         this.shopTile = shopTile;
     }
 
@@ -107,7 +115,7 @@ class ShopTileData {
      * @param buy the new price the ShopTile will
      * allow players to buy for.
      */
-    public void setBuy(double buy){
+    public void setBuyPrice(double buy){
         if(buy < 0) buy = 0;
         this.buy = buy;
         shopTile.markDirty();
@@ -120,7 +128,7 @@ class ShopTileData {
      * @param sell the new price the ShopTile will
      * allow players to sell for.
      */
-    public void setSell(double sell){
+    public void setSellPrice(double sell) {
         if(sell < 0) sell = 0;
         this.sell = sell;
         shopTile.markDirty();

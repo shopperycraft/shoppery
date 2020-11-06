@@ -54,7 +54,7 @@ public final class ModTiles extends QueueRegisterer<TileRegistration<? extends M
      * here within the static block.
      */
     static {
-        queue(ShopTile.REGISTRATION);
+        queue(BasicShopTile.BASIC_SHOP_REGISTRATION);
     }
 
     /**

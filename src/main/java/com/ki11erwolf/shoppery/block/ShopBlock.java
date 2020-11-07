@@ -83,21 +83,21 @@ public abstract class ShopBlock<T extends ShopTile<?>> extends ModBlockTile<T, S
 
         if(!rightClick){ //Left-Click & set to left-click
             if(SHOPS_CONFIG.isBuyLeftClick()) {
-                return getTile(world, pos).purchaseItem(world, player) ?
-                        ActionResultType.SUCCESS : ActionResultType.FAIL;
+                getTile(world, pos).purchaseItem(world, player);
             } else {
-                return getTile(world, pos).sellItem(world, player) ?
-                        ActionResultType.SUCCESS : ActionResultType.FAIL;
+                getTile(world, pos).sellItem(world, player);
             }
+
+            return ActionResultType.SUCCESS;
         }
 
         if(!(SHOPS_CONFIG.isBuyLeftClick())) { //Right-Click & set to right-click
-            return getTile(world, pos).purchaseItem(world, player) ?
-                    ActionResultType.SUCCESS : ActionResultType.FAIL;
+            getTile(world, pos).purchaseItem(world, player);
         } else {
-            return getTile(world, pos).sellItem(world, player) ?
-                    ActionResultType.SUCCESS : ActionResultType.FAIL;
+            getTile(world, pos).sellItem(world, player);
         }
+
+        return ActionResultType.SUCCESS;
     }
 
     // MC Click Handlers

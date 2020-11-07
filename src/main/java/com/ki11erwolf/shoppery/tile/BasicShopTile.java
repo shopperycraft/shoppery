@@ -6,7 +6,7 @@ import com.ki11erwolf.shoppery.price.ItemPrice;
 import com.ki11erwolf.shoppery.price.ItemPrices;
 
 /**
- * //TODO: Finish documentation
+ * The "Basic" Shops {@link ShopTile} implementation.
  *
  * <p/>A type of Shop that trades a randomly chosen Item or Block, with a
  * registered {@link com.ki11erwolf.shoppery.price.ItemPrice Price}, at a
@@ -15,6 +15,10 @@ import com.ki11erwolf.shoppery.price.ItemPrices;
  * two together. Additionally, these Shops have unlimited Items and Money
  * for trading, as they're primarily intended for players in a singleplayer
  * setting.
+ *
+ * <p/> Defines the properties, logic, and anything else specific to this
+ * unique implementation of ShopTile, such as the way it's setup and the
+ * type(s) of data it uses.
  */
 public class BasicShopTile extends ShopTile<ShopTileData> {
 
@@ -27,11 +31,12 @@ public class BasicShopTile extends ShopTile<ShopTileData> {
     );
 
     /**
-     * Creates a new "Basic" Shop Tile instance object, likely for a newly
-     * placed/generated Basic Shop.
+     * Creates a new "Basic" Shop Tile instance object, likely for a newly placed
+     * / generated Basic Shop. Provides the necessary {@link TileRegistration}
+     * object and {@link ShopTileData} implementation instance.
      */
     public BasicShopTile() {
-        super(BASIC_SHOP_REGISTRATION);
+        super(BASIC_SHOP_REGISTRATION, ShopTileData::new);
     }
 
     /**
@@ -53,24 +58,11 @@ public class BasicShopTile extends ShopTile<ShopTileData> {
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * <p/> Sets up this specific Shop to trade a randomly chosen
+     * Sets up this specific Shop to trade a randomly chosen
      * Item at a price similar to the original.
      */
     @Override
     protected void setup() {
         setupRandomTrade();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return a new {@link ShopTileData} object instance
-     * linked to this Tile.
-     */
-    @Override
-    protected ShopTileData createDataManager() {
-        return new ShopTileData(this);
     }
 }

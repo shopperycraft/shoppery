@@ -11,8 +11,9 @@ import java.util.Objects;
 /**
  * A base class for all Shoppery Mod Tiles to inherit
  * from. Extends upon the vanilla TileEntity class to
- * allow using TileDefinitions, better read/write
- * methods, and various other Mod features & functions.
+ * allow using TileDefinitions for easy registration,
+ * better read/write methods, and various other Mod
+ * features & functions.
  */
 public abstract class ModTile extends TileEntity {
 
@@ -25,12 +26,12 @@ public abstract class ModTile extends TileEntity {
     protected final TileRegistration<? extends ModTile> definition;
 
     /**
-     * Creates a new basic ModTile that
+     * Creates a new basic ModTile, using the {@link TileRegistration}
+     * object specified to uniquely register the Tile to the game, as
+     * a {@link TileEntity}.
      *
-     * @param tileDefinition the Tiles defining object, that defines
-     *                      the Tile & TileType, holds its data, and
-     *                       allows it to be registered using {@link
-     *                       ModTiles}.
+     * @param tileDefinition the unique registration helper object used
+     * to specify
      */
     public ModTile(TileRegistration<? extends ModTile> tileDefinition) {
         super(Objects.requireNonNull(tileDefinition).getTileType());
@@ -88,7 +89,7 @@ public abstract class ModTile extends TileEntity {
      * CompoundNBT object to saved to disk instead.
      */
     protected CompoundNBT onWrite(CompoundNBT tags){
-        return null;
+        return null; //No-op
     }
 
     // *******************
@@ -130,7 +131,7 @@ public abstract class ModTile extends TileEntity {
      *               read from.
      */
     @Override @NonnullDefault @Deprecated
-    public void /*read*/ func_230337_a_(BlockState state, CompoundNBT tags) {
+    public void func_230337_a_ /*read()*/ (BlockState state, CompoundNBT tags) {
         super.func_230337_a_(state, tags);
         onRead(state, tags);
     }

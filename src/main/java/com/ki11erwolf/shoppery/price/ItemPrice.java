@@ -194,15 +194,17 @@ public class ItemPrice {
 
     /**
      * Creates a new ItemPrice object based upon this ItemPrice,
-     * for the same Item/Block as this ItemPrice, where the
-     * buying and selling prices have been changed (+/-) by a
-     * percentage of the original prices (using {@link #fluctuation}
-     * as the percentage).
+     * for the same Item/Block as this ItemPrice, where the buying
+     * and selling prices have been changed slightly. This allows
+     * creating quick and simple price variations, such as for use
+     * in {@link com.ki11erwolf.shoppery.tile.ShopTile Shops} with
+     * natural variability.
      *
-     * @see #applyFluctuation(double)
-     * @return the new ItemPrice object for the same Item/Block
-     * as this ItemPrice object, containing fluctuated buying and
-     * selling prices.
+     * @see #applyFluctuation(double) applyFluctuation(double) -
+     * for a detailed description on how the prices are changed.
+     *
+     * @return the new prices for the same Item, as a new {@link
+     * ItemPrice} object.
      */
     public ItemPrice withPriceFluctuation(){
         double exactBuy = -1;
@@ -219,14 +221,17 @@ public class ItemPrice {
     }
 
     /**
-     * Used to change a value, usually a price, by a
-     * random percentage between {@code 0} and
-     * {@link #fluctuation}, in either the positive
-     * or negative direction.
+     * Changes a value, usually a price, by a small percentage. This
+     * allows creating price fluctuations simulating a natural market
+     * with variability.
      *
-     * @param value the input value to calculate
-     * @return a random value calculated from the
-     * input value and the ItemPrice's fluctuation.
+     * <p/> The input value will be changed, randomly in either the
+     * positive or negative direction, by a random percentage of the
+     * original value. The percentage change is a randomly chosen
+     * percentage between {@code 0%} and {@link #fluctuation}%.
+     *
+     * @param value the input value to fluctuate.
+     * @return the original input value changed as described above.
      */
     protected double applyFluctuation(double value){
         if(value <= 0) return 0;

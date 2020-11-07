@@ -46,8 +46,8 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * The texture map for the various GUI backgrounds
      * used by Shoppery.
      */
-    public static final ResourceLocation WALLET_GUI_TEXTURES
-            = new ResourceLocation("shoppery", "textures/gui/wallet_guis.png");
+    public static final ResourceLocation WALLET_GUI_TEXTURE
+            = new ResourceLocation("shoppery", "textures/gui/wallet_gui.png");
 
     /**
      * The amount of pixes to shift each tooltip on the x-axis.
@@ -210,7 +210,7 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      */
     protected void renderBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
         renderImage(
-                matrix, WALLET_GUI_TEXTURES, relX, relY, 0, 0,
+                matrix, WALLET_GUI_TEXTURE, relX, relY, 0, 0,
                 WIDTH, HEIGHT, 256, 256
         );
     }

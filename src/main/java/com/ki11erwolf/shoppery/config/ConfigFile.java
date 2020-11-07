@@ -37,7 +37,7 @@ public class ConfigFile {
     /**
      * List of already parsed and loaded config categories.
      */
-    private final Map<Class, ? super ConfigCategory> loadedCategories = new HashMap<>();
+    private final Map<Class<?>, ? super ConfigCategory> loadedCategories = new HashMap<>();
 
     /**
      * The toml config file.

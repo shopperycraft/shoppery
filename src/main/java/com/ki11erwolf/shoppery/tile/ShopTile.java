@@ -7,6 +7,7 @@ import com.ki11erwolf.shoppery.config.ModConfig;
 import com.ki11erwolf.shoppery.config.categories.ShopsConfig;
 import com.ki11erwolf.shoppery.price.ItemPrice;
 import com.ki11erwolf.shoppery.util.MathUtil;
+import javafx.util.Callback;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,18 +19,35 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
  * The parent class and template for the different Shop Block
- * implementations, such as the {@link BasicShopTile}. Provides
- * much of the groundwork needed to create a functioning Shop.
+ * implementations, such as the {@link BasicShopTile}. Sets out
+ * the basic design common to all Shops and ShopTiles, such as
+ * buying, selling, setup, and data handling. Provided as well,
+ * are overridable callbacks and logic that allow extending upon
+ * the original design.
  *
- * //TODO: Finish Documentation
+ * <p/> The ShopTile class is not a complete Shop on its own.
+ * It's abstract and requires a custom implementation for all the
+ * different types of Shops. Most Shops will also not share the
+ * exact same logic for setup and the sale/purchase of Items. They
+ * may also store, use, and manipulate different types and amounts
+ * of data. This is where the base ShopTile class comes into play.
+ *
+ * <p/> The base ShopTile sets out and handles as much as it can,
+ * and that which is likely to be common amongst most Shops. When
+ * unable to perform a required action or task, it is delegated
+ * to the implementation Shop Tile class through an abstract method,
+ * such as {@link #setup()}. The ShopTile also provides various
+ * non-abstract methods, which can be easily overridden when needed
+ * to do things such as respond to or prevent sales/purchases.
  *
  * @param <T> the exact implementation of {@link ShopTileData} to
- *           use as the data container and manager for this type
- *           of Shop Tile.
+ * use as the data container and manager for this type of Shop Tile.
  */
 public abstract class ShopTile<T extends ShopTileData> extends ModTile {
 
@@ -39,52 +57,98 @@ public abstract class ShopTile<T extends ShopTileData> extends ModTile {
     protected static final ShopsConfig SHOPS_CONFIG = ModConfig.GENERAL_CONFIG.getCategory(ShopsConfig.class);
 
     /**
-     * This Shops recent transactions. Helps reverse/undo recent player
-     * transactions upon request.
+     * This Shops recent transactions. Helps with reversing (undoing)
+     * recent player transactions upon request.
      */
     private final ShopTransactions transactions = new ShopTransactions();
 
     /**
-     * This Shops internal {@link ShopTileData data manager and container}.
-     * Exact implementation may be different depending on Shop type.
+     * The {@link Callback} provided by the implementation class which is
+     * used to lazily initialize the {@link #data} object.
      */
-    private final T data;
-
-    public ShopTile(TileRegistration<? extends ModTile> tileDefinition) {
-        super(tileDefinition);
-        this.data = Objects.requireNonNull(createDataManager());
-    }
-
-    // Impl & Setup
+    private final Callback<ShopTile<T>, T> dataProvider;
 
     /**
-     * Requests that the specific Shop implementation
-     * setup itself as best it can.
+     * This Shops internal {@link ShopTileData data manager and container}.
+     * Exact implementation may be different depending on Shop type.
+     *
+     * <p/><b>Note:</b> the data object is lazily initialized! It will be
+     * {@code null} until the ShopTile implementation requires the object.
+     * Use {@link #getData()} to access this object.
+     */
+    @CheckForNull
+    private T data;
+
+    /**
+     * The single constructor available when creating a new instance
+     * of a ShopTile implementation.
+     *
+     * <p/> Every ShopTile <i>implementation</i> needs its own unique
+     * {@link  TileRegistration} global object to work with the game,
+     * and likely needs its own {@link ShopTileData} implementation to
+     * handle its data. Additionally, every ShopTile <i>instance object
+     * </i> needs its own object instance of the ShopTileData object it
+     * uses and reference to the global TileRegistration object for its
+     * specific implementation type.
+     *
+     * @param registration the global {@link TileRegistration} object
+     * used to register this specific ShopTile implementation to the game.
+     * @param dataProvider a callback allowing the implementing class to provide
+     * a new object instance of the specific {@link ShopTileData} implementation
+     * used by this type of ShopTile. The provider is only queried
+     * for the ShopTileData implementation object instance
+     */
+    @Nonnull
+    public ShopTile(TileRegistration<? extends ModTile> registration, Callback<ShopTile<T>, T> dataProvider) {
+        super(registration);
+        this.dataProvider = Objects.requireNonNull(dataProvider);
+    }
+
+    // Setup
+
+    /**
+     * Called to setup this Shop for trading, by providing it with an Item
+     * to sell and prices to trade the Item at, which is done through the
+     * {@link #getData()} object. Setup is generally only called once, on
+     * Shop Tile types which have not yet been setup. However, any call to
+     * {@code setup()}, regardless of any previous setups, should normally
+     * setup the Shop again, unless a good reason exists not to do so.
+     *
+     * <p/> Setup is normally called when a player interacts with a Shop
+     * which is not yet setup. <b>It's expected that the implementation
+     * class correctly setup the Shop itself.</b> Failure to setup the
+     * Shop will simply prevent any player from using it until otherwise.
+     * Players can, however, also repeat the setup process an infinite
+     * amount of times by trying to interact with the block, allowing setups
+     * to be  dependent on any number of variables or conditions.
+     *
+     * <p/> Shops are generally constructed in an incomplete state, without
+     * any setup whatsoever and {@link #data null, lazily loaded core data
+     * objects}, and tend to stay that way until a player interacts with the
+     * Shop. This helps save a lot of memory and cpu time, by only setting up
+     * the Shops when necessary, however it also requires a second setup
+     * process to work correctly.
      */
     protected abstract void setup();
 
-    /**
-     * Requests that the specific Shop implementation
-     * create a brand new object {@link ShopTileData}
-     * object, or some implementation thereof that
-     * is capable of storing the data the Shop Tile
-     * needs and uses.
-     *
-     * @return a new {@link ShopTileData} object, or
-     * some implementation thereof, that can be used
-     * to store the data of the specific Shop Tile
-     * implementation.
-     */
-    protected abstract T createDataManager();
-
-    // Impl API
+    // Protected API
 
     /**
      * @return this Shops internal {@link ShopTileData data manager and
      * container} implementation instance, which handles the data required
-     * by this specific Shop type.
+     * by this specific Shop type. <b>Note:</b> the data object is lazily
+     * initialized through this method and cannot be accessed directly!
      */
     protected T getData() {
+        if(data != null) return data; //Simple return
+
+        //Setup and Nullity checks
+        if((this.data = dataProvider.call(this)) == null)
+            throw new NullPointerException(String.format(
+                    "ShopTileData object provided for '%s' cannot be NULL!",
+                    this.getClass().getCanonicalName()
+            ));
+
         return data;
     }
 
@@ -392,7 +456,7 @@ public abstract class ShopTile<T extends ShopTileData> extends ModTile {
      *             trade.
      */
     protected void setShopsTrade(ItemPrice item) {
-        this.getData().setFromItemPrice(item);
+        this.getData().set(item);
     }
 
     // Read/Write

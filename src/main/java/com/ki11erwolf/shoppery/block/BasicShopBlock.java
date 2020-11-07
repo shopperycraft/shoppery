@@ -8,10 +8,7 @@ import net.minecraft.world.IBlockReader;
 import javax.annotation.Nonnull;
 
 /**
- * The "Basic" Shop Block implementation of a {@link ShopBlock ShopBlock}.
- * Defines the unique properties and logic specific to this implementation
- * of ShopBlock, such as the blocks registry name and specific {@link
- * com.ki11erwolf.shoppery.tile.ShopTile} implementation.
+ * The "Basic" Shops {@link ShopBlock} implementation.
  *
  * <p/>A type of Shop that trades a randomly chosen Item or Block, with a
  * registered {@link com.ki11erwolf.shoppery.price.ItemPrice Price}, at a
@@ -20,6 +17,10 @@ import javax.annotation.Nonnull;
  * two together. Additionally, these Shops have unlimited Items and Money
  * for trading, as they're primarily intended for players in a singleplayer
  * setting.
+ *
+ * <p/> Defines the unique properties and logic specific to this
+ * implementation of ShopBlock, such as the blocks registry name
+ * and specific {@link com.ki11erwolf.shoppery.tile.ShopTile} implementation.
  */
 public class BasicShopBlock extends ShopBlock<BasicShopTile> {
 

@@ -192,7 +192,7 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
     protected void renderLockOverlayIfAppropriate(MatrixStack matrix, int x, int y){
         if(!affordable()){
             renderImage(
-                    matrix, WalletInventoryScreen.WALLET_GUI_TEXTURES, x, y, 0,
+                    matrix, WalletInventoryScreen.WALLET_GUI_TEXTURE, x, y, 0,
                     65, SIZE, SIZE, 256, 256
             );
         }

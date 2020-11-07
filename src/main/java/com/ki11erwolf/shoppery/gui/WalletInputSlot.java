@@ -110,7 +110,7 @@ public class WalletInputSlot extends Widget implements WidgetFix {
      */
     private void renderBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
         renderImage(
-                matrix, WalletInventoryScreen.WALLET_GUI_TEXTURES, getXPos(), getYPos(),
+                matrix, WalletInventoryScreen.WALLET_GUI_TEXTURE, getXPos(), getYPos(),
                 /* X */((WidgetFix.isHovered(this) || containedItem != null) ? 35 : 16),
                 /* Y */65, SIZE, SIZE, 256, 256
         );

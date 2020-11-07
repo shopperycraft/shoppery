@@ -81,13 +81,23 @@ class ShopTileData {
      * @param shopTile the specific ShopTile to hold
      * and manage data for.
      */
-    public ShopTileData(ShopTile<?> shopTile){
+    public ShopTileData(ShopTile<?> shopTile) {
         this.shopTile = shopTile;
     }
 
     // Modifiers
 
-    public void setFromItemPrice(ItemPrice itemPrice){
+    /**
+     * A convenience method that allows {@link ShopTile ShopTiles} to
+     * set the shop data using a single {@link ItemPrice} object - a
+     * common datatype already in use in most applications using
+     * prices.
+     *
+     * @param itemPrice any {@link ItemPrice} object that specifies
+     * an Item and both a buying and selling price for the Item.
+     * The data specified will be copied verbatim to the Shop data.
+     */
+    public void set(ItemPrice itemPrice) {
         this.item = itemPrice.getItem();
         this.buy = itemPrice.getBuyPrice();
         this.sell = itemPrice.getSellPrice();
@@ -102,7 +112,7 @@ class ShopTileData {
      * @param item the registry name as a Resource
      * Location of the Item/Block to trade.
      */
-    public void setItem(ResourceLocation item){
+    public void setItem(ResourceLocation item) {
         this.item = Objects.requireNonNull(item);
         clearAndValidateItemObject();
         shopTile.markDirty();
@@ -115,7 +125,7 @@ class ShopTileData {
      * @param buy the new price the ShopTile will
      * allow players to buy for.
      */
-    public void setBuyPrice(double buy){
+    public void setBuyPrice(double buy) {
         if(buy < 0) buy = 0;
         this.buy = buy;
         shopTile.markDirty();
@@ -156,7 +166,7 @@ class ShopTileData {
      * is invalid, or if no Item/Block is registered using the
      * ItemID.
      */
-    public boolean isItemValid(){
+    public boolean isItemValid() {
         return hasValidItemObject();
     }
 
@@ -167,7 +177,7 @@ class ShopTileData {
      * Will return {@code false} if the item id
      * is blank or {@code null}.
      */
-    public boolean isItemSet(){
+    public boolean isItemSet() {
         return isItemIDSet();
     }
 
@@ -222,7 +232,7 @@ class ShopTileData {
      * Will return {@code false} if the item id
      * is blank or {@code null}.
      */
-    protected boolean isItemIDSet(){
+    protected boolean isItemIDSet() {
         if(item == null) return false;
 
         String namespace = item.getNamespace();
@@ -267,7 +277,7 @@ class ShopTileData {
      * be used to prove the ItemID is usable. No object
      * proves the ItemID is unusable.
      */
-    protected void validateItemObject(){
+    protected void validateItemObject() {
         //Clear instance if ID not set
         if(!isItemIDSet()){
             itemObject = null;
@@ -290,7 +300,7 @@ class ShopTileData {
      * Used whenever the ItemID is changed to keep the
      * object instance up-to-date with the ItemID.
      */
-    protected void clearAndValidateItemObject(){
+    protected void clearAndValidateItemObject() {
         this.itemObject = null;
         validateItemObject();
     }
@@ -303,7 +313,7 @@ class ShopTileData {
      * is invalid, or if no Item/Block is registered using the
      * ItemID.
      */
-    protected boolean hasValidItemObject(){
+    protected boolean hasValidItemObject() {
         if(itemObject == null) return false;
         if(itemObject.asItem().getRegistryName() == null)
             return false;

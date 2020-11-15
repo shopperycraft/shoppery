@@ -26,7 +26,7 @@ public class BasicShopTile extends ShopTile<ShopTileData> {
      * The registration object used to register this specific Tile Type
      * to the game.
      */
-    protected static final TileRegistration<?> BASIC_SHOP_REGISTRATION = new TileRegistration<>(
+    public static final TileRegistration<?> BASIC_SHOP_REGISTRATION = new TileRegistration<>(
             BasicShopBlock.REGISTRY_NAME, BasicShopTile::new, ModBlocks.BASIC_SHOP
     );
 

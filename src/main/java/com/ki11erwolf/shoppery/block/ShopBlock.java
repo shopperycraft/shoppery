@@ -48,11 +48,9 @@ public abstract class ShopBlock<T extends ShopTile<?>> extends ModBlockTile<T, S
      * will be registered under and identified by.
      */
     public ShopBlock(String registryName) {
-        super(registryName, AbstractBlock.Properties
-                .create(Material.WOOD).harvestTool(ToolType.AXE).noDrops()
-                .hardnessAndResistance(
-                        (SHOPS_CONFIG.isBreakingPrevented()) ? -1.0F : 10.0F, 3600000.0F
-                )
+        super(registryName, AbstractBlock.Properties.create(Material.WOOD).hardnessAndResistance(
+                ((SHOPS_CONFIG.isBreakingPrevented()) ? -1.0F : 10.0F), 3600000.0F
+            ).noDrops().harvestTool(ToolType.AXE)
         );
     }
 

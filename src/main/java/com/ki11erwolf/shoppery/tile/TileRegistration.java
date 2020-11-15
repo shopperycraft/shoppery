@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  *
  * @param <T> the Tile class defining and using the TileDefinition.
  */
-class TileRegistration<T extends ModTile> {
+public class TileRegistration<T extends ModTile> {
 
     /**
      * The simple registry name of the tile entity
@@ -108,7 +108,7 @@ class TileRegistration<T extends ModTile> {
      * in the Forge Registry. Usually has {@code "_tile"}
      * appended. Does not include namespace/modid.
      */
-    String getRegistryName() {
+    public String getRegistryName() {
         return registryName;
     }
 
@@ -116,7 +116,7 @@ class TileRegistration<T extends ModTile> {
      * List of Shoppery ModBlockTiles that provide the
      * Tile created & defined by this TileDefinition.
      */
-    ModBlock<?>[] getBlockTiles() {
+    public ModBlock<?>[] getBlockTiles() {
         return blockTiles;
     }
 
@@ -125,7 +125,7 @@ class TileRegistration<T extends ModTile> {
      * E.g. {@code TileClass::new}. Constructor must
      * be a default constructor with no parameters.
      */
-    Supplier<T> getTileSupplier() {
+    public Supplier<T> getTileSupplier() {
         return tileSupplier;
     }
 
@@ -139,7 +139,23 @@ class TileRegistration<T extends ModTile> {
      * TileDefinition object for use in the Tile.<b>
      * TileType is {@code null} until registered!</b>
      */
-    TileEntityType<?> getTileType() {
+    public TileEntityType<?> getTileType() {
+        return tileType;
+    }
+
+    /**
+     * The TileEntityType for the Tile defined by
+     * this TileDefinition. The TileType is created
+     * and registered in the Forge Tile Registry
+     * hook - at which point it is passed to this
+     * TileDefinition object for use in the Tile.<b>
+     * TileType is {@code null} until registered!</b>
+     *
+     * <p/> Just a version of the method that has no
+     * generic type associated with it.
+     */
+    @SuppressWarnings("rawtypes")
+    public TileEntityType getTypelessTileType() {
         return tileType;
     }
 

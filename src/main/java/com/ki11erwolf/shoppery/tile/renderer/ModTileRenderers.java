@@ -25,7 +25,7 @@ public final class ModTileRenderers extends QueueRegisterer<ModTileRenderer> {
     private ModTileRenderers(){}
 
     //############################
-    //   Public Block Instances
+    //          Renders
     //############################
 
     public static final ModTileRenderer A = ((ModTileRenderer) () ->
@@ -41,7 +41,7 @@ public final class ModTileRenderers extends QueueRegisterer<ModTileRenderer> {
     ).register();
 
     //############################
-    //     Block Registration
+    //          Renders
     //############################
 
     public static void registerRenderers(FMLClientSetupEvent event) {

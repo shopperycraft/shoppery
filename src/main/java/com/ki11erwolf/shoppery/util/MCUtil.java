@@ -98,7 +98,7 @@ public final class MCUtil {
 
         if(world.getServer() == null)   // World Server get & check
             throw new IllegalStateException("Cannot get world name! World object has no server. Client side maybe?");
-        ServerWorld serverWorld = world.getServer().getWorld(world.func_234923_W_());
+        ServerWorld serverWorld = world.getServer().getWorld(world.getDimensionKey());
 
         if(serverWorld == null)         // World Info get & check
             throw new IllegalStateException("Cannot get world name! World object has no server. Client side maybe?");

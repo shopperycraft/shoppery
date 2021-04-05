@@ -37,7 +37,7 @@ interface WidgetFix {
      */
     default boolean isSelfClicked(double x, double y, int button) {
         Widget self = asWidget();
-        if (self.field_230693_o_ && self.field_230694_p_) {
+        if (self.active && self.visible) {
             // this.active && this.visible
             return button >= 0 && button < 3;
         }
@@ -154,7 +154,7 @@ interface WidgetFix {
     static void renderImageResource(Widget widget, MatrixStack matrix, ResourceLocation imageResource, int screenPosX, int screenPosY,
                                     int textureStartXPos, int textureStartYPos, int textureRenderWidth, int textureRenderHeight,
                                     int imageWidthPixelResolution, int imageHeightPixelResolution, int hoverOffset) {
-        if (widget.func_230449_g_()) { //If hovered
+        if (widget.isHovered()) { //If hovered
             textureStartYPos += hoverOffset;
         }
 
@@ -330,7 +330,7 @@ interface WidgetFix {
     }
 
     static int getYPos(Widget widget){
-        return widget.field_230691_m_;
+        return widget.y;// widget.field_230691_m_;
     }
 
     static void setXPos(Widget widget, int x){

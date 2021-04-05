@@ -454,5 +454,5 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      *
      * @param button the button widget to add to the screen.
      */
-    protected void addButton(Widget button){ this.func_230480_a_(button); }
+    protected void addButton(Widget button){ super.addButton(button); }
 }

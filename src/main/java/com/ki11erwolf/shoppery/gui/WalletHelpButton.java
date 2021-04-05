@@ -94,21 +94,11 @@ class WalletHelpButton extends ImageButton implements WidgetFix {
      * Obfuscated {@link #render(MatrixStack, int, int, float)}.
      */
     @Override @ParametersAreNonnullByDefault
-    public void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
-        super.func_230431_b_(matrix, mouseXPos, mouseYPos, frameTime);
-        this.render(matrix, mouseXPos, mouseYPos, frameTime);
+    public void render(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+        super.render(matrix, mouseXPos, mouseYPos, frameTime);
+        //this.render(matrix, mouseXPos, mouseYPos, frameTime);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Extends the normal button renderer to display tooltips.
-     */
-    @Override
-    public void render(MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime) {
-        //Super()
-        renderTooltip(matrixStack, mouseXPos, mouseYPos, frameTime);
-    }
 
     /**
      * Handles rendering the different tooltips on screen
@@ -140,9 +130,9 @@ class WalletHelpButton extends ImageButton implements WidgetFix {
     // ############
     // Action Event
     // ############
-
-    /** Obfuscated {@link #onMouseClick(double, double, int)} */
-    @Override public boolean func_231044_a_(double x, double y, int button) { return onMouseClick(x, y, button); }
+//
+//    /** Obfuscated {@link #onMouseClick(double, double, int)} */
+//    @Override public boolean onMouseClick(double x, double y, int button) { return onMouseClick(x, y, button); }
 
     /**
      * Called when a mouse action is performed, to check
@@ -157,7 +147,7 @@ class WalletHelpButton extends ImageButton implements WidgetFix {
      */
     public boolean onMouseClick(double x, double y, int button) {
         if(isSelfClicked(x, y, button)){
-            if (func_230992_c_(x, y)) { //If Hovered
+            if (isMouseOver(x, y)) { //If Hovered
                 if(button == 0 || button == 1) {
                     //If left/right button
                     onAction(button == 0);

@@ -131,8 +131,8 @@ public abstract class ModTile extends TileEntity {
      *               read from.
      */
     @Override @NonnullDefault @Deprecated
-    public void func_230337_a_ /*read()*/ (BlockState state, CompoundNBT tags) {
-        super.func_230337_a_(state, tags);
+    public void read /*read()*/ (BlockState state, CompoundNBT tags) {
+        super.read(state, tags);
         onRead(state, tags);
     }
 }

@@ -192,11 +192,12 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      */
     @Override
     public void renderBackground(@Nonnull MatrixStack matrix, int offset) {
+        super.renderBackground(matrix, offset);
+
         renderImage(
                 matrix, WALLET_GUI_TEXTURE, relX, relY, 0, 0,
                 WIDTH, HEIGHT, 256, 256
         );
-        super.renderBackground(matrix, offset);
     }
 
     // **********

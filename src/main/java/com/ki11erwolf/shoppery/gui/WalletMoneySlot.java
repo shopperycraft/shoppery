@@ -142,7 +142,7 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime) {
         updateBalance(); //Update and calculate position.
-        Vector2f animationOffset = this.getHoverAnimationOffset(this.affordable(), frameTime);
+        Vector2f animationOffset = this.getHoverAnimationOffset(mouseXPos, mouseYPos, this.affordable(), frameTime);
         int x = this.getXPos() + (int) animationOffset.x;
         int y = this.getYPos() + (int) animationOffset.y;
 
@@ -162,9 +162,9 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
      * @param affordable if the player can afford the currency.
      * @param frameTime time to render the frame.
      */
-    private Vector2f getHoverAnimationOffset(boolean affordable, float frameTime){
+    private Vector2f getHoverAnimationOffset(int mouseX, int mouseY, boolean affordable, float frameTime){
         Vector2f animation;
-        if(this.isHovered() && affordable){
+        if(isMouseOver(mouseX, mouseY) && affordable){
             stepAnimationRenderer(frameTime);
             animation = getHoverAnimationPath(frame);
         } else {
@@ -266,7 +266,7 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
     @Override
     public boolean mouseClicked(double x, double y, int button) {
         if(isSelfClicked(x, y, button)) {
-            if (super.isHovered()) { //If hovered
+            if (isMouseOver(x, y)) { //If hovered
                 this.onPress();
                 return true;
             }

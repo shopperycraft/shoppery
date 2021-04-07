@@ -301,12 +301,14 @@ interface WidgetFix {
     // Static Rename util
     // ##################
 
+    @SuppressWarnings("SuspiciousNameCombination")
     static void renderTooltip1_(MatrixStack stack, FontRenderer fontRenderer, ITextComponent tooltipText, int x, int y, int z) {
         AbstractGui.drawCenteredString(stack, fontRenderer, tooltipText, x, y, z);
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     static void renderTooltip2_(MatrixStack stack, FontRenderer fontRenderer, ITextComponent tooltipText, int x, int y, int z) {
-        AbstractGui.drawCenteredString(stack, fontRenderer, tooltipText, x, y, z);
+        AbstractGui.drawString(stack, fontRenderer, tooltipText, x, y, z);
     }
 
     static void blit_(MatrixStack matrix, int posX, int posY, float xBegin, float yBegin, int a, int b, int c, int d) {

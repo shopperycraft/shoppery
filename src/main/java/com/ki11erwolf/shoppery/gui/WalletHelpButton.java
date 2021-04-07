@@ -90,13 +90,10 @@ class WalletHelpButton extends ImageButton implements WidgetFix {
     // Rendering
     // #########
 
-    /**
-     * Obfuscated {@link #render(MatrixStack, int, int, float)}.
-     */
     @Override @ParametersAreNonnullByDefault
     public void render(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
         super.render(matrix, mouseXPos, mouseYPos, frameTime);
-        //this.render(matrix, mouseXPos, mouseYPos, frameTime);
+        renderTooltip(matrix, x, y, frameTime);
     }
 
 
@@ -112,7 +109,7 @@ class WalletHelpButton extends ImageButton implements WidgetFix {
      * last frame.
      */
     private void renderTooltip(MatrixStack matrixStack, int x, int y, float frameTime) {
-        if(!(isHovered() && WalletInventoryScreen.ALLOW_TOOLTIPS)) return;
+        if(!(isHovered && WalletInventoryScreen.ALLOW_TOOLTIPS)) return;
         TOOLTIP_ANIMATION_STEPPER.onRender(frameTime);
 
         int offsetX = (tooltipToRender == 0) ? 51 : 45;
@@ -130,9 +127,6 @@ class WalletHelpButton extends ImageButton implements WidgetFix {
     // ############
     // Action Event
     // ############
-//
-//    /** Obfuscated {@link #onMouseClick(double, double, int)} */
-//    @Override public boolean onMouseClick(double x, double y, int button) { return onMouseClick(x, y, button); }
 
     /**
      * Called when a mouse action is performed, to check
@@ -145,7 +139,8 @@ class WalletHelpButton extends ImageButton implements WidgetFix {
      * @return {@code true} if a clicked event
      * was raised (effectively clicked).
      */
-    public boolean onMouseClick(double x, double y, int button) {
+    @Override
+    public boolean mouseClicked(double x, double y, int button) {
         if(isSelfClicked(x, y, button)){
             if (isMouseOver(x, y)) { //If Hovered
                 if(button == 0 || button == 1) {

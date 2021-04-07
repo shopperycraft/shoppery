@@ -247,17 +247,17 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      */
     protected void drawItemPrices(MatrixStack matrix){
         if(!ItemPriceRecPacket.doesLastReceivedHavePrice()){
-            drawString(matrix, font,
+            drawCenteredString(matrix, font,
                     LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("no_price"), X(73), Y(23), 0x9C1313
             );
             return;
         }
 
-        drawString( matrix, font, CurrencyUtil.CURRENCY_SYMBOL
+        drawCenteredString( matrix, font, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedBuyPrice()),
                 X(38), Y(23), 0xD11F1F);
 
-        drawString(matrix, font, CurrencyUtil.CURRENCY_SYMBOL
+        drawCenteredString(matrix, font, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedSellPrice()),
                 X(108), Y(23), 0x00E500);
     }
@@ -267,7 +267,7 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * information screen section.
      */
     protected void drawPlayerBalance(MatrixStack matrix){
-        drawString(matrix, font, CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
+        drawCenteredString(matrix, font, CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
                 X(73), Y(23), ModConfig.GENERAL_CONFIG.getCategory(AppearanceConfig.class).getWalletGuiBalanceColor()
         );
     }

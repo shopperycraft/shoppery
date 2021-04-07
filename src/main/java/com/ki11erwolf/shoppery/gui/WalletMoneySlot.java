@@ -266,7 +266,7 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
     @Override
     public boolean mouseClicked(double x, double y, int button) {
         if(isSelfClicked(x, y, button)) {
-            if (this.isHovered()) { //If hovered
+            if (super.isHovered()) { //If hovered
                 this.onPress();
                 return true;
             }

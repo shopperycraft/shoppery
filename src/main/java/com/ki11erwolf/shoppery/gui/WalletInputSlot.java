@@ -20,7 +20,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.commons.lang3.RandomUtils;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.Nonnull;
 
 /**
  * A type of widget, which can be treated as a
@@ -70,13 +70,6 @@ public class WalletInputSlot extends Widget implements WidgetFix {
     // Rendering
     // #########
 
-    /**
-     * Obfuscated {@link #render(MatrixStack, int, int, float)}.
-     */
-    @Override @ParametersAreNonnullByDefault
-    public void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
-        this.render(matrix, mouseXPos, mouseYPos, frameTime);
-    }
 
     /**
      * Draws the widget on screen within the
@@ -88,7 +81,8 @@ public class WalletInputSlot extends Widget implements WidgetFix {
      *                   frame took to render.
      */
     @Override
-    public void render(MatrixStack matrix, int mouseX, int mouseY, float renderTime) {
+    public void render(@Nonnull MatrixStack matrix, int mouseX, int mouseY, float renderTime) {
+        super.render(matrix, mouseX, mouseY, renderTime);
         renderBackgroundLayer(matrix, renderTime, mouseX, mouseY);
         renderContainedItem();
         renderTooltip(matrix, mouseX, mouseY);
@@ -151,8 +145,6 @@ public class WalletInputSlot extends Widget implements WidgetFix {
     // Action Event
     // ############
 
-    /** Obfuscated {@link #onMouseAction(double, double, int)} */
-    @Override public boolean func_231044_a_(double x, double y, int button) { return onMouseAction(x, y, button); }
 
     /**
      * Called when a mouse action is performed, to check
@@ -165,9 +157,10 @@ public class WalletInputSlot extends Widget implements WidgetFix {
      * @return {@code true} if a clicked event
      * was raised (effectively clicked).
      */
-    public boolean onMouseAction(double x, double y, int button) {
+    @Override
+    public boolean mouseClicked(double x, double y, int button) {
         if(isSelfClicked(x, y, button)){
-            if (func_230992_c_(x, y)) { //If Hovered
+            if (super.isHovered()) { //If Hovered
                 this.onClick(x, y, button);
                 return true;
             }
@@ -245,7 +238,8 @@ public class WalletInputSlot extends Widget implements WidgetFix {
      */
     public boolean mouseReleased(double x, double y, int button) {
         if (button >= 0 && button < 3) {
-            this.func_231047_b_(x, y); //this.onRelease(x, y);
+            this.onRelease(x, y);
+            //this.func_231047_b_(x, y); //this.onRelease(x, y);
             return true;
         } else {
             return false;

@@ -15,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.crash.ReportedException;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -24,7 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.Nonnull;
 
 import static com.ki11erwolf.shoppery.item.ModItems.*;
 
@@ -124,29 +123,18 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
         this.player = player;
     }
 
-    /** Obfuscated {@link #init()}. */
-    @Override protected void func_231160_c_() {
-        super.func_231160_c_();
-        init();
-    }
-
     /**
      * {@inheritDoc}
      * Constructs and initializes the gui screen
      * and all sub components.
      */
+    @Override
     protected void init() {
+        super.init();
         calculateOriginPosition();
         initCashSection();
         this.addButton(new WalletHelpButton(relX, relY));
         this.addButton((this.inputSlot = new WalletInputSlot(player, relX + 122, relY + 36)));
-    }
-
-    /** Obfuscated {@link #render(MatrixStack, int, int, float)}. */
-    @Override @ParametersAreNonnullByDefault
-    public void func_230430_a_(MatrixStack matrix, int mouseX, int mouseY, float ticks) {
-        render(matrix, mouseX, mouseY, ticks);
-        super.func_230430_a_(matrix, mouseX, mouseY, ticks);
     }
 
     /**
@@ -164,8 +152,9 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * @param frameTime frame render time
      */
     @Override
-    public void render(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+    public void render(@Nonnull MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
         calculateOriginPosition();
+        super.render(matrix, mouseXPos, mouseYPos, frameTime);
     }
 
     /**
@@ -197,39 +186,30 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
     // Background
     // **********
 
-    /** Obfuscated {@link #renderBackgroundLayer(MatrixStack, float, int, int)} */
-    @Override @ParametersAreNonnullByDefault
-    protected void func_230450_a_(MatrixStack matrix, float ticks, int mouseXPos, int mouseYPos) {
-        super.func_230450_a_(matrix, ticks, mouseXPos, mouseXPos);
-        renderBackgroundLayer(matrix, ticks, mouseXPos, mouseYPos);
-    }
-
     /**
      * Draws the background image of the money section of
      * the gui. The image is always centered atop the normal gui.
      */
-    protected void renderBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
+    @Override
+    public void renderBackground(@Nonnull MatrixStack matrix, int offset) {
         renderImage(
                 matrix, WALLET_GUI_TEXTURE, relX, relY, 0, 0,
                 WIDTH, HEIGHT, 256, 256
         );
+        super.renderBackground(matrix, offset);
     }
 
     // **********
     // Foreground
     // **********
 
-    /** Obfuscated {@link #drawGuiContainerForegroundLayer(MatrixStack, int, int)} */
-    @Override @ParametersAreNonnullByDefault
-    protected void func_230451_b_(MatrixStack stack, int mouseX, int mouseY) {
-        super.func_230451_b_(stack, mouseX, mouseY);
-        drawGuiContainerForegroundLayer(stack, mouseX, mouseY);
-    }
-
     /**
      * {@inheritDoc}
      */
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrix, int mouseX, int mouseY) {
+    @Override
+    protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
+        super.drawGuiContainerForegroundLayer(matrix, mouseX, mouseY);
+
         drawTitles(matrix);
 
         //Info screen: balance/prices
@@ -242,7 +222,7 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * and other static text.
      */
     protected void drawTitles(MatrixStack matrix){
-        FontRenderer fr = this.field_230712_o_;
+        FontRenderer fr = this.font;
 
         if(inputSlot.isOccupied()){
             renderTooltip2(matrix, fr, new StringTextComponent(
@@ -267,17 +247,17 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      */
     protected void drawItemPrices(MatrixStack matrix){
         if(!ItemPriceRecPacket.doesLastReceivedHavePrice()){
-            func_238471_a_(matrix, field_230712_o_,
+            drawString(matrix, font,
                     LocaleDomains.TEXT.sub(LocaleDomains.SCREEN).get("no_price"), X(73), Y(23), 0x9C1313
             );
             return;
         }
 
-        func_238471_a_( matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL
+        drawString( matrix, font, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedBuyPrice()),
                 X(38), Y(23), 0xD11F1F);
 
-        func_238471_a_(matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL
+        drawString(matrix, font, CurrencyUtil.CURRENCY_SYMBOL
                         + CurrencyUtil.toFullString(ItemPriceRecPacket.getLastReceivedSellPrice()),
                 X(108), Y(23), 0x00E500);
     }
@@ -287,7 +267,7 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
      * information screen section.
      */
     protected void drawPlayerBalance(MatrixStack matrix){
-        func_238471_a_(matrix, field_230712_o_, CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
+        drawString(matrix, font, CurrencyUtil.CURRENCY_SYMBOL + getBalance(),
                 X(73), Y(23), ModConfig.GENERAL_CONFIG.getCategory(AppearanceConfig.class).getWalletGuiBalanceColor()
         );
     }
@@ -447,12 +427,4 @@ public class WalletInventoryScreen extends InventoryScreen implements WidgetFix{
 
         return false;
     }
-
-    /**
-     * Adds a button, as a widget, to this screens list of components,
-     * so that it may be displayed on screen.
-     *
-     * @param button the button widget to add to the screen.
-     */
-    protected void addButton(Widget button){ super.addButton(button); }
 }

@@ -21,7 +21,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.commons.lang3.RandomUtils;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 /**
@@ -127,12 +127,6 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
     // Render
     // ######
 
-    /** Obfuscated {@link #render(MatrixStack, int, int, float)}. */
-    @Override @ParametersAreNonnullByDefault
-    public void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
-        this.render(matrix, mouseXPos, mouseYPos, frameTime);
-    }
-
     /**
      * Handles the drawing and rendering of the button
      * on screen.
@@ -146,7 +140,7 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
      *            the frame took render.
      */
     @Override
-    public void render(MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime) {
+    public void render(@Nonnull MatrixStack matrixStack, int mouseXPos, int mouseYPos, float frameTime) {
         updateBalance(); //Update and calculate position.
         Vector2f animationOffset = this.getHoverAnimationOffset(this.affordable(), frameTime);
         int x = this.getXPos() + (int) animationOffset.x;
@@ -259,9 +253,6 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
     // Action Event
     // ############
 
-    /** Obfuscated {@link #onMouseAction(double, double, int)} */
-    @Override public boolean func_231044_a_(double x, double y, int button) { return onMouseAction(x, y, button); }
-
     /**
      * Called when a mouse action is performed. Will handle invoking
      * a click if the mouse if hovering this widget.
@@ -272,9 +263,10 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
      * @return {@code true} if a clicked event
      * was raised (effectively clicked).
      */
-    public boolean onMouseAction(double x, double y, int button) {
+    @Override
+    public boolean mouseClicked(double x, double y, int button) {
         if(isSelfClicked(x, y, button)) {
-            if (func_230992_c_(x, y)) { //If hovered
+            if (this.isHovered()) { //If hovered
                 this.onPress();
                 return true;
             }
@@ -352,18 +344,13 @@ public class WalletMoneySlot extends Widget implements WidgetFix {
     // Sound
     // #####
 
-    /** Obfuscated {@link #playDownSound(SoundHandler)}. */
-    @Override @ParametersAreNonnullByDefault
-    public void func_230988_a_(SoundHandler soundHandler) {
-        playDownSound(soundHandler);
-    }
-
     /**
      * Plays the shoppery money withdraw sound effect,
      * replacing the default button press sounds with
      * {@link ShopperySoundEvents#WITHDRAW}.
      */
-    public void playDownSound(SoundHandler soundHandler) {
+    @Override
+    public void playDownSound(@Nonnull SoundHandler soundHandler) {
         if(affordable()) {
             soundHandler.play(SimpleSound.master(ShopperySoundEvents.WITHDRAW,
                     RandomUtils.nextFloat(1.2F, 1.4F), 0.50F

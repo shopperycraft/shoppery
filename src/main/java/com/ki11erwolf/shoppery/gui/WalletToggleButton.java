@@ -25,7 +25,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.Nonnull;
 
 /**
  * The player inventory button added by shoppery to display
@@ -107,13 +107,6 @@ public abstract class WalletToggleButton extends ImageButton implements WidgetFi
     // Render
     // ******
 
-    /** Obfuscated {@link #render(MatrixStack, int, int, float)}. */
-    @Override @ParametersAreNonnullByDefault
-    public void func_230431_b_(MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
-        super.func_230431_b_(matrix, mouseXPos, mouseYPos, frameTime);
-        this.render(matrix, mouseXPos, mouseYPos, frameTime);
-    }
-
     /**
      * Handles position updates and drawing the text atop
      * the button that displays the players balance.
@@ -123,11 +116,13 @@ public abstract class WalletToggleButton extends ImageButton implements WidgetFi
      * @param frameTime the time taken to render the frame.
      */
     @Override
-    public void render(MatrixStack stack, int mouseXPos, int mouseYPos, float frameTime) {
+    public void render(@Nonnull MatrixStack matrix, int mouseXPos, int mouseYPos, float frameTime) {
+        super.render(matrix, mouseXPos, mouseYPos, frameTime);
+
         posUpdateCheck();//Have to respond to gui size changes first.
 
         //Button text
-        renderTooltip1(stack, Minecraft.getInstance().fontRenderer, new StringTextComponent(getShortenedBalance()),
+        renderTooltip1(matrix, Minecraft.getInstance().fontRenderer, new StringTextComponent(getShortenedBalance()),
                 this.getXPos() + (this.getWidth() / 2), this.getYPos() + (this.getHeight() / 3) - 1, 0xffffff
         );
     }
@@ -243,7 +238,7 @@ public abstract class WalletToggleButton extends ImageButton implements WidgetFi
      */
     private static WalletToggleButton makeButton(InventoryScreen screen, PlayerEntity player){
         return new WalletToggleButton(
-                screen.getGuiLeft() + REL_X, screen.field_230709_l_
+                screen.getGuiLeft() + REL_X, screen.getGuiTop()
                 /*screen.field_230708_k_*/ / 2 - REL_INV_Y, screen) {
 
             @Override

@@ -208,7 +208,7 @@ interface WidgetFix {
         minecraft.getTextureManager().bindTexture(imageResource);
 
         RenderSystem.enableDepthTest();
-        Widget.func_238463_a_(matrix, screenPosX, screenPosY, (float)textureStartXPos, (float)textureStartYPos,
+        Widget.blit(matrix, screenPosX, screenPosY, (float)textureStartXPos, (float)textureStartYPos,
                 textureRenderWidth, textureRenderHeight, imageXPixelResolution, imageYPixelResolution);
     }
 
@@ -224,7 +224,7 @@ interface WidgetFix {
         renderTooltip2_(stack, fontRenderer, tooltipText, x, y, z);
     }
 
-    default void blit(MatrixStack matrix, int posX, int posY, float xBegin, float yBegin, int a, int b, int c, int d) {
+    default void blitC(MatrixStack matrix, int posX, int posY, float xBegin, float yBegin, int a, int b, int c, int d) {
         blit_(matrix, posX, posY, xBegin, yBegin, a, b, c, d);
     }
 
@@ -302,31 +302,31 @@ interface WidgetFix {
     // ##################
 
     static void renderTooltip1_(MatrixStack stack, FontRenderer fontRenderer, ITextComponent tooltipText, int x, int y, int z) {
-        AbstractGui.func_238472_a_(stack, fontRenderer, tooltipText, x, y, z);
+        AbstractGui.drawCenteredString(stack, fontRenderer, tooltipText, x, y, z);
     }
 
     static void renderTooltip2_(MatrixStack stack, FontRenderer fontRenderer, ITextComponent tooltipText, int x, int y, int z) {
-        AbstractGui.func_238475_b_(stack, fontRenderer, tooltipText, x, y, z);
+        AbstractGui.drawCenteredString(stack, fontRenderer, tooltipText, x, y, z);
     }
 
     static void blit_(MatrixStack matrix, int posX, int posY, float xBegin, float yBegin, int a, int b, int c, int d) {
-        Button.func_238463_a_(matrix, posX, posY, xBegin, yBegin, a, b, c, d);
+        Button.blit(matrix, posX, posY, xBegin, yBegin, a, b, c, d);
     }
 
     static void blitA_(MatrixStack matrix, int posX, int posY, float xBegin, float yBegin, int a, int b) {
-        Button.func_238463_a_(matrix, posX, posY, xBegin, yBegin, a, b, 0, 0);
+        Button.blit(matrix, posX, posY, xBegin, yBegin, a, b, 0, 0);
     }
 
     static void blitB_(MatrixStack matrix, int posX, int posY, float xBegin, float yBegin, int a, int b) {
-        Button.func_238463_a_(matrix, posX, posY, xBegin, yBegin, a, b, 16, 16);
+        Button.blit(matrix, posX, posY, xBegin, yBegin, a, b, 16, 16);
     }
 
     static boolean isHovered (Widget widget){
-        return widget.func_230449_g_();
+        return widget.isFocused();
     }
 
     static int getXPos(Widget widget){
-        return widget.field_230690_l_;
+        return widget.x;
     }
 
     static int getYPos(Widget widget){
@@ -334,20 +334,20 @@ interface WidgetFix {
     }
 
     static void setXPos(Widget widget, int x){
-        widget.field_230690_l_ = x;
+        widget.x = x;
     }
 
     static void setYPos(Widget widget, int y){
-        widget.field_230691_m_ = y;
+        widget.y = y;
     }
 
     static int getWidth(Widget widget){
-        return widget.func_230998_h_();
+        return widget.getWidth();
     }
 
     static int getHeight(Widget widget){
-        return widget.func_238483_d_();
+        return widget.getHeightRealms();
     }
 
-    static void setBlitOffset(Widget widget, int offset) { widget.func_230926_e_(offset); }
+    static void setBlitOffset(Widget widget, int offset) { widget.setBlitOffset(offset); }
 }

@@ -57,7 +57,7 @@ public abstract class WalletToggleButton extends ImageButton implements WidgetFi
             WIDTH       = 46,             //Button width.
             HEIGHT      = 18,             //Button height.
             REL_X       = 125,            //Relative X position to gui.
-            REL_INV_Y   = 22;             //Relative -Y position to half gui height.
+            REL_INV_Y   = 61;             //Relative -Y position to half gui height.
 
     /**
      * WaitTimer that tracks and limits the sending of
@@ -238,9 +238,9 @@ public abstract class WalletToggleButton extends ImageButton implements WidgetFi
      */
     private static WalletToggleButton makeButton(InventoryScreen screen, PlayerEntity player){
         return new WalletToggleButton(
-                screen.getGuiLeft() + REL_X, screen.getGuiTop()
-                /*screen.field_230708_k_*/ / 2 - REL_INV_Y, screen) {
-
+                screen.getGuiLeft() + REL_X,
+                (screen.getGuiTop() + REL_INV_Y),
+                screen) {
             @Override
             protected String getShortenedBalance() {
                 WalletToggleButton.requestBalance(player);

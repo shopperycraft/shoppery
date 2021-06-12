@@ -12,7 +12,7 @@ import net.minecraft.item.Item;
  * to add: a native {@link #queueRegistration() register}
  * system & method, as well as other utilities.
  *
- * @generic T the Item child class inheriting from this class.
+ * @param <T> the Item child class inheriting from this class.
  */
 @SuppressWarnings("WeakerAccess")
 public class ModItem<T extends ModItem<T>> extends Item {
@@ -24,14 +24,10 @@ public class ModItem<T extends ModItem<T>> extends Item {
     private boolean isQueued = false;
 
     /**
-     * Package private constructor to prevent
-     * item instance creation from outside
-     * packages. Creates a new blank{@link
-     * Item.Properties}.
+     * Package private constructor to prevent item instance creation
+     * from outside packages. Creates a new blank{@link Item.Properties}.
      *
-     *
-     * @param registryName the name to register
-     *                     this item under.
+     * @param registryName the name to register this item under.
      */
     ModItem(String registryName){
         this(new Item.Properties(), registryName);
@@ -72,6 +68,7 @@ public class ModItem<T extends ModItem<T>> extends Item {
         this.setRegistryName(ShopperyMod.MODID, registryName);
     }
 
+    // Comment
     /**
      * Adds this item instance to
      * the items registration queue

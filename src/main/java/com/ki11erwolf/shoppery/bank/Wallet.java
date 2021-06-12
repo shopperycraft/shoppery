@@ -12,18 +12,20 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 
 /**
- * Player Wallet.
+ * Player Wallet. Provides access to and stores the currency
+ * balance of a single player.
  *
- * Stores the currency balance of a single
- * player. This class is used to retrieve
- * and modify the balance of a player.
+ * <p>
+ *     Use Wallet objects to retrieve and modify the balance of
+ *     the player the Wallet object belongs to.
+ * </p>
  *
- * The {@link Bank} is responsible for
- * storage, retrieval, saving, and loading
- * of player wallets. A wallet cannot be
- * created from this class, rather, a
- * wallet must be obtained from the
- * Bank class.
+ * <p>
+ *     The {@link Bank} is responsible for storage, retrieval,
+ *     saving, and loading of player wallets. A wallet cannot be
+ *     created from this class, rather, a wallet must be obtained
+ *     from the Bank class.
+ * </p>
  *
  * @see BankManager for obtaining Bank & Wallet objects.
  */
@@ -110,6 +112,7 @@ public class Wallet {
      * @param cents the amount of cents the wallet
      *              should have.
      */
+    @SuppressWarnings("unused")
     public void setBalance(long balance, byte cents){
         if(balance < 0)
             throw new IllegalArgumentException("balance < 0");
@@ -567,7 +570,7 @@ public class Wallet {
 
         if(jBalance == null
                 || jCents == null){
-            LOGGER.warn("Invalid json wallet object found: " + jWallet.toString());
+            LOGGER.warn("Invalid json wallet object found: " + jWallet);
             return null;
         }
 

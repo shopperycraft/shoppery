@@ -45,20 +45,17 @@ import java.util.UUID;
  */
 public enum BankManager {
 
-    //The thought of completely removing all dependencies
-    //on MC, Forge, & Mojang code. Then making wrapper objects
-    //to depend on instead seemed promising for a moment...
-
     /**
      * Singleton instance of this class.
      */
     INSTANCE;
 
     /**
-     * The file name of every bank, to be formatted
-     * with the banks name.
+     * The path to the save file of a bank for any world save folder,
+     * relative to the Minecraft run directory. <b>Must be formatted
+     * with the name of the world save folder!</b>
      */
-    private static final String FILE_NAME = "WorldBank-%s.json";
+    private static final String SAVE_FILE_LOCATION = "/saves/%s/shoppery/bank.json";
 
     /*
      * Registers the bank saver shutdown
@@ -76,12 +73,6 @@ public enum BankManager {
     private static final Logger LOGGER = ShopperyMod.getNewLogger();
 
     /**
-     * The directory where shoppery will save all its
-     * Bank data.
-     */
-    public final File bankDirectory;
-
-    /**
      * Map that links a world name
      * to its bank.
      */
@@ -90,8 +81,7 @@ public enum BankManager {
     /**
      * Initializes fields.
      */
-    BankManager(){
-        this.bankDirectory = new File(System.getProperty("user.dir") + "/shoppery/banks/");
+    BankManager() {
         this.worldToBank = new HashMap<>();
     }
 
@@ -117,14 +107,14 @@ public enum BankManager {
      * @return the bank object linked
      * to the given world.
      */
-    public Bank getBank(World world){
+    public Bank getBank(World world) {
         String worldName = MCUtil.getWorldName(world);
         Bank givenBank = worldToBank.get(worldName);
 
-        if(givenBank == null){
+        if(givenBank == null) {
             givenBank = readBank(world);
 
-            if(givenBank == null){
+            if(givenBank == null) {
                 givenBank = new Bank(world);
             }
         }
@@ -156,7 +146,7 @@ public enum BankManager {
      */
     //Underscore used to differentiate
     //between static & member method.
-    public static Bank _getBank(World world){
+    public static Bank _getBank(World world) {
         return INSTANCE.getBank(world);
     }
 
@@ -170,7 +160,7 @@ public enum BankManager {
      *                   we're retrieving.
      * @return the players wallet for the given world.
      */
-    public static Wallet _getWallet(World world, UUID playerUUID){
+    public static Wallet _getWallet(World world, UUID playerUUID) {
         return _getBank(world).getWallet(playerUUID);
     }
 
@@ -183,7 +173,7 @@ public enum BankManager {
      * @param player the player who's wallet we're retrieving.
      * @return the players wallet for the given world.
      */
-    public static Wallet _getWallet(World world, PlayerEntity player){
+    public static Wallet _getWallet(World world, PlayerEntity player) {
         return _getBank(world).getWallet(player);
     }
 
@@ -197,7 +187,7 @@ public enum BankManager {
      *                      who's wallet we're retrieving.
      * @return the players wallet for the given world.
      */
-    public static Wallet _getWallet(World world, GameProfile playerProfile){
+    public static Wallet _getWallet(World world, GameProfile playerProfile) {
         return _getBank(world).getWallet(playerProfile);
     }
 
@@ -210,7 +200,7 @@ public enum BankManager {
      *                      who's wallet we're retrieving.
      * @return the players wallet for the world they are currently in.
      */
-    public static Wallet _getWallet(UUID playerUUID){
+    public static Wallet _getWallet(UUID playerUUID) {
         PlayerEntity player = MCUtil.getPlayerFromUUID(playerUUID);
         return _getBank(player.getEntityWorld()).getWallet(player);
     }
@@ -223,7 +213,7 @@ public enum BankManager {
      * @param player the the player who's wallet we're retrieving.
      * @return the players wallet for the world they are currently in.
      */
-    public static Wallet _getWallet(PlayerEntity player){
+    public static Wallet _getWallet(PlayerEntity player) {
         return _getBank(player.getEntityWorld()).getWallet(player);
     }
 
@@ -236,7 +226,7 @@ public enum BankManager {
      *                      who's wallet we're retrieving.
      * @return the players wallet for the world they are currently in.
      */
-    public static Wallet _getWallet(GameProfile playerProfile){
+    public static Wallet _getWallet(GameProfile playerProfile) {
         PlayerEntity player = MCUtil.getPlayerFromUUID(playerProfile.getId());
         return _getBank(player.getEntityWorld()).getWallet(player);
     }
@@ -246,21 +236,21 @@ public enum BankManager {
      * given bank is {@code null}, this method
      * will save every bank in the cache to file.
      *
-     * @param b the bank to save or null to
+     * @param bank the bank to save or null to
      *          save all banks.
      */
-    public void save(Bank b){
-        if(b != null){
+    public void save(Bank bank) {
+        if(bank != null) {
             //Just make sure it exists within the map.
-            if(worldToBank.containsKey(b.getWorldName())){
-                worldToBank.put(b.getWorldName(), b);
+            if(worldToBank.containsKey(bank.getWorldName())) {
+                worldToBank.put(bank.getWorldName(), bank);
             }
 
-            saveBank(b);
+            saveBank(bank);
             return;
         }
 
-        if(worldToBank.isEmpty()){
+        if(worldToBank.isEmpty()) {
             LOGGER.info("No cached banks. Skipping save...");
             return;
         }
@@ -272,7 +262,7 @@ public enum BankManager {
      * Saves every bank in the BankManagers cache.
      * Shortcut for {@code save(null);}.
      */
-    public void save(){
+    public void save() {
         save(null);
     }
 
@@ -293,14 +283,14 @@ public enum BankManager {
      * @return a reconstructed Bank object from file, or
      * {@code null} if no save could be found.
      */
-    private Bank readBank(World world){
+    private Bank readBank(World world) {
         String worldName = MCUtil.getWorldName(world);
         LOGGER.info("Reading bank save file: " + worldName);
 
-        File saveFile = getFileFromName(worldName);
+        File saveFile = getWorldBankSaveFile(world);
 
         //Ensure existence
-        if(!saveFile.exists()){
+        if(!saveFile.exists()) {
             LOGGER.info("Bank save file not found: " + saveFile);
             return null;
         }
@@ -311,7 +301,7 @@ public enum BankManager {
             BufferedReader reader = new BufferedReader(new FileReader(saveFile));
 
             String line;
-            while((line = reader.readLine()) != null){
+            while((line = reader.readLine()) != null) {
                 saveFileContent.append(line);
             }
 
@@ -325,7 +315,7 @@ public enum BankManager {
         try{
             JsonObject jBank = GSON.fromJson(saveFileContent.toString(), JsonObject.class);
             return Bank.createBankFromJsonObject(jBank, world);
-        } catch (JsonSyntaxException e){
+        } catch (JsonSyntaxException e) {
             LOGGER.error(
                     "Bank save file: "
                             + worldName +
@@ -346,21 +336,24 @@ public enum BankManager {
      * @return {@code true} if the file was successfully
      * written to, {@code false} otherwise.
      */
-    private boolean saveBank(Bank bank){
-        //Print (logger is unreliable) out when we save the bank
-        //and from where.
-        System.out.printf(
-            "Attempting to save shoppery bank %s from %s%n",
-            bank.getWorldName(), StackLocatorUtil.getCallerClass(6)
+    @SuppressWarnings("UnusedReturnValue")
+    private boolean saveBank(Bank bank) {
+        String attemptLogMessage = String.format("Attempting to save shoppery bank %s from %s",
+                bank.getWorldName(), StackLocatorUtil.getCallerClass(6)
         );
 
-        JsonObject jBank = bank.getBankAsJsonObject();
-        File saveFile = getFileFromName(bank.getWorldName());
+        System.out.println(attemptLogMessage); //Logger is unreliable
+        LOGGER.info(attemptLogMessage);
+
+        File saveFile = null;
 
         try {
-            String bankJson = GSON.toJson(jBank);
+            JsonObject jBank = bank.getBankAsJsonObject();
+            saveFile = getWorldBankSaveFile(bank.getWorld());
 
+            String bankJson = GSON.toJson(jBank);
             FileWriter writer = new FileWriter(saveFile);
+
             writer.write(bankJson);
             writer.flush();
             writer.close();
@@ -373,20 +366,36 @@ public enum BankManager {
     }
 
     /**
-     * Creates a save file path for the given banks
-     * world name.
+     * Obtains the file used to save and load the bank's data
+     * for a specific {@link World}. The file and parent folders
+     * are created first if they do not yet exist.
      *
-     * @param name the given bank name.
-     * @return a file to read/save the content of the bank.
+     * @param world the world to get the Bank save file for.
+     * @return the Bank save  file, or {@code null} if the
+     * given world is {@code null}
      */
-    private static File getFileFromName(String name){
-        if(name == null)
+    private static File getWorldBankSaveFile(World world) {
+        if(world == null)
             return null;
 
-        return new File(
-                INSTANCE.bankDirectory
-                +"/" + String.format(FILE_NAME, name)
+        File saveFile = new File(
+                System.getProperty("user.dir") + String.format(SAVE_FILE_LOCATION, MCUtil.getWorldName(world))
         );
+
+        if(!saveFile.exists()) {
+            LOGGER.info("Bank save file: '" + saveFile + "' doesn't exist. Creating...");
+
+            try{
+                if(saveFile.getParentFile().mkdirs()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    saveFile.createNewFile();
+                }
+            } catch (IOException e) {
+                LOGGER.error("Could not create new bank save file: " + saveFile, e);
+            }
+        }
+
+        return saveFile;
     }
 
     //*******
@@ -397,7 +406,7 @@ public enum BankManager {
      * Registers a ShutdownHook ({@link Runtime#addShutdownHook(Thread)}
      * that will save all banks when the JVM exists (Not guaranteed).
      */
-    private static void registerShutdownSaver(){
+    private static void registerShutdownSaver() {
         Runtime.getRuntime().addShutdownHook(new Thread(BankManager.INSTANCE::save));
     }
 
@@ -411,13 +420,13 @@ public enum BankManager {
      *
      * @param worldSaveEvent forge event.
      */
-    @SubscribeEvent
-    void onWorldSave(WorldEvent.Save worldSaveEvent){
+    @SubscribeEvent @SuppressWarnings("unused")
+    void onWorldSave(WorldEvent.Save worldSaveEvent) {
         if(!(worldSaveEvent.getWorld() instanceof World))
             throw new IllegalStateException("Failed to convert IWorld to World.");
 
         World world = (World)worldSaveEvent.getWorld();
-        if(worldToBank.containsKey(MCUtil.getWorldName(world))){
+        if(worldToBank.containsKey(MCUtil.getWorldName(world))) {
             save(getBank(world));
         }
     }
@@ -437,8 +446,8 @@ public enum BankManager {
      *
      * @param worldUnloadEvent forge event.
      */
-    @SubscribeEvent
-    void onWorldUnload(WorldEvent.Unload worldUnloadEvent){
+    @SubscribeEvent @SuppressWarnings("unused")
+    void onWorldUnload(WorldEvent.Unload worldUnloadEvent) {
         if(worldUnloadEvent.getWorld().isRemote())
             return;
 

@@ -180,6 +180,9 @@ public class Bank {
      * be created from the JsonObject.
      */
     static Bank createBankFromJsonObject(JsonObject jBank, World world){
+        if(jBank == null)
+            return null;
+
         Bank bank = new Bank(world);
         jBank.remove(WORLD_NAME_KEY);//We don't need to parse this.
 

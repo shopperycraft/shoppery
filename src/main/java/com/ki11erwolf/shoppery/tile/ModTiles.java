@@ -88,7 +88,7 @@ public final class ModTiles extends QueueRegisterer<TileRegistration<? extends M
      * @param registryEvent the subscribed to event that called this method.
      *                      Contains a reference to the Tile registry.
      */
-    @SubscribeEvent
+    @SubscribeEvent @SuppressWarnings("unused")
     public void registerTiles(RegistryEvent.Register<TileEntityType<?>> registryEvent) {
         this.iterateQueue(tileDef -> createRegisterAndPass(tileDef, registryEvent.getRegistry()));
     }

@@ -5,7 +5,7 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        //jcenter()
         mavenCentral()
     }
     dependencies {
@@ -16,14 +16,21 @@ buildscript {
 // ##############################
 // Versions & Other Configuration
 // ##############################
+
 /**
  * Holds values needed to run/build Shoppery that are likely to change. Such as versioning.
  */
-class BuildProperties {
+final class BuildProperties {
     //Don't forget to change version numbers in
-    //META-INF/mods.toml  &  ShopperyMod.java
+    //META-INF/mods.toml  &  ShopperyMod.java as well
+
+    static TITLE = 'ShopperyCraft'
 
     static VERSION = '1.0.0'
+
+    static MODID = 'shoppery'
+
+    static AUTHOR = 'Ki11er_wolf'
 
     static MINECRAFT_VERSION = '1.16.5'
 
@@ -31,13 +38,9 @@ class BuildProperties {
 
     static MAPPINGS_VERSION = '20201028-1.16.3'
 
-    static MODID = 'shoppery'
-
-    static AUTHOR = 'Ki11er_wolf'
-
     static DOMAIN = 'com.ki11erwolf' + '.' + MODID
 
-    static MCFORGE_VERSION = "${MINECRAFT_VERSION}-${FORGE_VERSION}"
+    static GString MCFORGE_VERSION = "${MINECRAFT_VERSION}-${FORGE_VERSION}"
 }
 
 //Standard forge build script
@@ -89,13 +92,16 @@ dependencies {
 
 jar {
     manifest {
+        //noinspection SpellCheckingInspection
         attributes([
             "Specification-Title": BuildProperties.MODID,
             "Specification-Vendor": BuildProperties.AUTHOR,
-            "Specification-Version": BuildProperties.VERSION + "-" + BuildProperties.MINECRAFT_VERSION,
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
+            "Specification-Version": BuildProperties.VERSION + "-" + BuildProperties.MCFORGE_VERSION,
+
+            "Implementation-Title": BuildProperties.TITLE,
             "Implementation-Vendor" : BuildProperties.AUTHOR,
+            "Implementation-Version": BuildProperties.VERSION,
+
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

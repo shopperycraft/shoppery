@@ -79,22 +79,19 @@ public abstract class ShopBlock<T extends ShopTile<?>> extends ModBlockTile<T, S
         // Do on client-side
         if(remote) return ActionResultType.SUCCESS;
 
-        if(!rightClick){ //Left-Click & set to left-click
+        if (rightClick) { // Right-Click
+            if(!(SHOPS_CONFIG.isBuyLeftClick())) {
+                getTile(world, pos).purchaseItem(world, player);
+            } else {
+                getTile(world, pos).sellItem(world, player);
+            }
+        } else { //Left-Click
             if(SHOPS_CONFIG.isBuyLeftClick()) {
                 getTile(world, pos).purchaseItem(world, player);
             } else {
                 getTile(world, pos).sellItem(world, player);
             }
-
-            return ActionResultType.SUCCESS;
         }
-
-        if(!(SHOPS_CONFIG.isBuyLeftClick())) { //Right-Click & set to right-click
-            getTile(world, pos).purchaseItem(world, player);
-        } else {
-            getTile(world, pos).sellItem(world, player);
-        }
-
         return ActionResultType.SUCCESS;
     }
 

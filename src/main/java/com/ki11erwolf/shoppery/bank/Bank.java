@@ -3,7 +3,9 @@ package com.ki11erwolf.shoppery.bank;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.ki11erwolf.shoppery.util.PlayerUtil;
+import com.ki11erwolf.shoppery.config.ModConfig;
+import com.ki11erwolf.shoppery.config.categories.GeneralConfig;
+import com.ki11erwolf.shoppery.util.MCUtil;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
@@ -14,21 +16,16 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * The Bank is a {@link Wallet} storage, and
- * access and retrieval system. It's responsible
- * for storing Wallets as well as providing
- * a solid API for accessing Wallets.
+ * The Bank is a {@link Wallet} storage and access system. It's responsible
+ * for storing Wallets as well as providing a solid API for accessing Wallets.
  *
- * A Bank stores only the Wallets for a single world
- * (including dimensions e.g. nether & end). This means
- * multiple banks can exist within a multiplayer server
- * with multiple worlds, and as such, a bank needs to
- * be obtained from the {@link BankManager} using a
- * {@link net.minecraft.world.World}.
+ * <p/>A Bank stores only the Wallets for a single world  (including dimensions
+ * e.g. nether & end). This means multiple banks can exist within a multiplayer
+ * server with multiple worlds, and as such, a bank needs to be obtained from
+ * the {@link BankManager} using a {@link net.minecraft.world.World}.
  *
  * @see BankManager for obtaining Bank & Wallet objects.
  */
-@SuppressWarnings("WeakerAccess")
 public class Bank {
 
     /**
@@ -73,13 +70,15 @@ public class Bank {
 
         //If player has no wallet.
         if(givenWallet == null){
-            PlayerEntity player = PlayerUtil.getPlayerFromUUID(playerUUID);
+            PlayerEntity player = MCUtil.getPlayerFromUUID(playerUUID);
 
             //If not player can be found.
             if(player == null)
                 return null;
 
-            givenWallet = new Wallet(player, 0, (byte)0);
+            givenWallet = new Wallet(
+                    player, ModConfig.GENERAL_CONFIG.getCategory(GeneralConfig.class).getStartingBalance(), (byte)0
+            );
             walletMap.put(playerUUID, givenWallet);
         }
 
@@ -123,14 +122,14 @@ public class Bank {
     /**
      * @return the world this bank is linked to.
      */
-    public World getWorld(){return world;}
+    public World getWorld() { return world; }
 
     /**
      * @return the name (given at world creation)
      * of the world this bank links to.
      */
     public String getWorldName(){
-        return world.getWorldInfo().getWorldName();
+        return MCUtil.getWorldName(world);
     }
 
     //****************
@@ -162,7 +161,7 @@ public class Bank {
     JsonObject getBankAsJsonObject(){
         JsonObject jBank = new JsonObject();
 
-        jBank.add(WORLD_NAME_KEY, new JsonPrimitive(world.getWorldInfo().getWorldName()));
+        jBank.add(WORLD_NAME_KEY, new JsonPrimitive(MCUtil.getWorldName(world)));
         walletMap.forEach((uuid, wallet) -> jBank.add(uuid.toString(), wallet.getWalletAsJsonObject()));
 
         return jBank;
@@ -181,6 +180,9 @@ public class Bank {
      * be created from the JsonObject.
      */
     static Bank createBankFromJsonObject(JsonObject jBank, World world){
+        if(jBank == null)
+            return null;
+
         Bank bank = new Bank(world);
         jBank.remove(WORLD_NAME_KEY);//We don't need to parse this.
 
@@ -196,4 +198,5 @@ public class Bank {
 
         return bank;
     }
+
 }

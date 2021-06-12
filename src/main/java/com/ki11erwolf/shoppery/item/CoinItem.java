@@ -14,7 +14,7 @@ import net.minecraft.world.World;
  * as Dollars to give simple, well known name
  * to the currency.
  */
-public class CoinItem extends ShopperyItem<CoinItem> {
+public class CoinItem extends ModItem<CoinItem> implements ICurrencyItem {
 
     /**
      * Prefix for all coin item types.
@@ -24,7 +24,7 @@ public class CoinItem extends ShopperyItem<CoinItem> {
     /**
      * The worth/worth (in cents) of this coin (0 < worth <= 100).
      */
-    private byte worth;
+    private final byte worth;
 
     /**
      * {@inheritDoc}
@@ -34,19 +34,12 @@ public class CoinItem extends ShopperyItem<CoinItem> {
      * @param worth the worth (in cents) of this coin (0 < worth <= 100).
      */
     CoinItem(String coinName, byte worth) {
-        super(new Properties(), ITEM_NAME_PREFIX + coinName);
+        super(ITEM_NAME_PREFIX + coinName);
 
         if(worth < 0 || worth > 100)
             throw new IllegalArgumentException("Value out of range (0 < worth <= 100): " + worth);
 
         this.worth = worth;
-    }
-
-    /**
-     * @return The worth/worth (in cents) of this coin (0 < worth <= 100).
-     */
-    public byte getWorth(){
-        return this.worth;
     }
 
     /**
@@ -77,4 +70,23 @@ public class CoinItem extends ShopperyItem<CoinItem> {
         return super.onItemRightClick(world, player, hand);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return a decimal {@code double} value, that gives
+     * the cash value/worth of this cent item. The value
+     * is always less than one (1) and above zero (0):
+     * {@code value > 0 && value < 1}, with a fraction
+     * that gives the value of this cent item.
+     *
+     * <br/>E.g. {@code 0.5} is 50 cents and {@code 0.05} is
+     * 5 cents.
+     */
+    @Override
+    public double getCashValue() {
+        if(this.worth < 10)
+            return Double.parseDouble("0.0" + this.worth);//Add .0 if less than 10
+        else
+            return Double.parseDouble("0." + this.worth);
+    }
 }

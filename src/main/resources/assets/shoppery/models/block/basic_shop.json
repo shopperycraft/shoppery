@@ -1,0 +1,6 @@
+{
+  "parent": "shoppery:block/shop",
+  "textures": {
+    "all": "minecraft:blocks/stone"
+  }
+}

@@ -1,26 +1,98 @@
 {
   "itemGroup.shoppery":                                   "ShopperyCraft",
 
-  "item.shoppery.deposit":                                "Deposit Money In Inventory.",
+  "shoppery.sound.subtitle.withdraw":                     "Cash withdraw",
+  "shoppery.sound.subtitle.deposit":                      "Cash deposit",
+  "shoppery.sound.subtitle.transact":                     "Cash transaction",
+  "shoppery.sound.subtitle.transact.alternative":         "Cash transaction (Alternative)",
+  "shoppery.sound.subtitle.cash_register":                "Cash register open",
+  "shoppery.sound.subtitle.decline":                      "Transaction failed",
 
-  "item.shoppery.coin_one":                               "$1¢ (One Cent Coin)",
-  "item.shoppery.coin_five":                              "$5¢ (Five Cent Coin)",
-  "item.shoppery.coin_ten":                               "$10¢ (Ten Cent Coin)",
-  "item.shoppery.coin_twenty":                            "$20¢ (Twenty Cent Coin)",
-  "item.shoppery.coin_fifty":                             "$50¢ (Fifty Cent Coin)",
-  "item.shoppery.coin_eighty":                            "$80¢ (Eighty Cent Coin)",
+  "block.shoppery.basic_shop":                            "Basic Shop",
 
-  "item.shoppery.note_one":                               "$1 (One Dollar Note)",
-  "item.shoppery.note_five":                              "$5 (Five Dollar Note)",
-  "item.shoppery.note_ten":                               "$10 (Ten Dollar Note)",
-  "item.shoppery.note_twenty":                            "$20 (Twenty Dollar Note)",
-  "item.shoppery.note_fifty":                             "$50 (Fifty Dollar Note)",
-  "item.shoppery.note_one_hundred":                       "$100 (One-Hundred Dollar Note)",
+  "item.shoppery.coin_one":                               "One Cent (1¢)",
+  "item.shoppery.coin_five":                              "Five Cents (5¢)",
+  "item.shoppery.coin_ten":                               "Ten Cents (10¢)",
+  "item.shoppery.coin_twenty":                            "Twenty Cents (20¢)",
+  "item.shoppery.coin_fifty":                             "Fifty Cents (50¢)",
+  "item.shoppery.coin_eighty":                            "Eighty Cents (80¢)",
 
-  "item.shoppery.note_five_hundred":                      "$500 (Five-Hundred Dollar Note)",
-  "item.shoppery.note_one_k":                             "$1,000 (One-Thousand Dollar Note)",
-  "item.shoppery.note_five_k":                            "$5,000 (Five-Thousand Dollar Note)",
-  "item.shoppery.note_ten_k":                             "$10,000 (Ten-Thousand Dollar Note)",
-  "item.shoppery.note_fifty_k":                           "$50,000 (Fifty-Thousand Dollar Note)",
-  "item.shoppery.note_one_hundred_k":                     "$100,000 (One-Hundred-Thousand Dollar Note)"
+  "item.shoppery.note_one":                               "One Dollar ($1)",
+  "item.shoppery.note_five":                              "Five Dollars ($5)",
+  "item.shoppery.note_ten":                               "Ten Dollars ($10)",
+  "item.shoppery.note_twenty":                            "Twenty Dollars ($20)",
+  "item.shoppery.note_fifty":                             "Fifty Dollars ($50)",
+  "item.shoppery.note_one_hundred":                       "One-Hundred Dollars ($100)",
+
+  "item.shoppery.note_five_hundred":                      "Five-Hundred Dollars ($500)",
+  "item.shoppery.note_one_k":                             "One-Thousand Dollars ($1,000)",
+  "item.shoppery.note_five_k":                            "Five-Thousand Dollars ($5,000)",
+  "item.shoppery.note_ten_k":                             "Ten-Thousand Dollars ($10,000)",
+  "item.shoppery.note_fifty_k":                           "Fifty-Thousand Dollars ($50,000)",
+  "item.shoppery.note_one_hundred_k":                     "One-Hundred-Thousand Dollars ($100,000)",
+
+  "item.shoppery.debug_item_read":                        "[Read Mode] Debugging Item",
+  "item.shoppery.debug_item_modify":                      "[Modify Mode] Debugging Item",
+
+  "$": "Below translations follow the 'shoppery.domain.sub_domain.*' style of grouping.",
+
+  "shoppery.title.screen.wallet":                         "%s's Wallet",
+
+  "shoppery.text.screen.buy":                             "Buy for",
+  "shoppery.text.screen.sell":                            "Sell for",
+  "shoppery.text.screen.no_price":                        "No Prices for Item",
+
+  "shoppery.tooltip.widget.help_button.wiki":             "Open Wiki (LMB)",
+  "shoppery.tooltip.widget.help_button.command":          "/Shoppery (RMB)",
+
+  "shoppery.tooltip.widget.input_slot_1":                 "Price Check",
+  "shoppery.tooltip.widget.input_slot_2":                 "& Cash Deposit",
+
+  "shoppery.error.balance":                               "< Balance Error >",
+
+  "$$": "Commands",
+
+  "shoppery.command.message.denied":                      "§4You are not allowed to use that command!",
+
+  "shoppery.command.usage.pay":                           "§e/pay §a<player name> <amount>",
+  "shoppery.command.description.pay":                     "§rPays the specified player the specified amount from your wallet. You must be in Survival Mode, have enough funds, and you must both be in the same world.",
+  "shoppery.command.message.pay.creative_mode":           "§4You must be in Survival Mode to use this command!",
+  "shoppery.command.message.pay.world_mismatch":          "§4That player is not in same world as you!",
+  "shoppery.command.message.pay.received":                "§9%s§r has sent you §2%s§r!",
+  "shoppery.command.message.pay.paid":                    "You have successfully paid §c%s§r to §9%s§r!",
+  "shoppery.command.message.pay.format_error":            "§4The amount you have entered is invalid!",
+  "shoppery.command.message.pay.insufficient_funds":      "§4You do not have enough funds to send that amount!",
+  "shoppery.command.message.pay.player_not_found":        "§4No players named §9%s§4 could be found!",
+
+  "shoppery.command.usage.balance":                       "§e/balance §3[player name]",
+  "shoppery.command.description.balance":                 "§rDisplays the current balance of your wallet in chat. If you are a server OP, you can also get the balance of another player by specifying their name after the command.",
+  "shoppery.command.message.balance.not_op":              "§4You need to be a server operator (OP) to get other players balances!",
+  "shoppery.command.message.balance.player_not_found":    "§4No players named §9%s§4 could be found!",
+  "shoppery.command.message.balance.balance":             "You currently have §2%s§r in your wallet!",
+  "shoppery.command.message.balance.balance_op":          "§9%s§r currently has §2%s§r in their wallet!",
+  "shoppery.command.message.balance.balance_infinite":    "You currently have §eInfinite Funds§r in your wallet!",
+
+  "shoppery.command.usage.money":                         "§e/money §a<amount>",
+  "shoppery.command.description.money":                   "§rWithdraws the specified amount from your wallet and gives it to you as an Item, if you have enough funds. Possible amount values:§d 1, 5, 10, 20, 50, 100, 500, 1k, 5k, 10k, 50k, 100k",
+  "shoppery.command.message.money.insufficient_funds":    "§4You do not have enough funds to withdraw that amount!",
+  "shoppery.command.message.money.invalid_amount":        "§4The amount you have entered is invalid!",
+
+  "shoppery.command.usage.price":                         "§e/price",
+  "shoppery.command.description.price":                   "§rDisplays the prices of the Item being held in your main hand.",
+  "shoppery.command.message.price.price":                 "The item §7%s§r can be bought for §c%s§r and can be sold for §2%s§r. Price may vary by up to §d%s%%§r",
+  "shoppery.command.message.price.no_price":              "§cThat item does not have a price!",
+  "shoppery.command.message.price.no_item":               "§4You must be holding the Item in your main hand to check its price!",
+
+  "shoppery.command.usage.shoppery":                      "§e/shoppery §3[command name]",
+  "shoppery.command.description.shoppery":                "§rDisplays the shoppery help message, as well as all shoppery commands. If a command name is given after the shoppery command, the commands help information will be displayed instead.",
+  "shoppery.command.message.shopperycraft.help_message":  "§6ShopperyCraft\n\n§rAdds single player & multiplayer shops where items can be bought or sold.\n\nYour balance can found in your inventory. Use your inventory to access your wallet as well by clicking on the balance button.\n\n§6Website:§r https://shopperycraft.github.io \n\nShopperyCraft also adds a bunch of commands listed below. Command parameters in §3[blue square brackets]§r are optional, while command parameters in §a<green angle brackets>§r are required.\n\n§6List of Commands:§r\n",
+  "shoppery.command.message.shopperycraft.command_not_found": "§4No Shoppery commands with that name exist!",
+
+  "shoppery.command.usage.setprice":                      "§e/setprice §a<buy price> §3[sell price]",
+  "shoppery.command.description.setprice":                "Sets the buying and/or selling price of the item in your main hand in Shoppery stores. Leave §3[sell price]§r blank to have it set to half the buying price.",
+  "shoppery.command.message.setprice.invalid_buy_price":  "§4The given buy price (%s) is not an acceptable buy price.",
+  "shoppery.command.message.setprice.invalid_sell_price": "§4The given sell price (%s) is not an acceptable sell price.",
+  "shoppery.command.message.setprice.hold_item":          "§4You must be holding an item to use this command!",
+  "shoppery.command.message.setprice.success":            "The price of §7%s§r has been set to §2%s§r | §c%s§r.",
+  "shoppery.command.message.setprice.failure":            "Could not set the price of %s."
 }

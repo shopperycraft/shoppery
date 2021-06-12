@@ -1,16 +1,20 @@
 package com.ki11erwolf.shoppery.command;
 
 import com.ki11erwolf.shoppery.ShopperyMod;
+import com.ki11erwolf.shoppery.packets.PlayerMessagePacket;
+import com.ki11erwolf.shoppery.util.LocaleDomain;
+import com.ki11erwolf.shoppery.util.LocaleDomains;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
@@ -22,6 +26,25 @@ import java.util.function.BiConsumer;
 @SuppressWarnings({"WeakerAccess", "StaticInitializerReferencesSubClass"})
 public abstract class Command {
 
+    /**
+     * The locale domain where all command usage messages are stored.
+     */
+    protected static final LocaleDomain COMMAND_USAGES =
+            LocaleDomains.COMMAND.sub(LocaleDomains.USAGE);
+
+    /**
+     * The locale domain where all command description messages are stored.
+     */
+    protected static final LocaleDomain COMMAND_DESCRIPTIONS =
+            LocaleDomains.COMMAND.sub(LocaleDomains.DESCRIPTION);
+
+    /**
+     * The locale domain that holds all general messages
+     * related to commands.
+     */
+    protected static final LocaleDomain COMMAND_MESSAGES
+            = LocaleDomains.COMMAND.sub(LocaleDomains.MESSAGE);
+
     //**************************
     // Command Object Instances
     //**************************
@@ -29,40 +52,62 @@ public abstract class Command {
     /**
      * Instance of the pay command.
      */
-    public static final CmdPay PAY_COMMAND;
+    public static final PayCommand PAY_COMMAND;
 
     /**
      * Instance of the shoppery command.
      */
-    public static final CmdShoppery SHOPPERY_COMMAND;
+    public static final ModCommand SHOPPERY_COMMAND;
 
     /**
      * Instance of the money command.
      */
-    public static final CmdMoney MONEY_COMMAND;
+    public static final MoneyCommand MONEY_COMMAND;
 
     /**
      * Instance of the balance command.
      */
-    public static final CmdBalance BALANCE_COMMAND;
+    public static final BalanceCommand BALANCE_COMMAND;
 
-    public static final CmdPrice PRICE_COMMAND;
+    /**
+     * Instance of the price command.
+     */
+    public static final PriceCommand PRICE_COMMAND;
+
+    /**
+     * Instance of the set price command.
+     */
+    public static final SetPriceCommand SET_PRICE_COMMAND;
 
     //*******
     // Logic
     //*******
 
     /**
+     * The name of this command, which
+     * is also the name used to issue
+     * the command in chat.
+     */
+    private final String name;
+
+    /**
      * Creates a new command.
      *
-     * @param commandName the name the command is called by.
+     * @param commandName the name the command, which
+     *                    is also the name used to issue
+     *                    the command in chat.
      *                    Must be unique.
      */
     Command(String commandName){
         if(CommandListener.COMMAND_MAP.containsKey(commandName))
             throw new IllegalArgumentException("Duplicate command names cannot exist: " + commandName);
 
+        this.name = commandName;
         CommandListener.COMMAND_MAP.put(commandName.toLowerCase(), this);
+    }
+
+    String getName(){
+        return name;
     }
 
     /**
@@ -108,25 +153,26 @@ public abstract class Command {
     abstract boolean canExecute(PlayerEntity player, World world);
 
     /**
-     * @return Should return a string showing
-     * how to use the command.
+     * Utility method used to send a localized message under
+     * the command messages domain to a player from the
+     * server side executed command.
+     *
+     * @param playerEntity the player to send the message to.
+     * @param identifier the messages identifier.
+     * @param params the formatting parameters.
      */
-    abstract String getUsage();
-
-    /**
-     * @return Should return a string describing
-     * what the command does.
-     */
-    abstract String getFunction();
+    void localeMessage(PlayerEntity playerEntity, String identifier, Object... params){
+        PlayerMessagePacket.send(playerEntity, COMMAND_MESSAGES.sub(() -> name), identifier, params);
+    }
 
     /**
      * Util method to send a player a message.
      *
      * @param player the player to send the message to.
-     * @param message the message.
+     * @param message the translated message or the identifier if no.
      */
     static void message(PlayerEntity player, String message){
-        player.sendMessage(new StringTextComponent(message));
+        player.sendMessage(new StringTextComponent(message), player.getUniqueID());
     }
 
     /**
@@ -202,11 +248,11 @@ public abstract class Command {
                     LOGGER.info("Calling command: " + event.getParseResults().getReader().getString());
 
                     if(!command.checkArguments(args)){
-                        message(
-                                player,
-                                TextFormatting.GREEN + "Usage: " + command.getUsage() +
-                                        TextFormatting.WHITE + " - " +
-                                        TextFormatting.BLUE + command.getFunction()
+                        PlayerMessagePacket.send(
+                                player, LocaleDomains.COMMAND.sub(LocaleDomains.USAGE), command.getName()
+                        );
+                        PlayerMessagePacket.send(
+                                player, LocaleDomains.COMMAND.sub(LocaleDomains.DESCRIPTION), command.getName()
                         );
                         event.setCanceled(true);
                         return;
@@ -214,7 +260,7 @@ public abstract class Command {
 
                     command.onCommandCalled(args, player, world);
                 } else {
-                    message(player, TextFormatting.RED + "You cannot use that command!");
+                    message(player, LocaleDomains.COMMAND.sub(LocaleDomains.MESSAGE).get("denied"));
                 }
 
                 event.setCanceled(true);
@@ -233,10 +279,11 @@ public abstract class Command {
         MinecraftForge.EVENT_BUS.register(CommandListener.INSTANCE);
 
         //Instance initialization.
-        PAY_COMMAND = new CmdPay();
-        SHOPPERY_COMMAND = new CmdShoppery();
-        MONEY_COMMAND = new CmdMoney();
-        BALANCE_COMMAND = new CmdBalance();
-        PRICE_COMMAND = new CmdPrice();
+        PAY_COMMAND = new PayCommand();
+        SHOPPERY_COMMAND = new ModCommand();
+        MONEY_COMMAND = new MoneyCommand();
+        BALANCE_COMMAND = new BalanceCommand();
+        PRICE_COMMAND = new PriceCommand();
+        SET_PRICE_COMMAND = new SetPriceCommand();
     }
 }

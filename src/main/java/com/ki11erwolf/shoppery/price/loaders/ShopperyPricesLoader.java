@@ -1,11 +1,10 @@
 package com.ki11erwolf.shoppery.price.loaders;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.price.ItemPrice;
-import com.ki11erwolf.shoppery.price.PriceAPI;
+import com.ki11erwolf.shoppery.price.ItemPrices;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.fml.ModList;
@@ -17,9 +16,8 @@ import java.util.List;
 
 /**
  * Price registry loader responsible for loading in
- * prices defined from this mod, in the shoppery-prices.json
- * file. These are prices for Minecraft and Shoppery Items
- * and Blocks.
+ * prices defined from this mod, in the /prices.json
+ * file. These are prices for Minecraft and Shoppery.
  */
 public class ShopperyPricesLoader extends Loader {
 
@@ -31,7 +29,7 @@ public class ShopperyPricesLoader extends Loader {
     /**
      * The path to the prices.json file.
      */
-    private static final String PRICES_FILE = "/shoppery-prices.json";
+    private static final String PRICES_FILE = "/prices.json";
 
     /**
      * {@inheritDoc}
@@ -50,7 +48,7 @@ public class ShopperyPricesLoader extends Loader {
             return null;
         }
 
-        List<ItemPrice> pricesList = new ArrayList<>(PriceAPI.minExpectedNumberOfEntries);
+        List<ItemPrice> pricesList = new ArrayList<>(ItemPrices.ENTRIES_EXPECTED);
 
         //For each mod
         prices.entrySet().forEach((price) -> {
@@ -104,7 +102,7 @@ public class ShopperyPricesLoader extends Loader {
                 prices.append((char) chr);
             }
 
-            Prices pricesObj = new Prices(new Gson().fromJson(prices.toString(), JsonObject.class));
+            Prices pricesObj = new Prices(ItemPrices.GSON_INSTANCE.fromJson(prices.toString(), JsonObject.class));
             return pricesObj.getPrices();
         } catch (Exception ex){
             LOG.error("Failed to load prices.json for Shoppery...", ex);

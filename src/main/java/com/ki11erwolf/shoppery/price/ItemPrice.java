@@ -16,11 +16,13 @@ import net.minecraft.util.ResourceLocation;
  * <p/>Every ItemPrice has fluctuation - the percentage
  * the prices can vary (fluctuate) by.
  *
- * <p/>An ItemPrice can be prohibited, either
- * prohibiting buy, selling, or both. When prohibited,
- * the item cannot be bought, sold, or both.
+ * <p/>An ItemPrice can be prohibited when either prohibiting
+ * buying, selling, or both. When prohibited, the item
+ * cannot be bought, sold, or both.
+ *
+ * @see ItemPrices ItemPrices - the registry for obtaining and
+ * changing the prices of Items and block.
  */
-//TODO: investigate making ItemPrice subclasses for memory usage improvements.
 public class ItemPrice {
 
     /**
@@ -65,8 +67,12 @@ public class ItemPrice {
     /**
      * Creates a new ItemPrice from the given values.
      */
-    private ItemPrice(ResourceLocation item, boolean prohibitBuy, double buy, boolean prohibitSell,
+    public ItemPrice(ResourceLocation item, boolean prohibitBuy, double buy, boolean prohibitSell,
                        double sell, double fluctuation){
+        //Ensure sell price never exceeds buy price.
+        double maxFluctuation = (buy * (fluctuation / 100));
+        if(sell >= buy - maxFluctuation) sell = buy - (maxFluctuation * 2);
+
         this.item = item;
         this.buy = (buy < 0) ? 0 : buy;
         this.sell = (sell < 0) ? 0 : sell;
@@ -78,21 +84,21 @@ public class ItemPrice {
     /**
      * Creates a new ItemPrice from the given values, with a fluctuation of 10%.
      */
-    private ItemPrice(ResourceLocation item, boolean prohibitBuy, double buy, boolean prohibitSell, double sell){
+    public ItemPrice(ResourceLocation item, boolean prohibitBuy, double buy, boolean prohibitSell, double sell){
         this(item, prohibitBuy, buy, prohibitSell, sell, 10.0);
     }
 
     /**
      * Creates a new ItemPrice from the given values.
      */
-    private ItemPrice(ResourceLocation item, double buy, double sell, double fluctuation){
+    public ItemPrice(ResourceLocation item, double buy, double sell, double fluctuation){
         this(item, false, buy, false, sell, fluctuation);
     }
 
     /**
      * Creates a new ItemPrice from the given values, with a fluctuation of 10%.
      */
-    private ItemPrice(ResourceLocation item, double buy, double sell){
+    public ItemPrice(ResourceLocation item, double buy, double sell){
         this(item, buy, sell, 10.0);
     }
 
@@ -165,37 +171,75 @@ public class ItemPrice {
     }
 
     /**
-     * @return the buy price of the item {@link #getBuyPrice()}
-     * with fluctuation applied. The value returned is not
-     * always the same and should be saved.
+     * @return a random buying price for the item, that within
+     * +/- {@link #fluctuation}% of the original buying price.
+     * Returns a new value every call.
+     *
+     * @see #applyFluctuation(double)
      */
-    public double getBuyPriceWithFluctuation(){
-        double buy = getBuyPrice();
-
-        if(buy <= 0)
-            return 0;
-
-        double change = (buy * (MathUtil.getRandomDoubleInRage(0, fluctuation)/100));
-        if(MathUtil.getRandomBoolean()) buy += change; else buy -= change;
-
-        return MathUtil.roundToTwoDecimals((buy > 0) ? buy : 0.01);
+    public double getFluctuatingBuyPrice(){
+        return applyFluctuation(buy);
     }
 
     /**
-     * @return the sell price of the item {@link #getSellPrice()}
-     * with fluctuation applied. The value returned is not
-     * always the same and should be saved.
+     * @return a random selling price for the item, that within
+     * +/- {@link #fluctuation}% of the original selling price.
+     * Returns a new value every call.
+     *
+     * @see #applyFluctuation(double)
      */
-    public double getSellPriceWithFluctuation(){
-        double sell = getSellPrice();
+    public double getFluctuatingSellPrice(){
+        return applyFluctuation(sell);
+    }
 
-        if(sell <= 0)
-            return 0;
+    /**
+     * Creates a new ItemPrice object based upon this ItemPrice,
+     * for the same Item/Block as this ItemPrice, where the buying
+     * and selling prices have been changed slightly. This allows
+     * creating quick and simple price variations, such as for use
+     * in {@link com.ki11erwolf.shoppery.tile.ShopTile Shops} with
+     * natural variability.
+     *
+     * @see #applyFluctuation(double) applyFluctuation(double) -
+     * for a detailed description on how the prices are changed.
+     *
+     * @return the new prices for the same Item, as a new {@link
+     * ItemPrice} object.
+     */
+    public ItemPrice withPriceFluctuation(){
+        double exactBuy = -1;
+        double exactSell = -1;
 
-        double change = (sell * (MathUtil.getRandomDoubleInRage(0, fluctuation)/100));
-        if(MathUtil.getRandomBoolean()) sell += change; else sell -= change;
+        if(this.canBuy()) exactBuy = getFluctuatingBuyPrice();
+        if(this.canSell())  exactSell = getFluctuatingSellPrice();
 
-        return MathUtil.roundToTwoDecimals((sell > 0) ? sell : 0.01);
+        if(exactSell >= exactBuy){
+            exactSell = exactBuy / 2;
+        }
+
+        return new ItemPrice(this.getItem(), exactBuy, exactSell, 0);
+    }
+
+    /**
+     * Changes a value, usually a price, by a small percentage. This
+     * allows creating price fluctuations simulating a natural market
+     * with variability.
+     *
+     * <p/> The input value will be changed, randomly in either the
+     * positive or negative direction, by a random percentage of the
+     * original value. The percentage change is a randomly chosen
+     * percentage between {@code 0%} and {@link #fluctuation}%.
+     *
+     * @param value the input value to fluctuate.
+     * @return the original input value changed as described above.
+     */
+    protected double applyFluctuation(double value){
+        if(value <= 0) return 0;
+
+        double change = (value * (MathUtil.getRandomDoubleInRange(0, fluctuation)/100));
+        if(MathUtil.getRandomBoolean()) value += change; else value -= change;
+
+        return MathUtil.roundToTwoDecimals((value > 0) ? value : 0.01);
     }
 
     /**

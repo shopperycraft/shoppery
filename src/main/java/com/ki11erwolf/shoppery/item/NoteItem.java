@@ -14,7 +14,7 @@ import net.minecraft.world.World;
  * as Dollars to a give simple, well known name
  * to the currency.
  */
-public class NoteItem extends ShopperyItem<NoteItem> {
+public class NoteItem extends ModItem<NoteItem> implements ICurrencyItem {
 
     /**
      * Prefix for the name of every note item.
@@ -37,19 +37,12 @@ public class NoteItem extends ShopperyItem<NoteItem> {
      *              is worth (worth > 0).
      */
     NoteItem(String noteName, int worth) {
-        super(new Properties(), ITEM_NAME_PREFIX + noteName);
+        super(ITEM_NAME_PREFIX + noteName);
 
         if(worth < 0)
             throw new IllegalArgumentException("Invalid worth of note (worth < 0). Worth: " + worth);
 
         this.worth = worth;
-    }
-
-    /**
-     * @return how much money this note is worth (worth > 0)
-     */
-    public int getWorth() {
-        return worth;
     }
 
     /**
@@ -80,4 +73,15 @@ public class NoteItem extends ShopperyItem<NoteItem> {
         return super.onItemRightClick(world, player, hand);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return a whole double value, with no
+     * decimal/fraction value, that gives the
+     * cash value/worth of this note item.
+     */
+    @Override
+    public double getCashValue() {
+        return this.worth;
+    }
 }

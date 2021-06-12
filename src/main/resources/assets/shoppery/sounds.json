@@ -1,7 +1,33 @@
 {
-  "money": {
-    "category": "block",
-    "subtitle": "shoppery.subtitle.money",
-    "sounds": ["shoppery:money"]
+  "withdraw": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.withdraw",
+    "sounds": ["shoppery:withdraw"],
+    "license": "Creative Commons Attribution 3.0 Unported (CC BY 3.0)"
+  },
+  "deposit": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.deposit",
+    "sounds": ["shoppery:deposit"]
+  },
+  "transact": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.transact",
+    "sounds": ["shoppery:transact"]
+  },
+  "transact_alt": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.transact.alternative",
+    "sounds": ["shoppery:transact_alt"]
+  },
+  "cash_register": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.cash_register",
+    "sounds": ["shoppery:cash_register"]
+  },
+  "decline": {
+    "category": "player",
+    "subtitle": "shoppery.sound.subtitle.decline",
+    "sounds": ["shoppery:decline"]
   }
 }

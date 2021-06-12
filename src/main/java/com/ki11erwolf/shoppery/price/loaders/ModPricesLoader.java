@@ -2,11 +2,11 @@ package com.ki11erwolf.shoppery.price.loaders;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlParser;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ki11erwolf.shoppery.ShopperyMod;
 import com.ki11erwolf.shoppery.price.ItemPrice;
+import com.ki11erwolf.shoppery.price.ItemPrices;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.fml.ModList;
@@ -236,7 +236,6 @@ public class ModPricesLoader extends Loader{
      * process.
      */
     private Prices getPricesFromMod(File modFile, Results results) throws Exception {
-        String modName = modFile.getName();
         ZipFile modJar = new ZipFile(modFile);
 
         //Get prices in root.
@@ -287,7 +286,7 @@ public class ModPricesLoader extends Loader{
     private Prices getPricesFromZipEntry(ZipFile file, ZipEntry entry) throws IOException {
         if(entry != null){
             String content = getFileFromZip(file, entry);
-            JsonObject json = new Gson().fromJson(content, JsonObject.class);
+            JsonObject json = ItemPrices.GSON_INSTANCE.fromJson(content, JsonObject.class);
             return new Prices(json);
         } else {
             results.logError("Could not find a prices file for mod!");

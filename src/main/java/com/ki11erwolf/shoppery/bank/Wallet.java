@@ -4,26 +4,28 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.ki11erwolf.shoppery.ShopperyMod;
-import com.ki11erwolf.shoppery.util.PlayerUtil;
+import com.ki11erwolf.shoppery.util.CurrencyUtil;
+import com.ki11erwolf.shoppery.util.MCUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import org.apache.logging.log4j.Logger;
 
-import java.text.NumberFormat;
 import java.util.*;
 
 /**
- * Player Wallet.
+ * Player Wallet. Provides access to and stores the currency
+ * balance of a single player.
  *
- * Stores the currency balance of a single
- * player. This class is used to retrieve
- * and modify the balance of a player.
+ * <p>
+ *     Use Wallet objects to retrieve and modify the balance of
+ *     the player the Wallet object belongs to.
+ * </p>
  *
- * The {@link Bank} is responsible for
- * storage, retrieval, saving, and loading
- * of player wallets. A wallet cannot be
- * created from this class, rather, a
- * wallet must be obtained from the
- * Bank class.
+ * <p>
+ *     The {@link Bank} is responsible for storage, retrieval,
+ *     saving, and loading of player wallets. A wallet cannot be
+ *     created from this class, rather, a wallet must be obtained
+ *     from the Bank class.
+ * </p>
  *
  * @see BankManager for obtaining Bank & Wallet objects.
  */
@@ -42,11 +44,6 @@ public class Wallet {
      * Original Library/Origin: Regex Buddy (https://www.regexbuddy.com/)
      */
     private static final String BALANCE_REGEX = "^[+-]?[0-9]{1,3}(?:,?[0-9]{3})*(?:\\.[0-9]{2})?$";
-
-    /**
-     * The symbol to represent the currency.
-     */
-    private static final char CURRENCY_SYMBOL = '$';
 
     /**
      * The player this wallet belongs to.
@@ -115,6 +112,7 @@ public class Wallet {
      * @param cents the amount of cents the wallet
      *              should have.
      */
+    @SuppressWarnings("unused")
     public void setBalance(long balance, byte cents){
         if(balance < 0)
             throw new IllegalArgumentException("balance < 0");
@@ -199,7 +197,7 @@ public class Wallet {
      * is not in the correct format.
      */
     public void add(float balance){
-        add(String.valueOf(balance));
+        add(CurrencyUtil.floatToCurrency(balance));
     }
 
     /**
@@ -303,8 +301,8 @@ public class Wallet {
 
         newBalance -= balance;
 
-        if(newBalance == 0){
-            if (newCents == 0)
+        if(newBalance < 0){
+            if (newCents < 0)
                 return false;
         }
 
@@ -389,7 +387,7 @@ public class Wallet {
      * and the amount was taken off, {@code false} otherwise.
      */
     public boolean subtract(float balance){
-        return subtract(String.valueOf(balance));
+        return subtract(CurrencyUtil.floatToCurrency(balance));
     }
 
     /**
@@ -412,8 +410,7 @@ public class Wallet {
      * E.g. $100.00, $1,000.00 $1,000,000.00
      */
     public String getFullBalance(){
-        if(cents < 10) return CURRENCY_SYMBOL + NumberFormat.getInstance().format(balance) + ".0" + cents;
-        else return CURRENCY_SYMBOL + NumberFormat.getInstance().format(balance) + "." + cents;
+        return CurrencyUtil.toFullString(balance, cents);
     }
 
     /**
@@ -430,15 +427,7 @@ public class Wallet {
      * 123200000 to $123m
      */
     public String getShortenedBalance(){
-        if(balance == 0)
-            if(cents < 10){
-                return "0.0" + cents + 'c';
-            } else {
-                return "0." + cents + 'c';
-            }
-
-        if(cents < 10) return CURRENCY_SYMBOL + format(balance);
-        else return CURRENCY_SYMBOL + format(balance);
+        return CurrencyUtil.toShortString(balance, cents);
     }
 
     /**
@@ -455,7 +444,8 @@ public class Wallet {
     public String toString(){
         return String.format(
                 "Wallet[player: %s, balance: %s, cents: %s, full: %s]",
-                getPlayer().getName().getString(), balance, cents, getFullBalance()
+                getPlayer().getName().getString(), balance, cents,
+                CurrencyUtil.CURRENCY_SYMBOL + getFullBalance()
         );
     }
 
@@ -580,7 +570,7 @@ public class Wallet {
 
         if(jBalance == null
                 || jCents == null){
-            LOGGER.warn("Invalid json wallet object found: " + jWallet.toString());
+            LOGGER.warn("Invalid json wallet object found: " + jWallet);
             return null;
         }
 
@@ -602,61 +592,6 @@ public class Wallet {
      * if the json wallet object couldn't be parsed.
      */
     static Wallet createWalletFromJsonObject(JsonObject jWallet, UUID playerUUID){
-        return createWalletFromJsonObject(jWallet, PlayerUtil.getPlayerFromUUID(playerUUID));
-    }
-
-    //***************************************************************************************************************
-    // Currency Formatting Code
-    // Copied from:
-    // https://stackoverflow.com/questions/4753251/how-to-go-about-formatting-1200-to-1-2k-in-java/30661479#30661479
-    // THE BELOW CODE HAS BEEN EDITED
-    //***************************************************************************************************************
-
-    /**
-     * Map of numbers to their shorthand version.
-     */
-    private static final NavigableMap<Long, String> suffixes = new TreeMap<>();
-
-    /*
-     * Initializes the map.
-     */
-    static {
-        suffixes.put(1_000L, "K");
-        suffixes.put(1_000_000L, "M");
-        suffixes.put(1_000_000_000L, "B");
-        suffixes.put(1_000_000_000_000L, "T");
-        suffixes.put(1_000_000_000_000_000L, "Q");
-    }
-
-    /**
-     * Shortens a long value.
-     *
-     * Examples:
-     * 1000 to 1k
-     * 5821 to 5.8k
-     * 10500 to 10k
-     * 101800 to 101k
-     * 2000000 to 2m
-     * 7800000 to 7.8m
-     * 92150000 to 92m
-     * 123200000 to 123m
-     *
-     * @param value the value to shorten.
-     * @return the shorten value.
-     */
-    private static String format(long value) {
-        //Long.MIN_VALUE == -Long.MIN_VALUE so we need an adjustment here
-        if (value == Long.MIN_VALUE) return format(Long.MIN_VALUE + 1);
-        if (value < 0) return "-" + format(-value);
-        if (value < 1000) return Long.toString(value); //deal with easy case
-
-        Map.Entry<Long, String> e = suffixes.floorEntry(value);
-        Long divideBy = e.getKey();
-        String suffix = e.getValue();
-
-        long truncated = value / (divideBy / 10); //the number part of the output times 10
-        //noinspection IntegerDivisionInFloatingPointContext
-        boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10);
-        return hasDecimal ? (truncated / 10d) + suffix : (truncated / 10) + suffix;
+        return createWalletFromJsonObject(jWallet, MCUtil.getPlayerFromUUID(playerUUID));
     }
 }

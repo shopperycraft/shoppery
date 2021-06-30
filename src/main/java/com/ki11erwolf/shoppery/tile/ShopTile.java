@@ -8,6 +8,7 @@ import com.ki11erwolf.shoppery.config.categories.ShopsConfig;
 import com.ki11erwolf.shoppery.price.ItemPrice;
 import com.ki11erwolf.shoppery.util.MathUtil;
 import javafx.util.Callback;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,12 +16,14 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -98,7 +101,6 @@ public abstract class ShopTile<T extends ShopTileData> extends ModTile {
      * used by this type of ShopTile. The provider is only queried
      * for the ShopTileData implementation object instance
      */
-    @Nonnull
     public ShopTile(TileRegistration<? extends ModTile> registration, Callback<ShopTile<T>, T> dataProvider) {
         super(registration);
         this.dataProvider = Objects.requireNonNull(dataProvider);
@@ -297,6 +299,7 @@ public abstract class ShopTile<T extends ShopTileData> extends ModTile {
      * @return {@code true} if the item was successfully
      * sold to the player, {@code false} otherwise.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean purchaseItem(World world, PlayerEntity player) {
         if(!(player instanceof ServerPlayerEntity))
             return false;
@@ -333,6 +336,7 @@ public abstract class ShopTile<T extends ShopTileData> extends ModTile {
      * @return {@code true} if the item was successfully
      * purchased from the player, {@code false} otherwise.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean sellItem(World world, PlayerEntity player) {
         if(!(player instanceof ServerPlayerEntity))
             return false;
@@ -392,8 +396,9 @@ public abstract class ShopTile<T extends ShopTileData> extends ModTile {
      * already setup.
      */
     protected boolean ensureSetup() {
-        if(validateSetup())
+        if(validateSetup()) {
             return false;
+        }
 
         setup();
         return true;
@@ -535,5 +540,37 @@ public abstract class ShopTile<T extends ShopTileData> extends ModTile {
                             ? ShopperySoundEvents.TRANSACT_ALT : ShopperySoundEvents.TRANSACT,
                     1.0F, (float) MathUtil.getRandomDoubleInRange(0.9, 1.3)
             );
+    }
+
+    // ################
+    // Client Data Sync
+    // ################
+
+
+    /**
+     * Constructs the packet responsible for sending {@link CompoundNBT}
+     * data to the client.Needed for the {@link
+     * net.minecraft.client.renderer.tileentity.TileEntityRenderer} to work.
+     *
+     * @return the {@link SUpdateTileEntityPacket} containing server side
+     * data.
+     */
+    @Override @Nullable
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(this.pos, 1, this.getUpdateTag());
+    }
+
+    /**
+     * Handles writing the server-side data to a {@link CompoundNBT} object,
+     * which is sent to the client, where it can be used to render or display
+     * things based on the data. Needed for the {@link
+     * net.minecraft.client.renderer.tileentity.TileEntityRenderer} to work.
+     *
+     * @return a {@link CompoundNBT} object containing data from the server
+     * to be sent to the client.
+     */
+    @Override @Nonnull @SuppressWarnings("deprecation")
+    public CompoundNBT getUpdateTag() {
+        return this.write(new CompoundNBT());
     }
 }

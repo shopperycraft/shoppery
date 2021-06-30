@@ -17,7 +17,7 @@ public class ProxyClient extends ProxyServer {
     @Override
     public void onClientSetup(FMLClientSetupEvent event) {
         WalletToggleButton.init();
-        ModTileRenderers.registerRenderers(event);
+        ModTileRenderers.registerRenderers();
     }
 
     /**

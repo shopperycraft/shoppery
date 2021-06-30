@@ -25,7 +25,7 @@ import net.minecraft.util.text.ITextComponent;
  * {@link #render(MatrixStack, int, int, float)} method that can be used
  * instead of the Minecraft one.
  */
-interface WidgetFix {
+public interface WidgetFix {
 
     /**
      * @return {@code true} if this widget is being clicked during

@@ -110,7 +110,7 @@ public abstract class ModTile extends TileEntity {
      * the return value from {@code onWrite()}
      * is returned.
      */
-    @Override @Nonnull @NonnullDefault @Deprecated
+    @Override @Nonnull @NonnullDefault
     public CompoundNBT write(CompoundNBT tagsIn) {
         super.write(tagsIn);
         CompoundNBT tagsNew = onWrite(tagsIn);
@@ -131,7 +131,7 @@ public abstract class ModTile extends TileEntity {
      *               read from.
      */
     @Override @NonnullDefault @Deprecated
-    public void read /*read()*/ (BlockState state, CompoundNBT tags) {
+    public void read (BlockState state, CompoundNBT tags) {
         super.read(state, tags);
         onRead(state, tags);
     }
